@@ -1,0 +1,86 @@
+@use "sass:math";
+
+$scale: 60px;
+$time: 1s;
+
+// A Template (Mixin) of all common codes, to stop repitition
+
+@mixin common($a, $b, $c, $d, $e, $f, $g) {
+  display: $a;
+  flex-direction: $b;
+  justify-content: $c;
+  align-items: $d;
+  width: $e;
+  height: $f;
+  background-color: $g;
+  transition: all $time ease;
+}
+
+// To change the default Configurations
+
+.container {
+  display: flex;
+  justify-content: flex-end;
+
+  width: 10%;
+  @media (min-width: 500px) {
+    width: 8%;
+  }
+  .content {
+    text-align: justify;
+  }
+  input[type="checkbox"] {
+    display: none;
+  }
+}
+
+// Style rules for the .btn class
+
+.btn {
+  align-self: center;
+  margin: 15px 0;
+}
+
+// Style rules for the .box class
+
+.box {
+  @include common(
+    flex,
+    column,
+    center,
+    null,
+    $scale,
+    math.div($scale, 2),
+    black
+  );
+  position: relative;
+  border-radius: math.div($scale, 4);
+  cursor: pointer;
+
+  //   Style rules for the roller .ball class
+
+  .ball {
+    @include common(
+      null,
+      null,
+      null,
+      null,
+      math.div($scale, 2),
+      math.div($scale, 2),
+      grey
+    );
+    position: absolute;
+    border-radius: 50%;
+    border: 3px solid black;
+  }
+
+  //   Style rules for the .scenary(.sun, .moon) class
+
+  .scenary {
+    @include common(flex, row, space-between, null, null, null, null);
+    padding: 5px 10px 0px 10px;
+    svg {
+      width: math.div($scale, 3);
+    }
+  }
+}
