@@ -29,7 +29,7 @@ export class ThemeToggleComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribe$.next();
+    this.unsubscribe$.next(true);
     this.unsubscribe$.complete();
   }
 
