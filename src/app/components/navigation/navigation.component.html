@@ -1,0 +1,18 @@
+<div
+  class="z-50 absolute align-middle right-0 h-16 w-16 mr-8 sm:invisible lg:visible md:visible  xl:visible"
+>
+  <div class="flex items-center flex-col mb-3">
+    <a
+      class="relative border-2 border-green-500 px-5 py-2.5 group"
+      href="#{{ scrollTo }}"
+    >
+      <span
+        class="absolute w-0 group-hover:w-full transition ease-out duration-300 h-full group-hover:bg-green-500"
+      ></span>
+      <span class="relative">{{ description }}</span>
+    </a>
+    <span *ngIf="arrowType === 'up'" class="">↑</span>
+    <span *ngIf="arrowType === 'down'" class="">↓</span>
+    <span *ngIf="arrowType === ''" class=""></span>
+  </div>
+</div>
