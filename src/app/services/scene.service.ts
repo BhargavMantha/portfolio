@@ -90,7 +90,6 @@ export class SceneService implements OnDestroy {
       const options = { receiveShadow: false, castShadow: false };
       this.loader = new GLTFLoader();
       const loadModel = (glb: GLTF, position: Vector3) => {
-        console.log('gltf');
         const model = glb.scene;
         model.name = 'dog';
         model.position.y = 0;
@@ -150,8 +149,6 @@ export class SceneService implements OnDestroy {
   }
 
   animate = () => {
-    console.log('in animate');
-
     this.req = requestAnimationFrame(this.animate);
 
     this.frame = this.frame <= 100 ? this.frame + 1 : this.frame;
