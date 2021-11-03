@@ -9,6 +9,7 @@ import { DogTypingComponent } from './components/dog-typing/dog-typing.component
 import { AboutComponent } from './components/about/about.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { SkillsComponent } from './components/skills/skills.component';
+import { BlogsComponent } from './components/blogs/blogs.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { SkillsComponent } from './components/skills/skills.component';
     AboutComponent,
     NavigationComponent,
     SkillsComponent,
+    BlogsComponent,
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
