@@ -2,7 +2,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import {
   About,
-  Contact,
+  Earth,
   Experience,
   Feedbacks,
   Hero,
@@ -24,8 +24,8 @@ const App = () => {
         <Tech></Tech>
         <Works></Works>
         <div className='relative z-0'>
-          <Contact></Contact>
-          <StarsCanvas></StarsCanvas>
+          <StarsCanvas />
+          <Earth />
         </div>
       </div>
     </BrowserRouter>
