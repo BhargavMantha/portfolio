@@ -24,7 +24,6 @@ const App = () => {
         <Tech></Tech>
         <Works></Works>
         <div className='relative z-0'>
-          <StarsCanvas />
           <Earth />
         </div>
       </div>
