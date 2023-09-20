@@ -121,6 +121,21 @@ const technologies = [
 
 const experiences = [
   {
+    title: 'Senior Software Engineer (Remote)',
+    company_name: 'Delivery Solutions',
+    icon: deliverySolutions,
+    iconBg: '#383E56',
+    date: 'Mar 2022 - Present',
+    points: [
+      'Built services to handle up 600 TPS of load',
+      `Built an Object Data Mapping library to connect with Cassandra that establishes a connection with Cassandra
+     using “express-cassandra” syncing the entities following 2 main patterns: Domain Driven Design
+     and repository pattern.`,
+      'Refactored monolithic architecture code to domain-based entity-level microservices improving the performance by 48%.',
+      'Engineered a load-balancer service which distributes the load on the main service by calculating the number of ECS task definitions in the cluster and steps up / down the requests on the main server, this internally improved the performance by 73% and reduced the cost by 34%.',
+    ],
+  },
+  {
     title: 'Full stack Developer',
     company_name: 'Freelance',
     icon: shopify,
@@ -160,21 +175,6 @@ const experiences = [
       'Devices CICD pipelines for 0 down time and 20X faster deployment and delivery',
       'Translated business logic to code bridging the gap between client and developer improving the timeline by 5 days.',
       'Restructured applications using Node.JS clusters, Kubernetes for scaling, and 0 downtime',
-    ],
-  },
-  {
-    title: 'Senior Software Engineer (Remote)',
-    company_name: 'Delivery Solutions',
-    icon: deliverySolutions,
-    iconBg: '#383E56',
-    date: 'Mar 2022 - Present',
-    points: [
-      'Built services to handle up 600 TPS of load',
-      `Built an Object Data Mapping library to connect with Cassandra that establishes a connection with Cassandra
-       using “express-cassandra” syncing the entities following 2 main patterns: Domain Driven Design
-       and repository pattern.`,
-      'Refactored monolithic architecture code to domain-based entity-level microservices improving the performance by 48%.',
-      'Engineered a load-balancer service which distributes the load on the main service by calculating the number of ECS task definitions in the cluster and steps up / down the requests on the main server, this internally improved the performance by 73% and reduced the cost by 34%.',
     ],
   },
 ];
