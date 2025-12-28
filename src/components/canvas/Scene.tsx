@@ -51,7 +51,7 @@ export const Scene = () => {
           <pointLight
             position={[10, 5, 10]}
             intensity={3.0}
-            color={colors.atmosphere.magenta}
+            color={colors.atmosphere.blue}
           />
           <pointLight
             position={[0, 0, 15]}
