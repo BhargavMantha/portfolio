@@ -4,23 +4,23 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    dedupe: ['react', 'react-dom', 'three']
+  },
   build: {
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // Split React and React-DOM into separate chunk
-          if (id.includes('/node_modules/react/') || id.includes('/node_modules/react-dom/')) {
+          // Keep React and React-DOM together in one chunk
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
             return 'react-vendor';
           }
-          // Split Three.js ecosystem into separate chunk
-          if (
-            id.includes('/node_modules/three/') ||
-            id.includes('/node_modules/@react-three/')
-          ) {
+          // Keep Three.js separate (but not @react-three which needs React)
+          if (id.includes('node_modules/three/') && !id.includes('@react-three')) {
             return 'three-vendor';
           }
-          // Split other large libraries
-          if (id.includes('/node_modules/')) {
+          // Other vendor libraries
+          if (id.includes('node_modules/')) {
             return 'vendor';
           }
         },
