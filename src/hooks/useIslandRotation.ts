@@ -66,4 +66,11 @@ export const useIslandRotation = (groupRef: React.RefObject<THREE.Group>) => {
       dragState.current.velocity *= MOMENTUM_DECAY;
     }
   });
+
+  // Expose reset function for auto-snap to prevent conflict
+  const resetMomentum = () => {
+    dragState.current.velocity = 0;
+  };
+
+  return { resetMomentum };
 };
