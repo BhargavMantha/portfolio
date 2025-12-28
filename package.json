@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "overrides": {
-    "three": "^0.160.1"
+    "three": "0.156.1"
   },
   "scripts": {
     "dev": "vite",
@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@emailjs/browser": "^3.11.0",
-    "@react-three/drei": "9.90.0",
-    "@react-three/fiber": "^8.15.0",
+    "@react-three/drei": "9.84.0",
+    "@react-three/fiber": "8.14.2",
     "framer-motion": "^11.18.2",
     "maath": "^0.9.0",
     "react": "^18.2.0",
@@ -26,7 +26,7 @@
     "react-tilt": "^1.0.2",
     "react-use": "^17.6.0",
     "react-vertical-timeline-component": "^3.6.0",
-    "three": "^0.160.1",
+    "three": "0.156.1",
     "zustand": "^4.5.7"
   },
   "devDependencies": {
