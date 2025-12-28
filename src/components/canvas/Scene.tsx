@@ -20,7 +20,7 @@ export const Scene = () => {
         <Suspense fallback={null}>
           <PerspectiveCamera
             makeDefault
-            position={[0, 10, 35]}
+            position={[0, 15, 60]}
             fov={50}
           />
 
