@@ -1,7 +1,7 @@
 import { useGLTF, Html } from '@react-three/drei';
 import { useRef, useEffect } from 'react';
 import * as THREE from 'three';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { useFrame } from '@react-three/fiber';
 import { useIslandRotation } from '../../hooks/useIslandRotation';
 import { useAutoSnap } from '../../hooks/useAutoSnap';
