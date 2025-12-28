@@ -10,37 +10,37 @@ import { useIslandStore } from '../../store/islandStore';
 import { PIT_STOPS } from '../../constants/pitStops';
 import { SectionType } from '../../types/island';
 
-// Section-specific labels and positions with arrow indicators
+// Section-specific labels aligned vertically (left side, top to bottom)
 const SECTION_LABELS = {
   hero: {
     text: 'Home',
-    position: [-2, -1, 0] as [number, number, number],
-    lineStart: [-1.5, -1, 0] as [number, number, number],
-    lineEnd: [0, -1.5, 0] as [number, number, number]
+    position: [-3.5, -1.5, 0] as [number, number, number],
+    lineStart: [-3, -1.5, 0] as [number, number, number],
+    lineEnd: [0, -2, 0] as [number, number, number]
   },
   about: {
     text: 'About',
-    position: [-2.5, 2, 0] as [number, number, number],
-    lineStart: [-2, 2, 0] as [number, number, number],
+    position: [-3.5, 1.5, 0] as [number, number, number],
+    lineStart: [-3, 1.5, 0] as [number, number, number],
     lineEnd: [0, 2.2, 0] as [number, number, number]
   },
   experience: {
     text: 'Experience',
-    position: [2.5, 0.5, 0] as [number, number, number],
-    lineStart: [2, 0.5, 0] as [number, number, number],
+    position: [-3.5, 0.5, 0] as [number, number, number],
+    lineStart: [-3, 0.5, 0] as [number, number, number],
     lineEnd: [0, 0.8, 0] as [number, number, number]
   },
   projects: {
     text: 'Projects',
-    position: [2.5, -0.5, 0] as [number, number, number],
-    lineStart: [2, -0.5, 0] as [number, number, number],
-    lineEnd: [1.2, -0.3, 0] as [number, number, number]
+    position: [-3.5, -0.5, 0] as [number, number, number],
+    lineStart: [-3, -0.5, 0] as [number, number, number],
+    lineEnd: [1, 0, 0] as [number, number, number]
   },
   contact: {
     text: 'Contact',
-    position: [-2.5, -0.5, 0] as [number, number, number],
-    lineStart: [-2, -0.5, 0] as [number, number, number],
-    lineEnd: [-1.2, -0.3, 0] as [number, number, number]
+    position: [-3.5, -2.5, 0] as [number, number, number],
+    lineStart: [-3, -2.5, 0] as [number, number, number],
+    lineEnd: [-1, 0, 0] as [number, number, number]
   },
 };
 
@@ -110,10 +110,10 @@ export const Island = () => {
     <group ref={islandRef as any} position={[0, -1.5, 0]}>
       <primitive object={scene} scale={3.2} rotation={[0, 0, 0]} />
 
-      {/* Section-specific label with arrow line */}
+      {/* Section-specific label with fluorescent arrow line */}
       {activeSection && (
         <>
-          {/* Arrow line pointing to suit part */}
+          {/* Fluorescent arrow line pointing to suit part */}
           <mesh position={[0, 0, 0]}>
             <tubeGeometry
               args={[
@@ -122,42 +122,53 @@ export const Island = () => {
                   new THREE.Vector3(...SECTION_LABELS[activeSection].lineStart),
                 ]) as any,
                 20,
-                0.015,
+                0.02,
                 8,
                 false,
               ]}
             />
-            <meshBasicMaterial color={PIT_STOPS[activeSection].color} />
+            <meshStandardMaterial
+              color={PIT_STOPS[activeSection].color}
+              emissive={PIT_STOPS[activeSection].color}
+              emissiveIntensity={1.5}
+              toneMapped={false}
+            />
           </mesh>
 
-          {/* Arrow tip */}
+          {/* Fluorescent arrow tip */}
           <mesh
             position={SECTION_LABELS[activeSection].lineEnd}
             rotation={[0, 0, 0]}
           >
-            <coneGeometry args={[0.05, 0.1, 8]} />
-            <meshBasicMaterial color={PIT_STOPS[activeSection].color} />
+            <coneGeometry args={[0.08, 0.15, 8]} />
+            <meshStandardMaterial
+              color={PIT_STOPS[activeSection].color}
+              emissive={PIT_STOPS[activeSection].color}
+              emissiveIntensity={2.0}
+              toneMapped={false}
+            />
           </mesh>
 
-          {/* Compact section label */}
+          {/* Fluorescent section label */}
           <Html
             position={SECTION_LABELS[activeSection].position}
             center
             distanceFactor={10}
           >
             <div
-              className="px-3 py-1.5 rounded backdrop-blur-sm border"
+              className="px-4 py-2 rounded-md backdrop-blur-sm border-2"
               style={{
-                background: `${PIT_STOPS[activeSection].color}15`,
+                background: `${PIT_STOPS[activeSection].color}25`,
                 borderColor: PIT_STOPS[activeSection].color,
-                boxShadow: `0 0 10px ${PIT_STOPS[activeSection].color}60`,
+                boxShadow: `0 0 20px ${PIT_STOPS[activeSection].color}, 0 0 40px ${PIT_STOPS[activeSection].color}80, inset 0 0 10px ${PIT_STOPS[activeSection].color}40`,
               }}
             >
               <div
-                className="text-sm font-semibold tracking-wide"
+                className="text-sm font-bold tracking-wider uppercase"
                 style={{
                   color: PIT_STOPS[activeSection].color,
-                  textShadow: `0 0 8px ${PIT_STOPS[activeSection].color}`,
+                  textShadow: `0 0 10px ${PIT_STOPS[activeSection].color}, 0 0 20px ${PIT_STOPS[activeSection].color}`,
+                  filter: 'brightness(1.3)',
                 }}
               >
                 {SECTION_LABELS[activeSection].text}
