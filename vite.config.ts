@@ -8,6 +8,13 @@ export default defineConfig({
     dedupe: ['react', 'react-dom', 'three']
   },
   build: {
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        // Disable code splitting to prevent TDZ errors from cross-chunk imports
+        manualChunks: undefined,
+        inlineDynamicImports: true
+      }
+    }
   },
 })
