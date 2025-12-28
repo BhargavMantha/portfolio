@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useUniverseStore } from '../../../store/universeStore';
 import { PIT_STOPS } from '../../../constants/pitStops';
+import { useResponsive } from '../../../hooks/useResponsive';
 
 /**
  * WarpTunnel Component
@@ -16,13 +17,18 @@ import { PIT_STOPS } from '../../../constants/pitStops';
  * - Rotation animation for motion effect
  * - Color matches target universe
  * - Only visible during flight
+ * - Mobile optimization: Reduced radial segments (16 vs 32) for better performance
  */
 export const WarpTunnel = () => {
   const meshRef = useRef<THREE.Mesh>(null);
   const { isFlying, targetUniverse } = useUniverseStore();
+  const { isMobile } = useResponsive();
 
   // Get color from target universe (fallback to cyan if no target)
   const color = targetUniverse ? PIT_STOPS[targetUniverse].color : '#00d4ff';
+
+  // Mobile uses fewer segments for better performance
+  const radialSegments = isMobile ? 16 : 32;
 
   // Animate tunnel: scroll texture and rotate
   useFrame(({ clock }) => {
@@ -48,8 +54,8 @@ export const WarpTunnel = () => {
       position={[0, 0, -5]} // Behind Iron Man
       rotation={[Math.PI / 2, 0, 0]} // Horizontal orientation
     >
-      {/* Large cylinder to envelop the view */}
-      <cylinderGeometry args={[50, 50, 100, 32, 1, true]} />
+      {/* Large cylinder to envelop the view - fewer segments on mobile for performance */}
+      <cylinderGeometry args={[50, 50, 100, radialSegments, 1, true]} />
 
       <meshBasicMaterial
         color={color}
