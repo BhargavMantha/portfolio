@@ -1,17 +1,16 @@
-import { useIslandStore } from '../../store/islandStore';
+import { useUniverseStore } from '../../store/universeStore';
 import { PIT_STOPS } from '../../constants/pitStops';
 import { SectionType } from '../../types/island';
-import { degreesToRadians } from '../../utils/rotationUtils';
 
 export const Navbar = () => {
-  const activeSection = useIslandStore((state) => state.activeSection);
-  const setTargetRotation = useIslandStore((state) => state.setTargetRotation);
-  const startRotating = useIslandStore((state) => state.startRotating);
+  const currentUniverse = useUniverseStore((state) => state.currentUniverse);
+  const initiateFlightTo = useUniverseStore((state) => state.initiateFlightTo);
 
   const handleSectionClick = (sectionId: SectionType) => {
-    const targetAngle = PIT_STOPS[sectionId].angle;
-    setTargetRotation(degreesToRadians(targetAngle));
-    startRotating();
+    // Only initiate flight if clicking a different universe
+    if (sectionId !== currentUniverse) {
+      initiateFlightTo(sectionId);
+    }
   };
 
   return (
@@ -27,14 +26,14 @@ export const Navbar = () => {
               className={`
                 text-sm font-medium transition-all duration-300
                 ${
-                  activeSection === pitStop.id
+                  currentUniverse === pitStop.id
                     ? 'text-accent-cyan scale-105'
                     : 'text-neutral-gray hover:text-white'
                 }
               `}
               style={{
                 textShadow:
-                  activeSection === pitStop.id
+                  currentUniverse === pitStop.id
                     ? `0 0 10px ${pitStop.color}`
                     : 'none',
               }}

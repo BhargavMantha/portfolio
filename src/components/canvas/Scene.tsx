@@ -8,6 +8,7 @@ import { GPUParticles } from './particles/GPUParticles';
 import { EnergyLines } from './beams/EnergyLines';
 import { RotationTrails } from './beams/RotationTrails';
 import { Universe } from './universes/Universe';
+import { FlightController, WarpTunnel } from './flight';
 import { colors } from '../../constants/colors';
 import { useCameraOrbit } from '../../hooks/useCameraOrbit';
 
@@ -23,6 +24,10 @@ const SceneContent = () => {
         fov={50}
       />
       <fog attach="fog" args={['#0a1628', 10, 30]} />
+
+      {/* Flight system - manages transitions between universes */}
+      <FlightController />
+      <WarpTunnel />
 
       {/* Universe environment - dynamic background, fog, and particles */}
       <Universe />
