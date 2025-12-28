@@ -9,6 +9,7 @@ import { EnergyLines } from './beams/EnergyLines';
 import { RotationTrails } from './beams/RotationTrails';
 import { Universe } from './universes/Universe';
 import { FlightController, WarpTunnel } from './flight';
+import { PostProcessingEffects } from './effects';
 import { colors } from '../../constants/colors';
 import { useCameraOrbit } from '../../hooks/useCameraOrbit';
 
@@ -78,6 +79,9 @@ const SceneContent = () => {
       <EnergyLines />
       <RotationTrails />
       <Island />
+
+      {/* Post-processing effects - film grain + vignette for cinematic quality */}
+      <PostProcessingEffects />
     </>
   );
 };
