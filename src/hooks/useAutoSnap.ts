@@ -47,6 +47,7 @@ export const useAutoSnap = (
         duration: NAV_DURATION, // Use longer duration for button navigation
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRotating, targetRotation, resetMomentum]);
 
   // Trigger snap when drag ends
@@ -68,6 +69,7 @@ export const useAutoSnap = (
     }
 
     lastDragState.current = isDragging;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDragging, resetMomentum]);
 
   // Animate snap

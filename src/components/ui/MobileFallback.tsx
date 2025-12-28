@@ -136,7 +136,7 @@ export const MobileFallback = () => {
         style={{ borderColor: PIT_STOPS.contact.color }}
       >
         <h2 className="text-3xl font-bold text-white mb-6 text-center">
-          Let's Build Something Amazing
+          Let&apos;s Build Something Amazing
         </h2>
 
         <div className="space-y-3 mb-8">

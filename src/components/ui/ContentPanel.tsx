@@ -172,7 +172,7 @@ const PanelContent = ({ section }: { section: SectionType }) => {
       return (
         <div className="text-center">
           <h2 className="text-3xl font-bold text-white mb-6">
-            Let's Build Something Amazing
+            Let&apos;s Build Something Amazing
           </h2>
 
           <div className="space-y-3 mb-8">
