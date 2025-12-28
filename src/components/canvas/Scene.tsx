@@ -7,6 +7,7 @@ import { Sky } from './atmosphere/Sky';
 import { GPUParticles } from './particles/GPUParticles';
 import { EnergyLines } from './beams/EnergyLines';
 import { RotationTrails } from './beams/RotationTrails';
+import { Universe } from './universes/Universe';
 import { colors } from '../../constants/colors';
 import { useCameraOrbit } from '../../hooks/useCameraOrbit';
 
@@ -22,6 +23,9 @@ const SceneContent = () => {
         fov={50}
       />
       <fog attach="fog" args={['#0a1628', 10, 30]} />
+
+      {/* Universe environment - dynamic background, fog, and particles */}
+      <Universe />
 
       {/* Dramatic cinematic lighting */}
       <ambientLight intensity={0.3} />
