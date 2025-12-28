@@ -23,13 +23,13 @@ export const RepulsorGlow = ({ hand, position }: RepulsorGlowProps) => {
     const material = glowRef.current.material as THREE.MeshStandardMaterial;
 
     if (isActive) {
-      // Active: brighter pulse
-      material.emissiveIntensity = 2.5 + Math.sin(t * 4) * 0.5;
-      glowRef.current.scale.setScalar(1.2 + Math.sin(t * 4) * 0.1);
+      // Active: dramatic bright pulse
+      material.emissiveIntensity = 5.0 + Math.sin(t * 4) * 1.5;
+      glowRef.current.scale.setScalar(1.4 + Math.sin(t * 4) * 0.2);
     } else {
-      // Idle: gentle pulse
-      material.emissiveIntensity = 0.8 + Math.sin(t * 2) * 0.2;
-      glowRef.current.scale.setScalar(1);
+      // Idle: visible pulse
+      material.emissiveIntensity = 1.5 + Math.sin(t * 2) * 0.5;
+      glowRef.current.scale.setScalar(1 + Math.sin(t * 2) * 0.05);
     }
   });
 
@@ -37,27 +37,27 @@ export const RepulsorGlow = ({ hand, position }: RepulsorGlowProps) => {
     <group position={position}>
       {/* Core glow */}
       <mesh ref={glowRef}>
-        <sphereGeometry args={[0.06, 12, 12]} />
+        <sphereGeometry args={[0.08, 16, 16]} />
         <meshStandardMaterial
           color="#ffffff"
           emissive={isActive ? '#ffffff' : '#00D4FF'}
-          emissiveIntensity={1}
+          emissiveIntensity={2}
           toneMapped={false}
           transparent
-          opacity={0.9}
+          opacity={0.95}
         />
       </mesh>
 
       {/* Outer halo */}
       <mesh>
-        <sphereGeometry args={[0.12, 12, 12]} />
+        <sphereGeometry args={[0.18, 16, 16]} />
         <meshStandardMaterial
           color="#00D4FF"
           emissive="#00D4FF"
-          emissiveIntensity={isActive ? 1 : 0.3}
+          emissiveIntensity={isActive ? 2.5 : 0.8}
           toneMapped={false}
           transparent
-          opacity={0.4}
+          opacity={0.5}
         />
       </mesh>
     </group>

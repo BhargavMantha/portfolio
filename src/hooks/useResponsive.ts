@@ -5,10 +5,9 @@ export const useResponsive = () => {
 
   useEffect(() => {
     const checkMobile = () => {
-      const mobile =
-        window.innerWidth < 768 ||
-        'ontouchstart' in window ||
-        navigator.maxTouchPoints > 0;
+      // Only use width as the primary check
+      // Touch detection was too aggressive on touchscreen laptops
+      const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
     };
 

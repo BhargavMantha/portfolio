@@ -96,18 +96,41 @@ export const Island = () => {
   // Enable clickable parts
   useSuitPartClick(islandRef);
 
-  // Log mesh names once for debugging (only in development)
+  // Enhance materials for cinematic metallic look
   useEffect(() => {
-    if (islandRef.current && import.meta.env.DEV) {
+    if (!scene) return;
+
+    scene.traverse((child: THREE.Object3D) => {
+      if (child instanceof THREE.Mesh && child.material) {
+        const material = child.material as THREE.MeshStandardMaterial;
+
+        // Store original color
+        const originalColor = material.color.clone();
+
+        // Shiny metallic armor (without environment map)
+        material.metalness = 0.85;
+        material.roughness = 0.2;
+
+        // Boost saturation for vibrant gold/red colors
+        if (originalColor.r > 0.5 && originalColor.g < 0.3) {
+          // Red/Gold parts - boost saturation
+          material.color.multiplyScalar(1.2);
+        }
+
+        material.needsUpdate = true;
+      }
+    });
+
+    if (import.meta.env.DEV) {
       const meshNames: string[] = [];
-      islandRef.current.traverse((child: THREE.Object3D) => {
+      scene.traverse((child: THREE.Object3D) => {
         if (child instanceof THREE.Mesh) {
           meshNames.push(child.name);
         }
       });
-      console.log('🦾 Iron Man mesh names:', meshNames);
+      console.log('🦾 Enhanced Iron Man materials:', meshNames.length, 'meshes');
     }
-  }, []);
+  }, [scene]);
 
   // Highlight active section's corresponding part
   useFrame(() => {

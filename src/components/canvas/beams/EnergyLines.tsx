@@ -41,25 +41,25 @@ const EnergyLine = ({ section, isActive }: EnergyLineProps) => {
     const t = clock.getElapsedTime();
 
     if (isActive) {
-      // Active: bright pulsing
-      material.opacity = 0.7 + Math.sin(t * 3) * 0.2;
-      material.emissiveIntensity = 1.5 + Math.sin(t * 3) * 0.5;
+      // Active: dramatic bright pulsing
+      material.opacity = 0.85 + Math.sin(t * 3) * 0.15;
+      material.emissiveIntensity = 3.0 + Math.sin(t * 3) * 1.0;
     } else {
-      // Inactive: subtle
-      material.opacity = 0.2;
-      material.emissiveIntensity = 0.3;
+      // Inactive: visible but dimmer
+      material.opacity = 0.4;
+      material.emissiveIntensity = 0.8;
     }
   });
 
   return (
     <mesh ref={lineRef}>
-      <tubeGeometry args={[curve as THREE.Curve<THREE.Vector3>, 8, isActive ? 0.02 : 0.008, 6, false]} />
+      <tubeGeometry args={[curve as THREE.Curve<THREE.Vector3>, 12, isActive ? 0.035 : 0.015, 8, false]} />
       <meshStandardMaterial
         color={color}
         emissive={color}
-        emissiveIntensity={isActive ? 1.5 : 0.3}
+        emissiveIntensity={isActive ? 3.0 : 0.8}
         transparent
-        opacity={isActive ? 0.7 : 0.2}
+        opacity={isActive ? 0.85 : 0.4}
         toneMapped={false}
       />
     </mesh>

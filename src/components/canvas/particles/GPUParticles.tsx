@@ -4,8 +4,8 @@ import * as THREE from 'three';
 import { useIslandStore } from '../../../store/islandStore';
 import { colors } from '../../../constants/colors';
 
-// Particle count
-const PARTICLE_COUNT = 3000;
+// Particle count - increased for more dramatic effect
+const PARTICLE_COUNT = 5000;
 
 // Section attractor positions (in world space, adjusted for island position)
 const SECTION_ATTRACTORS: Record<string, [number, number, number]> = {
@@ -131,10 +131,10 @@ export const GPUParticles = () => {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.08}
+        size={0.12}
         color={colors.atmosphere.cyan}
         transparent
-        opacity={0.8}
+        opacity={0.95}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
         depthWrite={false}

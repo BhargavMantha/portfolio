@@ -15,66 +15,70 @@ export const ArcReactorGlow = ({ position = [0, 0.8, 0.4] }: ArcReactorGlowProps
 
     const t = clock.getElapsedTime();
 
-    // Pulsing intensity: 0.8 -> 1.2 range
-    const pulse = 1.0 + Math.sin(t * 2) * 0.2;
+    // Stronger pulsing intensity: 0.7 -> 1.3 range
+    const pulse = 1.0 + Math.sin(t * 2.5) * 0.3;
 
     const glowMaterial = glowRef.current.material as THREE.MeshStandardMaterial;
-    glowMaterial.emissiveIntensity = pulse * 2;
+    glowMaterial.emissiveIntensity = pulse * 4.0;
 
     const ringMaterial = ringRef.current.material as THREE.MeshStandardMaterial;
-    ringMaterial.emissiveIntensity = pulse * 1.5;
+    ringMaterial.emissiveIntensity = pulse * 3.0;
 
-    // Subtle scale pulse
-    glowRef.current.scale.setScalar(1 + Math.sin(t * 2) * 0.05);
+    // More pronounced scale pulse
+    glowRef.current.scale.setScalar(1 + Math.sin(t * 2.5) * 0.1);
   });
 
   return (
     <group position={position}>
       {/* Core glow - bright center */}
       <mesh ref={glowRef}>
-        <sphereGeometry args={[0.12, 16, 16]} />
+        <sphereGeometry args={[0.15, 20, 20]} />
         <meshStandardMaterial
           color="#ffffff"
           emissive="#00D4FF"
-          emissiveIntensity={2}
+          emissiveIntensity={4}
           toneMapped={false}
           transparent
-          opacity={0.9}
+          opacity={0.95}
         />
       </mesh>
 
       {/* Outer ring */}
       <mesh ref={ringRef} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.18, 0.02, 8, 32]} />
+        <torusGeometry args={[0.22, 0.025, 12, 48]} />
         <meshStandardMaterial
           color="#00D4FF"
           emissive="#00D4FF"
-          emissiveIntensity={1.5}
+          emissiveIntensity={3}
+          metalness={0.9}
+          roughness={0.1}
           toneMapped={false}
         />
       </mesh>
 
       {/* Inner ring */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.08, 0.015, 8, 32]} />
+        <torusGeometry args={[0.1, 0.02, 12, 48]} />
         <meshStandardMaterial
           color="#ffffff"
           emissive="#00F5FF"
-          emissiveIntensity={2}
+          emissiveIntensity={4}
+          metalness={0.9}
+          roughness={0.1}
           toneMapped={false}
         />
       </mesh>
 
-      {/* Glow halo (large, faint) */}
+      {/* Glow halo (large, bright) */}
       <mesh>
-        <sphereGeometry args={[0.3, 16, 16]} />
+        <sphereGeometry args={[0.4, 20, 20]} />
         <meshStandardMaterial
           color="#00D4FF"
           emissive="#00D4FF"
-          emissiveIntensity={0.5}
+          emissiveIntensity={1.2}
           toneMapped={false}
           transparent
-          opacity={0.3}
+          opacity={0.4}
         />
       </mesh>
     </group>
