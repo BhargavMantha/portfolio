@@ -10,13 +10,38 @@ import { useIslandStore } from '../../store/islandStore';
 import { PIT_STOPS } from '../../constants/pitStops';
 import { SectionType } from '../../types/island';
 
-// Section-specific labels and positions
+// Section-specific labels and positions with arrow indicators
 const SECTION_LABELS = {
-  hero: { text: 'MARK 85', position: [0, 3, 0] as [number, number, number] },
-  about: { text: 'JARVIS INTERFACE', position: [0, 2.5, 0] as [number, number, number] },
-  experience: { text: 'ARC REACTOR', position: [0, 1.5, 0] as [number, number, number] },
-  projects: { text: 'REPULSOR TECH', position: [0, 2, 0] as [number, number, number] },
-  contact: { text: 'CONNECT', position: [0, 2.8, 0] as [number, number, number] },
+  hero: {
+    text: 'Home',
+    position: [-2, -1, 0] as [number, number, number],
+    lineStart: [-1.5, -1, 0] as [number, number, number],
+    lineEnd: [0, -1.5, 0] as [number, number, number]
+  },
+  about: {
+    text: 'About',
+    position: [-2.5, 2, 0] as [number, number, number],
+    lineStart: [-2, 2, 0] as [number, number, number],
+    lineEnd: [0, 2.2, 0] as [number, number, number]
+  },
+  experience: {
+    text: 'Experience',
+    position: [2.5, 0.5, 0] as [number, number, number],
+    lineStart: [2, 0.5, 0] as [number, number, number],
+    lineEnd: [0, 0.8, 0] as [number, number, number]
+  },
+  projects: {
+    text: 'Projects',
+    position: [2.5, -0.5, 0] as [number, number, number],
+    lineStart: [2, -0.5, 0] as [number, number, number],
+    lineEnd: [1.2, -0.3, 0] as [number, number, number]
+  },
+  contact: {
+    text: 'Contact',
+    position: [-2.5, -0.5, 0] as [number, number, number],
+    lineStart: [-2, -0.5, 0] as [number, number, number],
+    lineEnd: [-1.2, -0.3, 0] as [number, number, number]
+  },
 };
 
 // Map sections to part keywords for highlighting
@@ -85,32 +110,61 @@ export const Island = () => {
     <group ref={islandRef as any} position={[0, -1.5, 0]}>
       <primitive object={scene} scale={3.2} rotation={[0, 0, 0]} />
 
-      {/* Section-specific floating label */}
+      {/* Section-specific label with arrow line */}
       {activeSection && (
-        <Html
-          position={SECTION_LABELS[activeSection].position}
-          center
-          distanceFactor={10}
-        >
-          <div
-            className="px-6 py-3 rounded-lg backdrop-blur-md border-2 animate-pulse"
-            style={{
-              background: `${PIT_STOPS[activeSection].color}20`,
-              borderColor: PIT_STOPS[activeSection].color,
-              boxShadow: `0 0 20px ${PIT_STOPS[activeSection].color}80`,
-            }}
+        <>
+          {/* Arrow line pointing to suit part */}
+          <mesh position={[0, 0, 0]}>
+            <tubeGeometry
+              args={[
+                new THREE.CatmullRomCurve3([
+                  new THREE.Vector3(...SECTION_LABELS[activeSection].lineEnd),
+                  new THREE.Vector3(...SECTION_LABELS[activeSection].lineStart),
+                ]) as any,
+                20,
+                0.015,
+                8,
+                false,
+              ]}
+            />
+            <meshBasicMaterial color={PIT_STOPS[activeSection].color} />
+          </mesh>
+
+          {/* Arrow tip */}
+          <mesh
+            position={SECTION_LABELS[activeSection].lineEnd}
+            rotation={[0, 0, 0]}
+          >
+            <coneGeometry args={[0.05, 0.1, 8]} />
+            <meshBasicMaterial color={PIT_STOPS[activeSection].color} />
+          </mesh>
+
+          {/* Compact section label */}
+          <Html
+            position={SECTION_LABELS[activeSection].position}
+            center
+            distanceFactor={10}
           >
             <div
-              className="text-2xl font-bold tracking-wider"
+              className="px-3 py-1.5 rounded backdrop-blur-sm border"
               style={{
-                color: PIT_STOPS[activeSection].color,
-                textShadow: `0 0 10px ${PIT_STOPS[activeSection].color}`,
+                background: `${PIT_STOPS[activeSection].color}15`,
+                borderColor: PIT_STOPS[activeSection].color,
+                boxShadow: `0 0 10px ${PIT_STOPS[activeSection].color}60`,
               }}
             >
-              {SECTION_LABELS[activeSection].text}
+              <div
+                className="text-sm font-semibold tracking-wide"
+                style={{
+                  color: PIT_STOPS[activeSection].color,
+                  textShadow: `0 0 8px ${PIT_STOPS[activeSection].color}`,
+                }}
+              >
+                {SECTION_LABELS[activeSection].text}
+              </div>
             </div>
-          </div>
-        </Html>
+          </Html>
+        </>
       )}
     </group>
   );
