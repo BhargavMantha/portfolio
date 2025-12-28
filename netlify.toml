@@ -1,6 +1,6 @@
 [build]
   publish = "dist"
-  command = "npm run build"
+  command = "npm ci --legacy-peer-deps && npm run build"
 
 [[redirects]]
   from = "/*"
@@ -9,3 +9,9 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  NPM_FLAGS = "--legacy-peer-deps"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
