@@ -79,9 +79,6 @@ const SceneContent = () => {
       <EnergyLines />
       <RotationTrails />
       <Island />
-
-      {/* Post-processing effects - film grain + vignette for cinematic quality */}
-      <PostProcessingEffects />
     </>
   );
 };
@@ -103,6 +100,9 @@ export const Scene = () => {
         <Suspense fallback={null}>
           <SceneContent />
         </Suspense>
+
+        {/* Post-processing effects - outside Suspense to persist during loading */}
+        <PostProcessingEffects />
       </Canvas>
     </div>
   );
