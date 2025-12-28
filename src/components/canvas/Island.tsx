@@ -82,8 +82,8 @@ export const Island = () => {
   });
 
   return (
-    <group ref={islandRef as any} position={[0, -2, 0]}>
-      <primitive object={scene} scale={2.5} rotation={[0, 0, 0]} />
+    <group ref={islandRef as any} position={[0, -1.5, 0]}>
+      <primitive object={scene} scale={3.2} rotation={[0, 0, 0]} />
 
       {/* Section-specific floating label */}
       {activeSection && (
