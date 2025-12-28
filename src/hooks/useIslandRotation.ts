@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
+import * as THREE from 'three';
 import { useIslandStore } from '../store/islandStore';
 import { ROTATION_SENSITIVITY, MOMENTUM_DECAY } from '../constants/pitStops';
 
