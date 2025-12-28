@@ -1,5 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import { PerspectiveCamera } from '@react-three/drei';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { Suspense } from 'react';
 import { Island } from './Island';
 import { Sky } from './atmosphere/Sky';
@@ -69,6 +70,16 @@ export const Scene = () => {
           <Sky />
           <DataParticles />
           <Island />
+
+          {/* Post-processing effects */}
+          <EffectComposer>
+            <Bloom
+              intensity={1.5}
+              luminanceThreshold={0.6}
+              luminanceSmoothing={0.9}
+              mipmapBlur
+            />
+          </EffectComposer>
         </Suspense>
       </Canvas>
     </div>
