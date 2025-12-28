@@ -5,6 +5,8 @@ import { Suspense } from 'react';
 import { Island } from './Island';
 import { Sky } from './atmosphere/Sky';
 import { GPUParticles } from './particles/GPUParticles';
+import { EnergyLines } from './beams/EnergyLines';
+import { RotationTrails } from './beams/RotationTrails';
 import { colors } from '../../constants/colors';
 
 export const Scene = () => {
@@ -69,6 +71,8 @@ export const Scene = () => {
 
           <Sky />
           <GPUParticles />
+          <EnergyLines />
+          <RotationTrails />
           <Island />
 
           {/* Post-processing effects */}
