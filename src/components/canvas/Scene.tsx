@@ -4,7 +4,7 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { Suspense } from 'react';
 import { Island } from './Island';
 import { Sky } from './atmosphere/Sky';
-import { DataParticles } from './atmosphere/DataParticles';
+import { GPUParticles } from './particles/GPUParticles';
 import { colors } from '../../constants/colors';
 
 export const Scene = () => {
@@ -68,7 +68,7 @@ export const Scene = () => {
           />
 
           <Sky />
-          <DataParticles />
+          <GPUParticles />
           <Island />
 
           {/* Post-processing effects */}
