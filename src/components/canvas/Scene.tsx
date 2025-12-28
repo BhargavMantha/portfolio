@@ -3,6 +3,7 @@ import { PerspectiveCamera } from '@react-three/drei';
 import { Suspense } from 'react';
 import { Island } from './Island';
 import { Sky } from './atmosphere/Sky';
+import { DataParticles } from './atmosphere/DataParticles';
 import { colors } from '../../constants/colors';
 
 export const Scene = () => {
@@ -42,6 +43,7 @@ export const Scene = () => {
           />
 
           <Sky />
+          <DataParticles />
           <Island />
         </Suspense>
       </Canvas>
