@@ -10,10 +10,10 @@ export const PROFILE = {
 };
 
 export const METRICS = [
-  { value: '800+', label: 'TPS', color: '#00cea8' },
-  { value: '40+', label: 'Microservices', color: '#f272c8' },
-  { value: '73%', label: 'Performance ↑', color: '#00ff88' },
-  { value: '14', label: 'Zero-Downtime', color: '#915EFF' },
+  { value: '800+', label: 'TPS', color: '#FFC107' },        // Vibrant Gold
+  { value: '40+', label: 'Microservices', color: '#00D4FF' }, // Electric Blue
+  { value: '73%', label: 'Performance ↑', color: '#0096FF' }, // Medium Blue
+  { value: '14', label: 'Zero-Downtime', color: '#E0F4FF' },  // Ice Blue
 ];
 
 export const SKILLS = {

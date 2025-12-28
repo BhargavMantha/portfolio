@@ -14,11 +14,11 @@ import { SectionType } from '../../types/island';
 const SECTION_LABELS = {
   hero: {
     text: 'Home',
-    position: [0, 3.5, -1.2] as [number, number, number], // Helmet/Head
+    position: [-1.0, 7.5, -2.0] as [number, number, number], // Left of head, well above
     arrowPath: [
-      [0, 3.5, -1.2],  // Label position
-      [0, 3.2, -0.8],  // Corner
-      [0, 2.5, -0.3],  // Target: top of helmet
+      [-0.3, 4.2, -0.5],   // Start: top of helmet (slightly left)
+      [-0.7, 5.5, -1.2],   // Corner
+      [-1.0, 7.5, -2.0],   // End: label position (slanting left from head)
     ] as [number, number, number][]
   },
   about: {
@@ -59,13 +59,14 @@ const SECTION_LABELS = {
   },
 };
 
-// Map sections to part keywords for highlighting
-const SECTION_TO_PART_KEYWORDS: Record<SectionType, string[]> = {
-  hero: ['leg', 'foot'],
-  about: ['helmet', 'head', 'face', 'mask'],
-  experience: ['chest', 'torso', 'reactor', 'body'],
-  projects: ['hand.r', 'arm.r', 'right'],
-  contact: ['hand.l', 'arm.l', 'left'],
+// Map sections to specific mesh indices for highlighting
+// Testing mode: Assign each section to a different mesh index to identify which is which
+const SECTION_TO_MESH_INDEX: Record<SectionType, number> = {
+  hero: 0,       // Test: Subdivision_Surface_893_Mat2_0
+  about: 1,      // Test: Subdivision_Surface_894_Mat_0
+  experience: 2, // Test: Subdivision_Surface_379_Mat1_0
+  projects: 3,   // Test: Mesh with encoding issues #1
+  contact: 4,    // Test: Mesh with encoding issues #2
 };
 
 export const Island = () => {
@@ -93,30 +94,44 @@ export const Island = () => {
   // Enable clickable parts
   useSuitPartClick(islandRef);
 
+  // Log mesh names once for debugging (only in development)
+  useEffect(() => {
+    if (islandRef.current && import.meta.env.DEV) {
+      const meshNames: string[] = [];
+      islandRef.current.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          meshNames.push(child.name);
+        }
+      });
+      console.log('🦾 Iron Man mesh names:', meshNames);
+    }
+  }, []);
+
   // Highlight active section's corresponding part
   useFrame(() => {
     if (!islandRef.current || !activeSection) return;
 
-    const keywords = SECTION_TO_PART_KEYWORDS[activeSection];
+    const targetMeshIndex = SECTION_TO_MESH_INDEX[activeSection];
     const sectionColor = PIT_STOPS[activeSection].color;
 
+    let currentMeshIndex = 0;
     islandRef.current.traverse((child) => {
       if (child instanceof THREE.Mesh && child.material) {
-        const meshName = child.name.toLowerCase();
-        const isActivePart = keywords.some((keyword) =>
-          meshName.includes(keyword.toLowerCase())
-        );
+        const isActivePart = currentMeshIndex === targetMeshIndex;
 
-        // Apply glow to active part
+        // Apply subtle glow to active part
         if (isActivePart) {
           const material = child.material as THREE.MeshStandardMaterial;
           material.emissive = new THREE.Color(sectionColor);
-          material.emissiveIntensity = 0.5 + Math.sin(Date.now() * 0.003) * 0.2;
+          // Reduced intensity: 0.15-0.25 range with gentle pulse
+          material.emissiveIntensity = 0.2 + Math.sin(Date.now() * 0.002) * 0.05;
         } else {
           const material = child.material as THREE.MeshStandardMaterial;
           material.emissive = new THREE.Color(0x000000);
           material.emissiveIntensity = 0;
         }
+
+        currentMeshIndex++;
       }
     });
   });
@@ -125,15 +140,14 @@ export const Island = () => {
     <group ref={islandRef as any} position={[0, -1.5, 0]}>
       <primitive object={scene} scale={3.2} rotation={[0, 0, 0]} />
 
-      {/* ALL labels with Iron Man HUD-style angular arrows */}
-      {Object.entries(SECTION_LABELS).map(([sectionKey, label]) => {
-        const section = sectionKey as SectionType;
-        const isActive = section === activeSection;
-        const sectionColor = PIT_STOPS[section].color;
+      {/* Active label with Iron Man HUD-style angular arrow */}
+      {activeSection && (() => {
+        const label = SECTION_LABELS[activeSection];
+        const sectionColor = PIT_STOPS[activeSection].color;
         const targetPoint = label.arrowPath[label.arrowPath.length - 1];
 
         return (
-          <group key={section}>
+          <group>
             {/* Angular arrow lines - Iron Man HUD style */}
             {label.arrowPath.map((point, index) => {
               if (index === 0) return null;
@@ -156,10 +170,8 @@ export const Island = () => {
                   <meshStandardMaterial
                     color={sectionColor}
                     emissive={sectionColor}
-                    emissiveIntensity={isActive ? 2.0 : 1.2}
+                    emissiveIntensity={1.2}
                     toneMapped={false}
-                    opacity={isActive ? 1 : 0.7}
-                    transparent
                   />
                 </mesh>
               );
@@ -174,10 +186,8 @@ export const Island = () => {
               <meshStandardMaterial
                 color={sectionColor}
                 emissive={sectionColor}
-                emissiveIntensity={isActive ? 2.5 : 1.5}
+                emissiveIntensity={1.5}
                 toneMapped={false}
-                opacity={isActive ? 1 : 0.8}
-                transparent
               />
             </mesh>
 
@@ -187,10 +197,8 @@ export const Island = () => {
               <meshStandardMaterial
                 color={sectionColor}
                 emissive={sectionColor}
-                emissiveIntensity={isActive ? 3.0 : 2.0}
+                emissiveIntensity={1.8}
                 toneMapped={false}
-                transparent
-                opacity={isActive ? 1 : 0.8}
               />
             </mesh>
 
@@ -205,24 +213,18 @@ export const Island = () => {
               <div
                 className="px-4 py-2 rounded backdrop-blur-sm border transition-all duration-300"
                 style={{
-                  background: `${sectionColor}25`,
+                  background: `${sectionColor}30`,
                   borderColor: sectionColor,
-                  borderWidth: '1px',
-                  boxShadow: isActive
-                    ? `0 0 20px ${sectionColor}aa, inset 0 0 10px ${sectionColor}40`
-                    : `0 0 12px ${sectionColor}80, inset 0 0 6px ${sectionColor}30`,
-                  opacity: isActive ? 1 : 0.85,
-                  transform: isActive ? 'scale(1.05)' : 'scale(1)',
+                  borderWidth: '2px',
+                  boxShadow: `0 0 15px ${sectionColor}99, inset 0 0 8px ${sectionColor}50`,
                 }}
               >
                 <div
                   className="text-sm font-bold tracking-widest uppercase"
                   style={{
                     color: sectionColor,
-                    textShadow: isActive
-                      ? `0 0 10px ${sectionColor}, 0 0 20px ${sectionColor}`
-                      : `0 0 6px ${sectionColor}, 0 0 12px ${sectionColor}`,
-                    filter: isActive ? 'brightness(1.4)' : 'brightness(1.2)',
+                    textShadow: `0 0 8px ${sectionColor}, 0 0 15px ${sectionColor}`,
+                    filter: 'brightness(1.6)',
                     fontFamily: 'monospace',
                   }}
                 >
@@ -232,7 +234,7 @@ export const Island = () => {
             </Html>
           </group>
         );
-      })}
+      })()}
     </group>
   );
 };

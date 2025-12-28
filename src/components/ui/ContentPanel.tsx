@@ -166,9 +166,9 @@ const PanelContent = ({ section }: { section: SectionType }) => {
                 <span
                   className="px-3 py-1 rounded text-xs font-semibold"
                   style={{
-                    background: `${project.color === 'purple' ? '#915EFF' : project.color === 'cyan' ? '#00cea8' : '#ff6b35'}20`,
-                    color: project.color === 'purple' ? '#915EFF' : project.color === 'cyan' ? '#00cea8' : '#ff6b35',
-                    border: `1px solid ${project.color === 'purple' ? '#915EFF' : project.color === 'cyan' ? '#00cea8' : '#ff6b35'}`,
+                    background: `${project.color === 'purple' ? '#0096FF' : project.color === 'cyan' ? '#00F5FF' : '#00D4FF'}20`,
+                    color: project.color === 'purple' ? '#0096FF' : project.color === 'cyan' ? '#00F5FF' : '#00D4FF',
+                    border: `1px solid ${project.color === 'purple' ? '#0096FF' : project.color === 'cyan' ? '#00F5FF' : '#00D4FF'}`,
                   }}
                 >
                   {project.category}

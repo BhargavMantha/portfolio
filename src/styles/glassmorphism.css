@@ -1,27 +1,27 @@
 .glass-panel {
-  background: rgba(21, 16, 48, 0.7);
+  background: rgba(0, 29, 61, 0.7); /* Deep Navy glass */
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(145, 94, 255, 0.2);
+  border: 1px solid rgba(0, 212, 255, 0.2); /* Electric Blue border */
   border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: 0 8px 32px 0 rgba(0, 119, 182, 0.3);
 }
 
 .glass-button {
-  background: linear-gradient(135deg, #915eff 0%, #00cea8 100%);
+  background: linear-gradient(135deg, #00D4FF 0%, #00F5FF 100%); /* Electric Blue to Cyan */
   border: none;
   border-radius: 8px;
   padding: 12px 32px;
   font-weight: 600;
-  color: white;
+  color: #000814; /* Dark text on bright button */
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 15px rgba(145, 94, 255, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
 }
 
 .glass-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(145, 94, 255, 0.6);
+  box-shadow: 0 6px 20px rgba(0, 245, 255, 0.6);
 }
 
 .scan-line {
@@ -33,7 +33,7 @@
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(145, 94, 255, 0.05) 50%,
+    rgba(0, 212, 255, 0.05) 50%, /* Electric Blue scan line */
     transparent 100%
   );
   background-size: 100% 4px;

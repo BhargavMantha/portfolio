@@ -4,16 +4,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#050816',
-        secondary: '#151030',
-        tertiary: '#100d25',
-        'accent-cyan': '#00cea8',
-        'accent-magenta': '#f272c8',
-        'accent-purple': '#915EFF',
-        'accent-blue': '#2b77e7',
-        'accent-orange': '#ff6b35',
-        'accent-green': '#00ff88',
-        'neutral-gray': '#aaa6c3',
+        primary: '#000814',       // Space Black
+        secondary: '#001d3d',     // Deep Navy
+        tertiary: '#003566',      // Navy Blue
+        'accent-cyan': '#00F5FF',     // Bright Cyan
+        'accent-blue': '#00D4FF',     // Electric Blue
+        'accent-medium': '#0096FF',   // Medium Blue
+        'accent-deep': '#0077B6',     // Deep Blue
+        'accent-ice': '#E0F4FF',      // Ice Blue Glow
+        'accent-orange': '#00D4FF',   // Replaced with blue
+        'accent-green': '#00F5FF',    // Replaced with cyan
+        'neutral-gray': '#8ecae6',    // Light Blue-gray
       },
     },
   },
