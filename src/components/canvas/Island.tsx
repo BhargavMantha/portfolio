@@ -17,7 +17,8 @@ const SECTION_LABELS = {
 
 export const Island = () => {
   const islandRef = useRef<THREE.Group>(null);
-  const { scene } = useGLTF('/models/iron_man_mark_85.glb');
+  // Try lighter model first - Iron Man is 97MB and takes too long to load
+  const { scene } = useGLTF('/models/free_sci-fi_vehicle_022__-_public_domain_cc0.glb');
   const activeSection = useIslandStore((state) => state.activeSection);
 
   // Apply drag-to-rotate
@@ -27,15 +28,15 @@ export const Island = () => {
   useAutoSnap(islandRef, resetMomentum);
 
   return (
-    <group ref={islandRef as any} position={[0, 0, 0]}>
-      <primitive object={scene} scale={0.02} />
+    <group ref={islandRef as any} position={[0, -2, 0]}>
+      <primitive object={scene} scale={2.5} rotation={[0, 0, 0]} />
 
       {/* Section-specific floating label */}
       {activeSection && (
         <Html
           position={SECTION_LABELS[activeSection].position}
           center
-          distanceFactor={8}
+          distanceFactor={10}
         >
           <div
             className="px-6 py-3 rounded-lg backdrop-blur-md border-2 animate-pulse"
@@ -62,4 +63,4 @@ export const Island = () => {
 };
 
 // Preload model
-useGLTF.preload('/models/iron_man_mark_85.glb');
+useGLTF.preload('/models/free_sci-fi_vehicle_022__-_public_domain_cc0.glb');

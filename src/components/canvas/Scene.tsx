@@ -20,26 +20,37 @@ export const Scene = () => {
         <Suspense fallback={null}>
           <PerspectiveCamera
             makeDefault
-            position={[0, 15, 60]}
+            position={[0, 3, 15]}
             fov={50}
           />
 
           {/* Lighting setup */}
-          <ambientLight intensity={0.4} />
+          <ambientLight intensity={0.8} />
           <directionalLight
             position={[10, 10, 5]}
-            intensity={1.2}
+            intensity={2.0}
             castShadow
+          />
+          <directionalLight
+            position={[-10, 10, -5]}
+            intensity={1.5}
           />
           <pointLight
             position={[-10, 5, -10]}
-            intensity={0.8}
+            intensity={1.2}
             color={colors.atmosphere.cyan}
           />
           <pointLight
             position={[10, 5, 10]}
-            intensity={0.6}
+            intensity={1.0}
             color={colors.atmosphere.magenta}
+          />
+          <spotLight
+            position={[0, 10, 0]}
+            intensity={1.5}
+            angle={0.6}
+            penumbra={0.5}
+            color="#ffffff"
           />
 
           <Sky />
