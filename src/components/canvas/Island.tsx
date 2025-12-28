@@ -1,6 +1,7 @@
 import { useGLTF, Html } from '@react-three/drei';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import * as THREE from 'three';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { useIslandRotation } from '../../hooks/useIslandRotation';
 import { useAutoSnap } from '../../hooks/useAutoSnap';
 import { useIslandStore } from '../../store/islandStore';
@@ -17,8 +18,18 @@ const SECTION_LABELS = {
 
 export const Island = () => {
   const islandRef = useRef<THREE.Group>(null);
-  // Try lighter model first - Iron Man is 97MB and takes too long to load
-  const { scene } = useGLTF('/models/free_sci-fi_vehicle_022__-_public_domain_cc0.glb');
+
+  // Setup Draco decoder for compressed model
+  useEffect(() => {
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+    return () => {
+      dracoLoader.dispose();
+    };
+  }, []);
+
+  // Load optimized Iron Man model (4.9MB with Draco compression)
+  const { scene } = useGLTF('/models/iron_man_mark_85_final.glb');
   const activeSection = useIslandStore((state) => state.activeSection);
 
   // Apply drag-to-rotate
@@ -62,5 +73,5 @@ export const Island = () => {
   );
 };
 
-// Preload model
-useGLTF.preload('/models/free_sci-fi_vehicle_022__-_public_domain_cc0.glb');
+// Preload optimized Iron Man model
+useGLTF.preload('/models/iron_man_mark_85_final.glb');
