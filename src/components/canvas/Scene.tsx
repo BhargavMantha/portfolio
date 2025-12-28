@@ -2,6 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { PerspectiveCamera } from '@react-three/drei';
 import { Suspense } from 'react';
 import { Island } from './Island';
+import { Sky } from './atmosphere/Sky';
 import { colors } from '../../constants/colors';
 
 export const Scene = () => {
@@ -40,6 +41,7 @@ export const Scene = () => {
             color={colors.atmosphere.magenta}
           />
 
+          <Sky />
           <Island />
         </Suspense>
       </Canvas>
