@@ -9,6 +9,7 @@ import { useSuitPartClick } from '../../hooks/useSuitPartClick';
 import { useIslandStore } from '../../store/islandStore';
 import { PIT_STOPS } from '../../constants/pitStops';
 import { SectionType } from '../../types/island';
+import { ArcReactorGlow } from './effects/ArcReactorGlow';
 
 // Section-specific labels with Iron Man HUD-style angular arrows
 const SECTION_LABELS = {
@@ -139,6 +140,9 @@ export const Island = () => {
   return (
     <group ref={islandRef as any} position={[0, -1.5, 0]}>
       <primitive object={scene} scale={3.2} rotation={[0, 0, 0]} />
+
+      {/* Arc Reactor glow effect */}
+      <ArcReactorGlow position={[0, 0.8, 0.4]} />
 
       {/* Active label with Iron Man HUD-style angular arrow */}
       {activeSection && (() => {
