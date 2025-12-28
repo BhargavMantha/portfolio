@@ -33,7 +33,7 @@ export const ContentPanel = () => {
 
           {/* Content */}
           <div className="p-8">
-            <PanelContent section={activeSection} color={pitStop.color} />
+            <PanelContent section={activeSection} />
           </div>
 
           {/* Footer hints */}
@@ -46,7 +46,7 @@ export const ContentPanel = () => {
   );
 };
 
-const PanelContent = ({ section }: { section: SectionType; color: string }) => {
+const PanelContent = ({ section }: { section: SectionType }) => {
   switch (section) {
     case 'hero':
       return (
