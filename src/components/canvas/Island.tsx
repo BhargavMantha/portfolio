@@ -98,7 +98,7 @@ export const Island = () => {
   useEffect(() => {
     if (islandRef.current && import.meta.env.DEV) {
       const meshNames: string[] = [];
-      islandRef.current.traverse((child) => {
+      islandRef.current.traverse((child: THREE.Object3D) => {
         if (child instanceof THREE.Mesh) {
           meshNames.push(child.name);
         }
@@ -115,7 +115,7 @@ export const Island = () => {
     const sectionColor = PIT_STOPS[activeSection].color;
 
     let currentMeshIndex = 0;
-    islandRef.current.traverse((child) => {
+    islandRef.current.traverse((child: THREE.Object3D) => {
       if (child instanceof THREE.Mesh && child.material) {
         const isActivePart = currentMeshIndex === targetMeshIndex;
 

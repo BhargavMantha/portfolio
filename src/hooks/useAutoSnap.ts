@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 import { useIslandStore } from '../store/islandStore';
 import { detectActiveSection, findNearestPitStop } from '../utils/rotationUtils';
 import { SNAP_DURATION, NAV_DURATION } from '../constants/pitStops';
