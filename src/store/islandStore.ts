@@ -7,6 +7,8 @@ interface IslandStore {
   activeSection: SectionType | null;
   isRotating: boolean;
   isDragging: boolean;
+  rotationVelocity: number; // for particle flow direction
+  qualityLevel: 'high' | 'medium' | 'low'; // for performance scaling
 
   setRotation: (rotation: number) => void;
   setTargetRotation: (rotation: number) => void;
@@ -15,6 +17,8 @@ interface IslandStore {
   endDrag: () => void;
   startRotating: () => void;
   endRotating: () => void;
+  setRotationVelocity: (velocity: number) => void;
+  setQualityLevel: (level: 'high' | 'medium' | 'low') => void;
 }
 
 export const useIslandStore = create<IslandStore>((set) => ({
@@ -23,6 +27,8 @@ export const useIslandStore = create<IslandStore>((set) => ({
   activeSection: null,
   isRotating: false,
   isDragging: false,
+  rotationVelocity: 0,
+  qualityLevel: 'high',
 
   setRotation: (rotation) => set({ rotationY: rotation }),
   setTargetRotation: (rotation) => set({ targetRotation: rotation }),
@@ -31,4 +37,6 @@ export const useIslandStore = create<IslandStore>((set) => ({
   endDrag: () => set({ isDragging: false }),
   startRotating: () => set({ isRotating: true }),
   endRotating: () => set({ isRotating: false }),
+  setRotationVelocity: (velocity) => set({ rotationVelocity: velocity }),
+  setQualityLevel: (level) => set({ qualityLevel: level }),
 }));
