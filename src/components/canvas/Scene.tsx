@@ -3,10 +3,6 @@ import { PerspectiveCamera } from '@react-three/drei';
 import { Suspense } from 'react';
 import * as THREE from 'three';
 import { Island } from './Island';
-import { Sky } from './atmosphere/Sky';
-import { GPUParticles } from './particles/GPUParticles';
-import { EnergyLines } from './beams/EnergyLines';
-import { RotationTrails } from './beams/RotationTrails';
 import { Universe } from './universes/Universe';
 import { FlightController, WarpTunnel } from './flight';
 import { PostProcessingEffects } from './effects';
@@ -74,10 +70,7 @@ const SceneContent = () => {
       <pointLight position={[10, 3, 6]} intensity={3.0} color="#ff6600" distance={25} />
       <pointLight position={[0, 8, -5]} intensity={2.5} color="#ff00ff" distance={20} />
 
-      <Sky />
-      <GPUParticles />
-      <EnergyLines />
-      <RotationTrails />
+      {/* Iron Man centered model */}
       <Island />
     </>
   );
