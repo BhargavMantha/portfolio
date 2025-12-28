@@ -10,37 +10,52 @@ import { useIslandStore } from '../../store/islandStore';
 import { PIT_STOPS } from '../../constants/pitStops';
 import { SectionType } from '../../types/island';
 
-// Section-specific labels attached to suit parts (billboarded to camera)
+// Section-specific labels with Iron Man HUD-style angular arrows
 const SECTION_LABELS = {
   hero: {
     text: 'Home',
-    position: [0, -2.2, 0.8] as [number, number, number], // Below feet
-    lineStart: [0, -2.2, 0.5] as [number, number, number],
-    lineEnd: [0, -2, 0] as [number, number, number]
+    position: [0, 3.5, -1.2] as [number, number, number], // Helmet/Head
+    arrowPath: [
+      [0, 3.5, -1.2],  // Label position
+      [0, 3.2, -0.8],  // Corner
+      [0, 2.5, -0.3],  // Target: top of helmet
+    ] as [number, number, number][]
   },
   about: {
     text: 'About',
-    position: [0, 2.5, 0.8] as [number, number, number], // Above helmet
-    lineStart: [0, 2.5, 0.5] as [number, number, number],
-    lineEnd: [0, 2.2, 0] as [number, number, number]
+    position: [-2, 2.2, -1] as [number, number, number], // Left upper area
+    arrowPath: [
+      [-2, 2.2, -1],   // Label position
+      [-1.2, 2.0, -0.6], // Corner
+      [-0.5, 1.8, -0.2], // Target: left shoulder
+    ] as [number, number, number][]
   },
   experience: {
     text: 'Experience',
-    position: [0, 1, 1] as [number, number, number], // Front of chest/arc reactor
-    lineStart: [0, 1, 0.7] as [number, number, number],
-    lineEnd: [0, 0.8, 0.2] as [number, number, number]
+    position: [0, 1.2, -1.5] as [number, number, number], // Arc reactor
+    arrowPath: [
+      [0, 1.2, -1.5],  // Label position
+      [0, 1.0, -1.0],  // Corner
+      [0, 0.8, -0.3],  // Target: arc reactor center
+    ] as [number, number, number][]
   },
   projects: {
     text: 'Projects',
-    position: [1.2, 0, 0.6] as [number, number, number], // Right hand side
-    lineStart: [1, 0, 0.4] as [number, number, number],
-    lineEnd: [0.8, 0, 0.1] as [number, number, number]
+    position: [2.2, 0, -1] as [number, number, number], // Right hand
+    arrowPath: [
+      [2.2, 0, -1],    // Label position
+      [1.5, 0, -0.6],  // Corner
+      [0.8, 0, -0.2],  // Target: right hand
+    ] as [number, number, number][]
   },
   contact: {
     text: 'Contact',
-    position: [-1.2, 0, 0.6] as [number, number, number], // Left hand side
-    lineStart: [-1, 0, 0.4] as [number, number, number],
-    lineEnd: [-0.8, 0, 0.1] as [number, number, number]
+    position: [-2.2, 0, -1] as [number, number, number], // Left hand
+    arrowPath: [
+      [-2.2, 0, -1],   // Label position
+      [-1.5, 0, -0.6], // Corner
+      [-0.8, 0, -0.2], // Target: left hand
+    ] as [number, number, number][]
   },
 };
 
@@ -110,75 +125,114 @@ export const Island = () => {
     <group ref={islandRef as any} position={[0, -1.5, 0]}>
       <primitive object={scene} scale={3.2} rotation={[0, 0, 0]} />
 
-      {/* Section-specific label with fluorescent arrow line */}
-      {activeSection && (
-        <>
-          {/* Fluorescent arrow line pointing to suit part */}
-          <mesh position={[0, 0, 0]}>
-            <tubeGeometry
-              args={[
-                new THREE.CatmullRomCurve3([
-                  new THREE.Vector3(...SECTION_LABELS[activeSection].lineEnd),
-                  new THREE.Vector3(...SECTION_LABELS[activeSection].lineStart),
-                ]) as any,
-                20,
-                0.02,
-                8,
-                false,
-              ]}
-            />
-            <meshStandardMaterial
-              color={PIT_STOPS[activeSection].color}
-              emissive={PIT_STOPS[activeSection].color}
-              emissiveIntensity={1.5}
-              toneMapped={false}
-            />
-          </mesh>
+      {/* ALL labels with Iron Man HUD-style angular arrows */}
+      {Object.entries(SECTION_LABELS).map(([sectionKey, label]) => {
+        const section = sectionKey as SectionType;
+        const isActive = section === activeSection;
+        const sectionColor = PIT_STOPS[section].color;
+        const targetPoint = label.arrowPath[label.arrowPath.length - 1];
 
-          {/* Fluorescent arrow tip */}
-          <mesh
-            position={SECTION_LABELS[activeSection].lineEnd}
-            rotation={[0, 0, 0]}
-          >
-            <coneGeometry args={[0.08, 0.15, 8]} />
-            <meshStandardMaterial
-              color={PIT_STOPS[activeSection].color}
-              emissive={PIT_STOPS[activeSection].color}
-              emissiveIntensity={2.0}
-              toneMapped={false}
-            />
-          </mesh>
+        return (
+          <group key={section}>
+            {/* Angular arrow lines - Iron Man HUD style */}
+            {label.arrowPath.map((point, index) => {
+              if (index === 0) return null;
+              const prevPoint = label.arrowPath[index - 1];
 
-          {/* Fluorescent section label (billboarded, always visible) */}
-          <Html
-            position={SECTION_LABELS[activeSection].position}
-            center
-            distanceFactor={6}
-            sprite
-            zIndexRange={[100, 0]}
-          >
-            <div
-              className="px-5 py-2.5 rounded-lg backdrop-blur-md border-2"
-              style={{
-                background: `${PIT_STOPS[activeSection].color}35`,
-                borderColor: PIT_STOPS[activeSection].color,
-                boxShadow: `0 0 25px ${PIT_STOPS[activeSection].color}, 0 0 50px ${PIT_STOPS[activeSection].color}90, inset 0 0 15px ${PIT_STOPS[activeSection].color}50`,
-              }}
+              return (
+                <mesh key={index} position={[0, 0, 0]}>
+                  <tubeGeometry
+                    args={[
+                      new THREE.LineCurve3(
+                        new THREE.Vector3(...prevPoint),
+                        new THREE.Vector3(...point)
+                      ) as any,
+                      1,
+                      0.015,
+                      8,
+                      false,
+                    ]}
+                  />
+                  <meshStandardMaterial
+                    color={sectionColor}
+                    emissive={sectionColor}
+                    emissiveIntensity={isActive ? 2.0 : 1.2}
+                    toneMapped={false}
+                    opacity={isActive ? 1 : 0.7}
+                    transparent
+                  />
+                </mesh>
+              );
+            })}
+
+            {/* Arrow tip at target point */}
+            <mesh
+              position={targetPoint}
+              rotation={[Math.PI / 2, 0, 0]}
+            >
+              <coneGeometry args={[0.06, 0.12, 6]} />
+              <meshStandardMaterial
+                color={sectionColor}
+                emissive={sectionColor}
+                emissiveIntensity={isActive ? 2.5 : 1.5}
+                toneMapped={false}
+                opacity={isActive ? 1 : 0.8}
+                transparent
+              />
+            </mesh>
+
+            {/* Target point glow */}
+            <mesh position={targetPoint}>
+              <sphereGeometry args={[0.04, 8, 8]} />
+              <meshStandardMaterial
+                color={sectionColor}
+                emissive={sectionColor}
+                emissiveIntensity={isActive ? 3.0 : 2.0}
+                toneMapped={false}
+                transparent
+                opacity={isActive ? 1 : 0.8}
+              />
+            </mesh>
+
+            {/* HUD-style label */}
+            <Html
+              position={label.position}
+              center
+              distanceFactor={6}
+              sprite
+              zIndexRange={[100, 0]}
             >
               <div
-                className="text-base font-bold tracking-wider uppercase"
+                className="px-4 py-2 rounded backdrop-blur-sm border transition-all duration-300"
                 style={{
-                  color: PIT_STOPS[activeSection].color,
-                  textShadow: `0 0 12px ${PIT_STOPS[activeSection].color}, 0 0 24px ${PIT_STOPS[activeSection].color}, 0 0 36px ${PIT_STOPS[activeSection].color}`,
-                  filter: 'brightness(1.5)',
+                  background: `${sectionColor}25`,
+                  borderColor: sectionColor,
+                  borderWidth: '1px',
+                  boxShadow: isActive
+                    ? `0 0 20px ${sectionColor}aa, inset 0 0 10px ${sectionColor}40`
+                    : `0 0 12px ${sectionColor}80, inset 0 0 6px ${sectionColor}30`,
+                  opacity: isActive ? 1 : 0.85,
+                  transform: isActive ? 'scale(1.05)' : 'scale(1)',
                 }}
               >
-                {SECTION_LABELS[activeSection].text}
+                <div
+                  className="text-sm font-bold tracking-widest uppercase"
+                  style={{
+                    color: sectionColor,
+                    textShadow: isActive
+                      ? `0 0 10px ${sectionColor}, 0 0 20px ${sectionColor}`
+                      : `0 0 6px ${sectionColor}, 0 0 12px ${sectionColor}`,
+                    filter: isActive ? 'brightness(1.4)' : 'brightness(1.2)',
+                    fontFamily: 'monospace',
+                  }}
+                >
+                  {label.text.toUpperCase()}
+                </div>
               </div>
-            </div>
-          </Html>
-        </>
-      )}
+            </Html>
+          </group>
+        );
+      })}
     </group>
   );
 };

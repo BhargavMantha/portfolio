@@ -30,11 +30,14 @@ export const EXPERIENCE = [
     period: 'Mar 2022 - Present',
     location: 'Mumbai, INDIA (Remote)',
     achievements: [
-      'Architected high-performance microservices handling 800+ TPS',
-      '73% performance boost and 34% cost reduction',
-      'Led 4 epic-level initiatives delivering 100 issues across 20 major projects',
+      'Architected microservices handling 800+ TPS with 73% performance boost and 34% cost reduction',
+      'Led 4 epic initiatives delivering 100 issues across 20 projects with measurable business impact',
+      'Resolved 23 critical bugs including 5 production issues, 85% test coverage, 14 zero-downtime deployments',
+      'Transformed monolithic systems into 40+ microservices achieving 48% performance improvement',
+      'Built workflow automation for Fortune 500 (McKesson, UPS) with SFTP, OAuth, webhooks',
+      'Engineered multi-tenant security with JWT validation and request-scoped context',
     ],
-    tags: ['NestJS', 'AWS', 'TypeORM', 'Docker', 'Kubernetes'],
+    tags: ['NestJS', 'AWS', 'TypeORM', 'Docker', 'Kubernetes', 'OAuth', 'JWT'],
   },
   {
     company: 'Irislogic',
@@ -42,11 +45,24 @@ export const EXPERIENCE = [
     period: 'Aug 2020 - Mar 2022',
     location: 'Santa Clara, CA (Remote)',
     achievements: [
-      'Implemented 40+ microservices handling 100 QPS',
-      'Reduced support tickets by 70% for large client',
-      'Built user management backend with MFA for 300 users',
+      'Implemented 40+ microservices handling 100 QPS with AWS (SQS, SNS, SES)',
+      'Improved CSV validation from 10min to 2min using AJV',
+      'Reduced support tickets by 70% through error handling and HTTP code mapping',
+      'Built user management with MFA using Passport+JWT for 300 concurrent users',
+      'Devised CI/CD pipelines for 0 downtime and 20X faster deployment',
     ],
-    tags: ['Node.js', 'AWS', 'NestJS'],
+    tags: ['Node.js', 'NestJS', 'AWS', 'TypeORM', 'Passport', 'JWT', 'Kubernetes'],
+  },
+  {
+    company: 'Pirates Alert',
+    role: 'Software Engineer',
+    period: 'Jan 2018 - Aug 2020',
+    location: 'Mumbai, INDIA (Remote)',
+    achievements: [
+      'Built pirated content detection app used by 4 companies',
+      'Used ML, FFMPEG, GCP, Google Vision/Tesseract for image recognition',
+    ],
+    tags: ['Node.js', 'Python', 'Angular', 'React', 'ML', 'FFMPEG', 'GCP'],
   },
 ];
 

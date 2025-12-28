@@ -4,9 +4,18 @@ import { PIT_STOPS } from '../../constants/pitStops';
 import { PROFILE, METRICS, SKILLS, EXPERIENCE, PROJECTS } from '../../constants/content';
 import { SectionType } from '../../types/island';
 import { TypewriterText } from './TypewriterText';
+import { useEffect, useRef } from 'react';
 
 export const ContentPanel = () => {
   const activeSection = useIslandStore((state) => state.activeSection);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top when section changes
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  }, [activeSection]);
 
   if (!activeSection) return null;
 
@@ -23,6 +32,7 @@ export const ContentPanel = () => {
         className="fixed top-0 right-0 h-screen w-[400px] z-40"
       >
         <div
+          ref={scrollContainerRef}
           className="h-full glass-panel relative overflow-y-auto"
           style={{
             borderLeft: `2px solid ${pitStop.color}`,
@@ -37,8 +47,8 @@ export const ContentPanel = () => {
             <PanelContent section={activeSection} />
           </div>
 
-          {/* Footer hints */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 text-center text-xs text-neutral-gray border-t border-gray-700">
+          {/* Footer hints - sticky at bottom */}
+          <div className="sticky bottom-0 left-0 right-0 p-4 text-center text-xs text-neutral-gray border-t border-gray-700 bg-primary backdrop-blur-md mt-auto">
             ← Drag to rotate  |  Click sections to jump →
           </div>
         </div>
