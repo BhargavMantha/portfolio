@@ -113,12 +113,13 @@ const PanelContent = ({ section }: { section: SectionType }) => {
           {EXPERIENCE.map((exp, idx) => (
             <div key={idx} className="mb-8 pb-8 border-b border-gray-700 last:border-0">
               <h3 className="text-xl font-bold text-white">{exp.company}</h3>
-              <p className="text-accent-orange mb-2">{exp.role}</p>
-              <p className="text-neutral-gray text-sm mb-4">{exp.period}</p>
+              <p className="text-accent-orange mb-1">{exp.role}</p>
+              <p className="text-neutral-gray text-sm mb-1">{exp.period}</p>
+              <p className="text-accent-cyan text-xs mb-4">📍 {exp.location}</p>
 
               <ul className="space-y-2 mb-4">
                 {exp.achievements.map((achievement, i) => (
-                  <li key={i} className="text-neutral-gray text-sm">
+                  <li key={i} className="text-neutral-gray text-sm leading-relaxed">
                     • {achievement}
                   </li>
                 ))}
@@ -144,25 +145,61 @@ const PanelContent = ({ section }: { section: SectionType }) => {
         <div>
           <h2 className="text-3xl font-bold text-white mb-6">Projects</h2>
           {PROJECTS.map((project, idx) => (
-            <div key={idx} className="mb-6 p-4 bg-secondary rounded-lg border border-gray-700">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-1 bg-primary rounded text-xs text-accent-green">
+            <div
+              key={idx}
+              className="mb-6 p-5 bg-secondary rounded-lg border-2 hover:border-accent-cyan transition-colors"
+              style={{
+                borderColor: project.featured ? '#00cea8' : '#374151',
+              }}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span
+                  className="px-3 py-1 rounded text-xs font-semibold"
+                  style={{
+                    background: `${project.color === 'purple' ? '#915EFF' : project.color === 'cyan' ? '#00cea8' : '#ff6b35'}20`,
+                    color: project.color === 'purple' ? '#915EFF' : project.color === 'cyan' ? '#00cea8' : '#ff6b35',
+                    border: `1px solid ${project.color === 'purple' ? '#915EFF' : project.color === 'cyan' ? '#00cea8' : '#ff6b35'}`,
+                  }}
+                >
                   {project.category}
                 </span>
+                {project.featured && (
+                  <span className="text-xs text-accent-green">⭐ Featured</span>
+                )}
               </div>
-              <h3 className="text-lg font-bold text-white mb-2">{project.name}</h3>
-              <p className="text-neutral-gray text-sm mb-3">{project.description}</p>
 
-              <div className="flex flex-wrap gap-2">
+              <h3 className="text-xl font-bold text-white mb-2">{project.name}</h3>
+              <p className="text-accent-cyan text-sm mb-2 font-medium">
+                {project.description}
+              </p>
+
+              {project.details && (
+                <p className="text-neutral-gray text-xs mb-4 leading-relaxed">
+                  {project.details}
+                </p>
+              )}
+
+              <div className="flex flex-wrap gap-2 mb-3">
                 {project.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 bg-tertiary rounded text-xs text-neutral-gray"
+                    className="px-2 py-1 bg-tertiary rounded text-xs text-neutral-gray border border-gray-600"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
+
+              {project.github && (
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-xs text-accent-cyan hover:text-white transition-colors"
+                >
+                  <span>🔗</span> View on GitHub
+                </a>
+              )}
             </div>
           ))}
         </div>
