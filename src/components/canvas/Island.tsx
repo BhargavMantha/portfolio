@@ -10,37 +10,37 @@ import { useIslandStore } from '../../store/islandStore';
 import { PIT_STOPS } from '../../constants/pitStops';
 import { SectionType } from '../../types/island';
 
-// Section-specific labels aligned vertically (left side, top to bottom)
+// Section-specific labels attached to suit parts (billboarded to camera)
 const SECTION_LABELS = {
   hero: {
     text: 'Home',
-    position: [-3.5, -1.5, 0] as [number, number, number],
-    lineStart: [-3, -1.5, 0] as [number, number, number],
+    position: [0, -2.2, 0.8] as [number, number, number], // Below feet
+    lineStart: [0, -2.2, 0.5] as [number, number, number],
     lineEnd: [0, -2, 0] as [number, number, number]
   },
   about: {
     text: 'About',
-    position: [-3.5, 1.5, 0] as [number, number, number],
-    lineStart: [-3, 1.5, 0] as [number, number, number],
+    position: [0, 2.5, 0.8] as [number, number, number], // Above helmet
+    lineStart: [0, 2.5, 0.5] as [number, number, number],
     lineEnd: [0, 2.2, 0] as [number, number, number]
   },
   experience: {
     text: 'Experience',
-    position: [-3.5, 0.5, 0] as [number, number, number],
-    lineStart: [-3, 0.5, 0] as [number, number, number],
-    lineEnd: [0, 0.8, 0] as [number, number, number]
+    position: [0, 1, 1] as [number, number, number], // Front of chest/arc reactor
+    lineStart: [0, 1, 0.7] as [number, number, number],
+    lineEnd: [0, 0.8, 0.2] as [number, number, number]
   },
   projects: {
     text: 'Projects',
-    position: [-3.5, -0.5, 0] as [number, number, number],
-    lineStart: [-3, -0.5, 0] as [number, number, number],
-    lineEnd: [1, 0, 0] as [number, number, number]
+    position: [1.2, 0, 0.6] as [number, number, number], // Right hand side
+    lineStart: [1, 0, 0.4] as [number, number, number],
+    lineEnd: [0.8, 0, 0.1] as [number, number, number]
   },
   contact: {
     text: 'Contact',
-    position: [-3.5, -2.5, 0] as [number, number, number],
-    lineStart: [-3, -2.5, 0] as [number, number, number],
-    lineEnd: [-1, 0, 0] as [number, number, number]
+    position: [-1.2, 0, 0.6] as [number, number, number], // Left hand side
+    lineStart: [-1, 0, 0.4] as [number, number, number],
+    lineEnd: [-0.8, 0, 0.1] as [number, number, number]
   },
 };
 
@@ -149,11 +149,14 @@ export const Island = () => {
             />
           </mesh>
 
-          {/* Fluorescent section label */}
+          {/* Fluorescent section label (billboarded) */}
           <Html
             position={SECTION_LABELS[activeSection].position}
             center
-            distanceFactor={10}
+            distanceFactor={8}
+            sprite
+            transform
+            occlude
           >
             <div
               className="px-4 py-2 rounded-md backdrop-blur-sm border-2"
