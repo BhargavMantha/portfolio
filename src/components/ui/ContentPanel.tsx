@@ -3,6 +3,7 @@ import { useIslandStore } from '../../store/islandStore';
 import { PIT_STOPS } from '../../constants/pitStops';
 import { PROFILE, METRICS, SKILLS, EXPERIENCE, PROJECTS } from '../../constants/content';
 import { SectionType } from '../../types/island';
+import { TypewriterText } from './TypewriterText';
 
 export const ContentPanel = () => {
   const activeSection = useIslandStore((state) => state.activeSection);
@@ -51,7 +52,9 @@ const PanelContent = ({ section }: { section: SectionType }) => {
     case 'hero':
       return (
         <div className="text-center">
-          <h1 className="text-5xl font-bold text-white mb-4">{PROFILE.name}</h1>
+          <h1 className="text-5xl font-bold text-white mb-4">
+            <TypewriterText text={PROFILE.name} speed={100} />
+          </h1>
           <p className="text-accent-cyan text-xl mb-2">{PROFILE.title}</p>
           <h2 className="text-3xl font-bold text-white mb-6">{PROFILE.tagline}</h2>
           <p className="text-neutral-gray mb-8">{PROFILE.description}</p>
