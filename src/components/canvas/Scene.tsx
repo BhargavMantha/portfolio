@@ -24,36 +24,45 @@ export const Scene = () => {
             fov={50}
           />
 
-          {/* Lighting setup - Much brighter */}
-          <ambientLight intensity={1.5} />
+          {/* Lighting setup - ULTRA BRIGHT */}
+          <ambientLight intensity={2.5} />
           <directionalLight
             position={[10, 10, 5]}
-            intensity={3.5}
+            intensity={5.0}
             castShadow
           />
           <directionalLight
             position={[-10, 10, -5]}
-            intensity={2.5}
+            intensity={4.0}
           />
           <directionalLight
             position={[0, 5, 10]}
-            intensity={2.0}
+            intensity={3.5}
+          />
+          <directionalLight
+            position={[0, -5, 5]}
+            intensity={3.0}
           />
           <pointLight
             position={[-10, 5, -10]}
-            intensity={2.0}
+            intensity={3.0}
             color={colors.atmosphere.cyan}
           />
           <pointLight
             position={[10, 5, 10]}
-            intensity={1.8}
+            intensity={3.0}
             color={colors.atmosphere.magenta}
           />
+          <pointLight
+            position={[0, 0, 15]}
+            intensity={4.0}
+            color="#ffffff"
+          />
           <spotLight
-            position={[0, 10, 0]}
-            intensity={2.5}
-            angle={0.6}
-            penumbra={0.5}
+            position={[0, 15, 0]}
+            intensity={4.0}
+            angle={0.8}
+            penumbra={0.3}
             color="#ffffff"
           />
 

@@ -149,29 +149,28 @@ export const Island = () => {
             />
           </mesh>
 
-          {/* Fluorescent section label (billboarded) */}
+          {/* Fluorescent section label (billboarded, always visible) */}
           <Html
             position={SECTION_LABELS[activeSection].position}
             center
-            distanceFactor={8}
+            distanceFactor={6}
             sprite
-            transform
-            occlude
+            zIndexRange={[100, 0]}
           >
             <div
-              className="px-4 py-2 rounded-md backdrop-blur-sm border-2"
+              className="px-5 py-2.5 rounded-lg backdrop-blur-md border-2"
               style={{
-                background: `${PIT_STOPS[activeSection].color}25`,
+                background: `${PIT_STOPS[activeSection].color}35`,
                 borderColor: PIT_STOPS[activeSection].color,
-                boxShadow: `0 0 20px ${PIT_STOPS[activeSection].color}, 0 0 40px ${PIT_STOPS[activeSection].color}80, inset 0 0 10px ${PIT_STOPS[activeSection].color}40`,
+                boxShadow: `0 0 25px ${PIT_STOPS[activeSection].color}, 0 0 50px ${PIT_STOPS[activeSection].color}90, inset 0 0 15px ${PIT_STOPS[activeSection].color}50`,
               }}
             >
               <div
-                className="text-sm font-bold tracking-wider uppercase"
+                className="text-base font-bold tracking-wider uppercase"
                 style={{
                   color: PIT_STOPS[activeSection].color,
-                  textShadow: `0 0 10px ${PIT_STOPS[activeSection].color}, 0 0 20px ${PIT_STOPS[activeSection].color}`,
-                  filter: 'brightness(1.3)',
+                  textShadow: `0 0 12px ${PIT_STOPS[activeSection].color}, 0 0 24px ${PIT_STOPS[activeSection].color}, 0 0 36px ${PIT_STOPS[activeSection].color}`,
+                  filter: 'brightness(1.5)',
                 }}
               >
                 {SECTION_LABELS[activeSection].text}
