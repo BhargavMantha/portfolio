@@ -10,6 +10,7 @@ import { useIslandStore } from '../../store/islandStore';
 import { PIT_STOPS } from '../../constants/pitStops';
 import { SectionType } from '../../types/island';
 import { ArcReactorGlow } from './effects/ArcReactorGlow';
+import { RepulsorGlow } from './effects/RepulsorGlow';
 
 // Section-specific labels with Iron Man HUD-style angular arrows
 const SECTION_LABELS = {
@@ -143,6 +144,10 @@ export const Island = () => {
 
       {/* Arc Reactor glow effect */}
       <ArcReactorGlow position={[0, 0.8, 0.4]} />
+
+      {/* Repulsor glows on hands */}
+      <RepulsorGlow hand="right" position={[0.65, 0.1, 0.3]} />
+      <RepulsorGlow hand="left" position={[-0.65, 0.1, 0.3]} />
 
       {/* Active label with Iron Man HUD-style angular arrow */}
       {activeSection && (() => {
