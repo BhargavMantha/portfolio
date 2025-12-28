@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Suspense } from 'react';
+import { Island } from './Island';
 import { colors } from '../../constants/colors';
 
 export const Scene = () => {
@@ -39,15 +40,7 @@ export const Scene = () => {
             color={colors.atmosphere.magenta}
           />
 
-          {/* Test cube to verify rendering */}
-          <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[2, 2, 2]} />
-            <meshStandardMaterial
-              color={colors.pitStops.hero}
-              emissive={colors.pitStops.hero}
-              emissiveIntensity={0.3}
-            />
-          </mesh>
+          <Island />
 
           {/* Development controls (remove later) */}
           <OrbitControls
