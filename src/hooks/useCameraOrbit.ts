@@ -65,6 +65,7 @@ export const useCameraOrbit = () => {
     window.addEventListener('mouseup', handleMouseUp);
 
     return () => {
+      isDragging.current = false; // Reset drag state on cleanup
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
@@ -82,6 +83,9 @@ export const useCameraOrbit = () => {
 
   // Update camera position every frame
   useFrame((_, delta) => {
+    // Guard against undefined camera
+    if (!camera) return;
+
     // Auto-rotate on mobile (disabled during flight)
     if (isMobile && !isFlying) {
       const newPhi = cameraOrbit.phi + autoRotateSpeed.current * delta;
