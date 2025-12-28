@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { PerspectiveCamera } from '@react-three/drei';
 import { Suspense } from 'react';
 import { Island } from './Island';
 import { colors } from '../../constants/colors';
@@ -41,13 +41,6 @@ export const Scene = () => {
           />
 
           <Island />
-
-          {/* Development controls (remove later) */}
-          <OrbitControls
-            enableDamping
-            dampingFactor={0.05}
-            enablePan={false}
-          />
         </Suspense>
       </Canvas>
     </div>
