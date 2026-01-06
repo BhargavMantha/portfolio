@@ -28,10 +28,11 @@ export const IronManScroll = () => {
   // Update canvas size on mount and resize
   useEffect(() => {
     const updateCanvasSize = () => {
-      const dpr = window.devicePixelRatio || 1;
+      // Cap DPR at 2 for performance on mobile/high-DPI screens while maintaining quality
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       setCanvasSize({
-        width: window.innerWidth * dpr,
-        height: window.innerHeight * dpr,
+        width: Math.floor(window.innerWidth * dpr),
+        height: Math.floor(window.innerHeight * dpr),
       });
     };
 
@@ -60,7 +61,7 @@ export const IronManScroll = () => {
       const img = images[index];
 
       if (img && img.complete) {
-        // Clear canvas
+        // Clear canvas with integer dimensions
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // Calculate scaling to cover entire canvas while maintaining aspect ratio
@@ -83,7 +84,14 @@ export const IronManScroll = () => {
           offsetY = (canvas.height - drawHeight) / 2;
         }
 
-        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        // Draw with rounded coordinates to prevent sub-pixel blur
+        ctx.drawImage(
+          img, 
+          Math.floor(offsetX), 
+          Math.floor(offsetY), 
+          Math.ceil(drawWidth), 
+          Math.ceil(drawHeight)
+        );
       }
     });
 
