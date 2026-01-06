@@ -13,7 +13,7 @@
     "format": "prettier --write src/**/*.{ts,tsx,css,md,json,scss} --config ./.prettierrc"
   },
   "dependencies": {
-    "framer-motion": "^11.18.2",
+    "framer-motion": "10.18.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-use": "^17.6.0"
