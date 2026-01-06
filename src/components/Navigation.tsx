@@ -53,14 +53,14 @@ export const Navigation = ({ scrollProgress }: NavigationProps) => {
       initial={{ opacity: 0, y: -20, pointerEvents: 'none' }}
       animate={{ pointerEvents: isVisible ? 'auto' : 'none' }}
     >
-      <div className="bg-secondary/80 backdrop-blur-md border border-electric-blue/30 rounded-full px-6 py-3 shadow-[0_0_30px_rgba(0,212,255,0.2)]">
+      <div className="bg-secondary/80 backdrop-blur-md border border-electric-blue/30 rounded-full px-3 py-2 md:px-6 md:py-3 shadow-[0_0_30px_rgba(0,212,255,0.2)]">
         <div className="flex items-center gap-1">
           {NAV_ITEMS.map((item, index) => (
             <button
               key={item.label}
               onClick={() => scrollToSection(index)}
               className={`
-                relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
+                relative px-2 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300
                 ${
                   activeSection === index
                     ? 'text-arc-reactor'

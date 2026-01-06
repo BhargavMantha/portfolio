@@ -61,7 +61,7 @@ const HeroSection = ({ scrollProgress }: SectionOverlayProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.2 }}
-          className="grid grid-cols-4 gap-6 mt-12"
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12"
         >
           {METRICS.map((metric, idx) => (
             <motion.div
@@ -324,7 +324,7 @@ const ContactSection = ({ scrollProgress }: SectionOverlayProps) => {
         </motion.p>
 
         {/* Holographic Contact Buttons */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           {contactMethods.map((method, idx) => (
             <motion.a
               key={method.label}
@@ -339,7 +339,7 @@ const ContactSection = ({ scrollProgress }: SectionOverlayProps) => {
             >
               <div className="text-4xl mb-2">{method.icon}</div>
               <div className="text-white font-bold mb-1">{method.label}</div>
-              <div className="text-electric-blue text-sm hud-text">{method.value}</div>
+              <div className="text-electric-blue text-sm hud-text break-all">{method.value}</div>
             </motion.a>
           ))}
         </div>
