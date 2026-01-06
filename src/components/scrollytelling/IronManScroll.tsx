@@ -29,7 +29,7 @@ export const IronManScroll = () => {
   useEffect(() => {
     const updateCanvasSize = () => {
       // Cap DPR at 2 for performance on mobile/high-DPI screens while maintaining quality
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = window.devicePixelRatio || 1;
       setCanvasSize({
         width: Math.floor(window.innerWidth * dpr),
         height: Math.floor(window.innerHeight * dpr),
