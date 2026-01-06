@@ -1,6 +1,4 @@
-import { Scene } from './components/canvas/Scene';
-import { Navbar } from './components/ui/Navbar';
-import { ContentPanel } from './components/ui/ContentPanel';
+import { IronManScroll } from './components/scrollytelling/IronManScroll';
 import { MobileFallback } from './components/ui/MobileFallback';
 import { useResponsive } from './hooks/useResponsive';
 
@@ -12,10 +10,8 @@ function App() {
   }
 
   return (
-    <div className="relative w-full h-screen bg-primary overflow-hidden">
-      <Navbar />
-      <Scene />
-      <ContentPanel />
+    <div className="relative w-full min-h-screen bg-primary">
+      <IronManScroll />
     </div>
   );
 }

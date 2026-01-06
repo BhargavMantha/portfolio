@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap");
 @import './styles/glassmorphism.css';
 
 @tailwind base;
@@ -9,10 +9,88 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 body {
-  background-color: #000814; /* Arc Reactor Space Black */
-  overflow: hidden;
+  background-color: #0A0A0A; /* Iron Man Near-Black */
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Arc Reactor Glow Animation */
+@keyframes arc-reactor-pulse {
+  0%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px #FFC107) drop-shadow(0 0 16px #FFC107);
+  }
+  50% {
+    opacity: 0.8;
+    filter: drop-shadow(0 0 12px #FFC107) drop-shadow(0 0 24px #FFC107);
+  }
+}
+
+/* Scanline Effect */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+/* HUD Flicker */
+@keyframes hud-flicker {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+/* Holographic Shimmer */
+@keyframes holographic-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Utility Classes */
+.arc-reactor-glow {
+  animation: arc-reactor-pulse 2s ease-in-out infinite;
+}
+
+.scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(transparent, #00D4FF, transparent);
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.hud-text {
+  animation: hud-flicker 3s ease-in-out infinite;
+  text-shadow: 0 0 10px #00D4FF, 0 0 20px #00D4FF;
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 10px #FFC107, 0 0 20px #FFC107, 0 0 30px #FFC107;
+}
+
+.text-glow-blue {
+  text-shadow: 0 0 10px #00D4FF, 0 0 20px #00D4FF;
 }

@@ -4,17 +4,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#000814',       // Space Black
-        secondary: '#001d3d',     // Deep Navy
-        tertiary: '#003566',      // Navy Blue
+        primary: '#0A0A0A',           // Iron Man Near-Black
+        secondary: '#1A1A1A',         // Slightly Lighter Black
+        tertiary: '#2A2A2A',          // Dark Gray
+        'arc-reactor': '#FFC107',     // Arc Reactor Gold
+        'electric-blue': '#00D4FF',   // Electric Blue (HUD)
         'accent-cyan': '#00F5FF',     // Bright Cyan
         'accent-blue': '#00D4FF',     // Electric Blue
         'accent-medium': '#0096FF',   // Medium Blue
-        'accent-deep': '#0077B6',     // Deep Blue
-        'accent-ice': '#E0F4FF',      // Ice Blue Glow
-        'accent-orange': '#00D4FF',   // Replaced with blue
-        'accent-green': '#00F5FF',    // Replaced with cyan
-        'neutral-gray': '#8ecae6',    // Light Blue-gray
+        'accent-gold': '#FFC107',     // Gold
+        'accent-orange': '#FF6B35',   // Orange (for projects)
+        'text-primary': 'rgba(255, 255, 255, 0.9)',
+        'text-secondary': 'rgba(255, 255, 255, 0.6)',
+        'text-tertiary': 'rgba(255, 255, 255, 0.4)',
       },
     },
   },
