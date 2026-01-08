@@ -7,11 +7,11 @@ interface NavigationProps {
 }
 
 const NAV_ITEMS = [
-  { label: 'Hero', range: [0, 0.2] },
-  { label: 'About', range: [0.2, 0.4] },
-  { label: 'Experience', range: [0.4, 0.6] },
-  { label: 'Projects', range: [0.6, 0.8] },
-  { label: 'Contact', range: [0.8, 1] },
+  { label: 'Hero', range: [0, 0.2], target: 0 },
+  { label: 'About', range: [0.2, 0.4], target: 0.3 },
+  { label: 'Experience', range: [0.4, 0.6], target: 0.5 },
+  { label: 'Projects', range: [0.6, 0.8], target: 0.7 },
+  { label: 'Contact', range: [0.8, 1], target: 0.9 },
 ];
 
 export const Navigation = ({ scrollProgress }: NavigationProps) => {
@@ -42,7 +42,7 @@ export const Navigation = ({ scrollProgress }: NavigationProps) => {
 
   const scrollToSection = (index: number) => {
     const scrollRange = document.documentElement.scrollHeight - window.innerHeight;
-    const targetScroll = scrollRange * NAV_ITEMS[index].range[0];
+    const targetScroll = scrollRange * NAV_ITEMS[index].target;
     window.scrollTo({ top: targetScroll, behavior: 'smooth' });
   };
 

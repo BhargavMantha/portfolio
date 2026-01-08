@@ -97,6 +97,29 @@ const HeroSection = ({ scrollProgress }: SectionOverlayProps) => {
         </motion.div>
         </motion.div>
       </div>
+
+      {/* Scroll Indicator */}
+      <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2, duration: 1 }}
+          className="absolute bottom-32 md:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 pointer-events-auto cursor-pointer z-50"
+          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+      >
+        <span className="text-electric-blue font-mono text-sm font-bold tracking-[0.8em] animate-pulse whitespace-nowrap drop-shadow-[0_0_10px_rgba(0,212,255,0.5)]">INITIALIZE SYSTEM</span>
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="w-6 h-10 border-2 border-electric-blue/30 rounded-full flex justify-center p-1"
+        >
+            <motion.div 
+              animate={{ y: [0, 15, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              className="w-1 h-2 bg-arc-reactor rounded-full" 
+            />
+        </motion.div>
+      </motion.div>
+
     </motion.div>
   );
 };
@@ -154,19 +177,19 @@ const AboutSection = ({ scrollProgress }: SectionOverlayProps) => {
            <BentoGridItem
             title="Hobbies"
             description="Compiler Design, Gaming on Linux, Cooking."
-            header={<div className="h-16 w-full bg-tertiary/30 rounded-lg mb-2 flex items-center justify-center">🎮 🍳 🐧</div>}
+            header={<div className="h-16 w-full bg-tertiary/30 rounded-lg mb-2 flex items-center justify-center text-4xl">🎮 🍳 🐧</div>}
             className="md:col-span-1"
           />
            <BentoGridItem
             title="Philosophy"
             description="Code is art. Performance is key. Simplicity is ultimate sophistication."
-            header={<div className="h-16 w-full bg-tertiary/30 rounded-lg mb-2 text-center pt-4 text-arc-reactor">Keep It Simple</div>}
+            header={<div className="h-16 w-full bg-tertiary/30 rounded-lg mb-2 flex items-center justify-center text-center text-xl font-bold text-arc-reactor">Keep It Simple</div>}
             className="md:col-span-1"
           />
            <BentoGridItem
             title="Location"
             description="Remote / Global"
-            header={<div className="h-16 w-full bg-tertiary/30 rounded-lg mb-2 flex items-center justify-center text-2xl">🌍</div>}
+            header={<div className="h-16 w-full bg-tertiary/30 rounded-lg mb-2 flex items-center justify-center text-5xl">🌍</div>}
             className="md:col-span-1"
           />
 
@@ -191,7 +214,7 @@ const ExperienceSection = ({ scrollProgress }: SectionOverlayProps) => {
           Mission Log
         </h2>
 
-        <div className="relative border-l-2 border-white/10 ml-12 space-y-12 bg-black/60 backdrop-blur-md p-8 rounded-r-3xl border-y border-r border-white/5">
+        <div className="relative border-l-2 border-white/10 ml-12 space-y-12 bg-black/60 backdrop-blur-md p-8 rounded-r-3xl border-y border-r border-white/5 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-arc-reactor/50 pointer-events-auto">
           {EXPERIENCE.map((exp) => (
             <div key={exp.company} className="relative pl-8">
               {/* Timeline Dot */}
@@ -257,7 +280,7 @@ const ProjectsSection = ({ scrollProgress }: SectionOverlayProps) => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
               whileHover={{ y: -10 }}
-              className="stark-glass-card rounded-2xl p-6 group relative overflow-hidden"
+              className="bg-[#050505] border border-white/20 rounded-2xl p-6 group relative overflow-hidden z-20"
             >
               <div className="absolute top-0 right-0 p-4 opacity-50 font-mono text-xs text-electric-blue">
                 {project.category}
@@ -303,7 +326,7 @@ const ContactSection = ({ scrollProgress }: SectionOverlayProps) => {
       className="fixed inset-0 flex items-center justify-center z-10"
     >
       <div className="text-center max-w-4xl px-8 w-full">
-         <div className="stark-glass-card p-12 rounded-3xl border border-electric-blue/20 bg-black/60 backdrop-blur-xl shadow-[0_0_80px_-20px_rgba(0,212,255,0.3)]">
+         <div className="bg-[#050505] p-12 rounded-3xl border border-white/20 shadow-[0_0_80px_-20px_rgba(0,212,255,0.3)] z-20 relative">
             <h2 className="text-6xl md:text-7xl font-bold text-white mb-6 font-display tracking-tight">
               Establish Uplink
             </h2>

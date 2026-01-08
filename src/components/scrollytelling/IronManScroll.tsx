@@ -13,6 +13,21 @@ export const IronManScroll = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 1920, height: 1080 });
 
+  // Force scroll to top on mount
+  // Force scroll to top on mount
+  useEffect(() => {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    
+    // Add small delay to ensure browser doesn't override with restored position
+    const timer = setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   // Load image sequence
   const { images, loading, progress, error } = useImageSequence(IMAGE_PATH, TOTAL_FRAMES);
 
