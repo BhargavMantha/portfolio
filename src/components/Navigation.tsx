@@ -1,5 +1,6 @@
 import { motion, useTransform, MotionValue } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { ArcReactorMenu } from './ArcReactorMenu';
 
 interface NavigationProps {
   scrollProgress: MotionValue<number>;
@@ -48,12 +49,19 @@ export const Navigation = ({ scrollProgress }: NavigationProps) => {
   return (
     <motion.nav
       style={{ opacity, y }}
-      className="fixed top-8 left-1/2 -translate-x-1/2 z-50"
+      className="fixed inset-x-0 top-0 z-50 flex justify-center md:top-8 pointer-events-none"
       // Start completely hidden
-      initial={{ opacity: 0, y: -20, pointerEvents: 'none' }}
-      animate={{ pointerEvents: isVisible ? 'auto' : 'none' }}
+      animate={{ opacity: isVisible ? 1 : 0 }}
     >
-      <div className="bg-secondary/80 backdrop-blur-md border border-electric-blue/30 rounded-full px-3 py-2 md:px-6 md:py-3 shadow-[0_0_30px_rgba(0,212,255,0.2)]">
+      <div className="pointer-events-auto md:hidden">
+        <ArcReactorMenu 
+          onNavigate={scrollToSection} 
+          items={NAV_ITEMS} 
+          activeSection={activeSection} 
+        />
+      </div>
+
+      <div className="hidden md:block bg-secondary/80 backdrop-blur-md border border-electric-blue/30 rounded-full px-3 py-2 md:px-6 md:py-3 shadow-[0_0_30px_rgba(0,212,255,0.2)] pointer-events-auto">
         <div className="flex items-center gap-1">
           {NAV_ITEMS.map((item, index) => (
             <button
@@ -105,3 +113,4 @@ export const Navigation = ({ scrollProgress }: NavigationProps) => {
     </motion.nav>
   );
 };
+

@@ -3,21 +3,21 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      colors: {
-        primary: '#0A0A0A',           // Iron Man Near-Black
-        secondary: '#1A1A1A',         // Slightly Lighter Black
-        tertiary: '#2A2A2A',          // Dark Gray
-        'arc-reactor': '#FFC107',     // Arc Reactor Gold
-        'electric-blue': '#00D4FF',   // Electric Blue (HUD)
-        'accent-cyan': '#00F5FF',     // Bright Cyan
-        'accent-blue': '#00D4FF',     // Electric Blue
-        'accent-medium': '#0096FF',   // Medium Blue
-        'accent-gold': '#FFC107',     // Gold
-        'accent-orange': '#FF6B35',   // Orange (for projects)
-        'text-primary': 'rgba(255, 255, 255, 0.9)',
-        'text-secondary': 'rgba(255, 255, 255, 0.6)',
-        'text-tertiary': 'rgba(255, 255, 255, 0.4)',
+      fontFamily: {
+        sans: ['Outfit', 'sans-serif'],
+        display: ['Space Grotesk', 'sans-serif'],
       },
+      colors: {
+        primary: '#000000',           // Deep Void Black (Matches Image Sequence)
+        secondary: '#0F0F0F',         // Panel Black
+        tertiary: '#1A1A1A',          // Border/Highlight
+        'arc-reactor': '#FFC107',     // Gold
+        'electric-blue': '#00D4FF',   // Core Blue
+        'stark-glass': 'rgba(255, 255, 255, 0.05)',
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      }
     },
   },
   plugins: [],

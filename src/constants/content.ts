@@ -5,7 +5,7 @@ export const PROFILE = {
   description: 'Enterprise-grade microservices architecture for companies that move fast',
   email: 'manthabhargav@gmail.com',
   github: 'https://github.com/BhargavMantha',
-  linkedin: 'https://linkedin.com/in/bhargavmantha',
+  linkedin: 'https://www.linkedin.com/in/bhargav-mantha/',
   blog: 'https://dev.to/bhargavmantha',
 };
 

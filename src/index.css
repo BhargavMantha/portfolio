@@ -1,21 +1,27 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap');
 @import './styles/glassmorphism.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --cursor-size: 20px;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Outfit', sans-serif;
+  cursor: none; /* Hide default cursor for custom cursor */
 }
 
 body {
-  background-color: #0A0A0A; /* Iron Man Near-Black */
+  background-color: #050505; /* Deep Void Black */
   overflow-x: hidden;
   overflow-y: auto;
+  color: #ffffff;
 }
 
 /* Smooth scrolling */
@@ -23,74 +29,80 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Arc Reactor Glow Animation */
-@keyframes arc-reactor-pulse {
-  0%, 100% {
-    opacity: 1;
-    filter: drop-shadow(0 0 8px #FFC107) drop-shadow(0 0 16px #FFC107);
-  }
-  50% {
-    opacity: 0.8;
-    filter: drop-shadow(0 0 12px #FFC107) drop-shadow(0 0 24px #FFC107);
-  }
+/* Typography Overrides */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', sans-serif;
 }
 
-/* Scanline Effect */
-@keyframes scanline {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(100vh);
-  }
+/* -- GLASSMORPHISM & UTILITIES -- */
+
+.stark-glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
-/* HUD Flicker */
-@keyframes hud-flicker {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.95;
-  }
+.stark-border-glow {
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
 }
 
-/* Holographic Shimmer */
-@keyframes holographic-shimmer {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
+/* Animated Glows */
+@keyframes pulse-glow-blue {
+  0%, 100% { box-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); }
 }
 
-/* Utility Classes */
-.arc-reactor-glow {
-  animation: arc-reactor-pulse 2s ease-in-out infinite;
+@keyframes pulse-glow-gold {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 193, 7, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(255, 193, 7, 0.4); }
 }
 
-.scanline {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(transparent, #00D4FF, transparent);
-  animation: scanline 8s linear infinite;
-  pointer-events: none;
-  opacity: 0.3;
+.glow-blue {
+  animation: pulse-glow-blue 3s infinite ease-in-out;
 }
 
-.hud-text {
-  animation: hud-flicker 3s ease-in-out infinite;
-  text-shadow: 0 0 10px #00D4FF, 0 0 20px #00D4FF;
+.glow-gold {
+  animation: pulse-glow-gold 3s infinite ease-in-out;
 }
 
-.text-glow-gold {
-  text-shadow: 0 0 10px #FFC107, 0 0 20px #FFC107, 0 0 30px #FFC107;
+/* Text Gradients */
+.text-gradient-gold {
+  background: linear-gradient(to bottom right, #FFC107, #FF8F00);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.text-glow-blue {
-  text-shadow: 0 0 10px #00D4FF, 0 0 20px #00D4FF;
+.text-gradient-blue {
+  background: linear-gradient(to bottom right, #00D4FF, #007ACC);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00D4FF;
+}
+
+/* Custom Selection */
+::selection {
+  background: rgba(0, 212, 255, 0.2);
+  color: #fff;
 }

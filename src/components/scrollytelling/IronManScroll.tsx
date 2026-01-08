@@ -5,8 +5,8 @@ import { ArcReactorLoader } from '../ui/ArcReactorLoader';
 import { SectionOverlay } from './SectionOverlay';
 import { Navigation } from '../Navigation';
 
-const TOTAL_FRAMES = 120;
-const IMAGE_PATH = '/sequence-hd';
+const TOTAL_FRAMES = 80;
+const IMAGE_PATH = '/sequence-new';
 
 export const IronManScroll = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -22,7 +22,7 @@ export const IronManScroll = () => {
     offset: ['start start', 'end end'],
   });
 
-  // Map scroll to frame index (0-119)
+  // Map scroll to frame index
   const frameIndex = useTransform(scrollYProgress, [0, 1], [0, TOTAL_FRAMES - 1]);
 
   // Update canvas size on mount and resize
@@ -38,7 +38,11 @@ export const IronManScroll = () => {
 
     updateCanvasSize();
     window.addEventListener('resize', updateCanvasSize);
-    return () => window.removeEventListener('resize', updateCanvasSize);
+    window.addEventListener('orientationchange', updateCanvasSize);
+    return () => {
+      window.removeEventListener('resize', updateCanvasSize);
+      window.removeEventListener('orientationchange', updateCanvasSize);
+    };
   }, []);
 
   // Render current frame to canvas
@@ -122,11 +126,14 @@ export const IronManScroll = () => {
           width={canvasSize.width}
           height={canvasSize.height}
           className="w-full h-full object-cover"
-          style={{ imageRendering: 'auto' }}
+          style={{ 
+            width: '100%',
+            height: '100%',
+            filter: 'contrast(1.15) saturate(1.1)' 
+          }}
         />
-
-        {/* Scanline Effect */}
-        <div className="scanline" />
+        
+        {/* Overlays removed as per user request to reduce distortion */}
       </div>
 
       {/* Section Overlays */}
