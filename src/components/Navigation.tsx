@@ -14,6 +14,10 @@ const NAV_ITEMS = [
   { label: 'Contact', range: [0.8, 1], target: 0.9 },
 ];
 
+const EXTERNAL_LINKS = [
+  { label: 'Stack 2026', href: '/agentic-stack/', badge: 'NEW' },
+];
+
 export const Navigation = ({ scrollProgress }: NavigationProps) => {
   const [activeSection, setActiveSection] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
@@ -54,10 +58,11 @@ export const Navigation = ({ scrollProgress }: NavigationProps) => {
       animate={{ opacity: isVisible ? 1 : 0 }}
     >
       <div className="pointer-events-auto md:hidden">
-        <ArcReactorMenu 
-          onNavigate={scrollToSection} 
-          items={NAV_ITEMS} 
-          activeSection={activeSection} 
+        <ArcReactorMenu
+          onNavigate={scrollToSection}
+          items={NAV_ITEMS}
+          activeSection={activeSection}
+          externalLinks={EXTERNAL_LINKS}
         />
       </div>
 
@@ -107,6 +112,21 @@ export const Navigation = ({ scrollProgress }: NavigationProps) => {
                 }}
               />
             </button>
+          ))}
+
+          {/* Divider + external links */}
+          <span className="mx-2 h-5 w-px bg-electric-blue/30" aria-hidden="true" />
+          {EXTERNAL_LINKS.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="relative px-2 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium text-arc-reactor border border-arc-reactor/40 bg-arc-reactor/10 hover:bg-arc-reactor/20 hover:shadow-[0_0_20px_rgba(255,193,7,0.35)] transition-all duration-300 flex items-center gap-2 no-underline"
+            >
+              <span className="hud-text">◆ {link.label}</span>
+              <span className="text-[9px] tracking-widest font-bold bg-arc-reactor text-black px-1.5 py-0.5 rounded">
+                {link.badge}
+              </span>
+            </a>
           ))}
         </div>
       </div>
