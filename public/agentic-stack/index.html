@@ -189,7 +189,7 @@ section.block{padding:64px 0;border-top:1px solid #1f2937;position:relative}
 }
 .pick.crown{border-color:rgba(0,245,212,.5);background:linear-gradient(180deg,rgba(0,245,212,.04),#0d1119 60%)}
 .pick.crown::after{
-  content:"YOUR STACK";position:absolute;top:-10px;right:14px;
+  content:"MINE";position:absolute;top:-10px;right:14px;
   background:#00f5d4;color:#06070d;font-family:'JetBrains Mono',monospace;
   font-size:10px;font-weight:700;letter-spacing:.15em;padding:3px 8px;border-radius:4px;
 }
@@ -275,12 +275,28 @@ section.block{padding:64px 0;border-top:1px solid #1f2937;position:relative}
 .skip-item .sn{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:#e7eaf0}
 .skip-item .sw{font-size:13.5px;color:#8b95a7;line-height:1.5}
 
-/* ============================ ARCH ASCII ============================ */
-pre.ascii{
-  background:#0d1119;border:1px solid #1f2937;border-radius:12px;padding:18px;
-  color:#b8c0cf;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.5;
-  overflow-x:auto;white-space:pre;
+/* ============================ ARCH DIAGRAM ============================ */
+.archdiag{
+  background:
+    radial-gradient(ellipse 70% 80% at 50% 0%,rgba(0,245,212,.06),transparent 60%),
+    linear-gradient(180deg,#0a0d14 0%,#0d1119 100%);
+  border:1px solid #1f2937;border-radius:14px;padding:22px 18px 18px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;position:relative;
 }
+.archdiag::before{
+  content:"REF · ATHENA · 2026";position:absolute;top:10px;right:14px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;color:#3a4759;
+}
+.archdiag svg{display:block;min-width:780px;width:100%;height:auto}
+.archdiag-legend{
+  display:flex;flex-wrap:wrap;gap:18px;margin-top:14px;padding-top:14px;
+  border-top:1px dashed #1f2937;font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:#8b95a7;letter-spacing:.05em;
+}
+.archdiag-legend .swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;vertical-align:middle}
+.archdiag-legend .sw-cy{background:#00f5d4;box-shadow:0 0 8px #00f5d4}
+.archdiag-legend .sw-mg{background:#ff2e88;box-shadow:0 0 8px #ff2e88}
+.archdiag-legend .sw-yl{background:#ffd166;box-shadow:0 0 8px #ffd166}
 
 /* ============================ FOOTER ============================ */
 footer{
@@ -334,7 +350,7 @@ footer .heart{color:#ff2e88}
     <nav>
       <a href="#tldr">TL;DR</a>
       <a href="#layers">7 Layers</a>
-      <a href="#yours">Your Stack</a>
+      <a href="#yours">My Stack</a>
       <a href="#path">12-mo Path</a>
       <a href="#validation">Validation</a>
       <a href="#skip">Skip List</a>
@@ -345,7 +361,7 @@ footer .heart{color:#ff2e88}
   <div class="drawer" id="drawer">
     <a href="#tldr">TL;DR</a>
     <a href="#layers">7 Layers</a>
-    <a href="#yours">Your Stack</a>
+    <a href="#yours">My Stack</a>
     <a href="#path">12-Month Path</a>
     <a href="#validation">Validation</a>
     <a href="#skip">Skip List</a>
@@ -359,9 +375,10 @@ footer .heart{color:#ff2e88}
     <div class="eyebrow">FIELD GUIDE · MAY 2026 · BHARGAV.M</div>
     <h1 class="title">THE AGENTIC<br/><span class="glow">STACK&nbsp;2026</span></h1>
     <p class="subtitle">
-      A merged, validated, opinionated reading of the agentic-AI ecosystem — cross-checked
-      across <strong>four parallel research agents</strong> and Google&nbsp;Gemini's seven-layer
-      framing. Built around <strong>what you already have</strong>: LangGraph.js, Neo4j, MCP, K3s.
+      My opinionated read of the 2026 agentic-AI ecosystem. I cross-checked it across
+      <strong>four parallel research agents</strong> and against Google&nbsp;Gemini's seven-layer
+      framing, then mapped the whole thing onto <strong>what I'm already running on Athena</strong>:
+      LangGraph.js, Neo4j, MCP, K3s. This is where I'm placing my bets.
     </p>
 
     <div class="tldr" id="tldr">
@@ -373,12 +390,12 @@ footer .heart{color:#ff2e88}
       <div class="card">
         <div class="num">02 / TS ORCHESTRATION</div>
         <div class="punch">Mastra&nbsp;&gt;&nbsp;LangGraph.js for new work.</div>
-        <div class="ctx">22K stars in 15&nbsp;months, 300K weekly npm downloads, Replit&nbsp;/&nbsp;SoftBank&nbsp;/&nbsp;PayPal in prod. Keep LangGraph.js for your existing graph-heavy work.</div>
+        <div class="ctx">22K stars in 15&nbsp;months, 300K weekly npm downloads, Replit&nbsp;/&nbsp;SoftBank&nbsp;/&nbsp;PayPal in prod. I'm keeping LangGraph.js for my existing graph-heavy work in life-optimization.</div>
       </div>
       <div class="card">
-        <div class="num">03 / YOUR EDGE</div>
+        <div class="num">03 / MY EDGE</div>
         <div class="punch">Neo4j memory is ahead of the curve.</div>
-        <div class="ctx">GraphRAG (vector + Cypher traversal) shows +26% comprehensiveness vs flat vector. Most teams haven't graduated yet — you already did.</div>
+        <div class="ctx">GraphRAG (vector + Cypher traversal) shows +26% comprehensiveness vs flat vector. Most teams haven't graduated past flat vector stores — I already did.</div>
       </div>
       <div class="card">
         <div class="num">04 / THE GAP TO CLOSE</div>
@@ -449,7 +466,7 @@ footer .heart{color:#ff2e88}
         <div class="pick crown">
           <div class="pname">Qwen3-235B-A22B (local)</div>
           <div class="ptag">SELF-HOSTED · ATHENA</div>
-          <div class="pwhy">MoE; usable for classification, drafting, &amp; routing-tier work on your K3s cluster. Serve via vLLM through KubeAI operator.</div>
+          <div class="pwhy">MoE; usable for classification, drafting, &amp; routing-tier work on my K3s cluster. I'll serve it via vLLM through the KubeAI operator.</div>
           <div class="pmeta">Cheap. Private. Yours.</div>
         </div>
         <div class="pick">
@@ -471,8 +488,8 @@ footer .heart{color:#ff2e88}
       <div class="picks">
         <div class="pick crown">
           <div class="pname">Neo4j&nbsp;+&nbsp;pgvector hybrid</div>
-          <div class="ptag">GRAPHRAG · YOU HAVE THIS</div>
-          <div class="pwhy">Vector recall + Cypher multi-hop. Microsoft GraphRAG benchmarks: +26% comprehensiveness, +57% diversity over flat vector. You're already running this.</div>
+          <div class="ptag">GRAPHRAG · I RUN THIS</div>
+          <div class="pwhy">Vector recall + Cypher multi-hop. Microsoft GraphRAG benchmarks: +26% comprehensiveness, +57% diversity over flat vector. Already running it in life-optimization.</div>
           <div class="pmeta">Athena infrastructure · already in life-optimization</div>
         </div>
         <div class="pick">
@@ -494,16 +511,16 @@ footer .heart{color:#ff2e88}
           <div class="pmeta">Needs Neo4j / FalkorDB under it</div>
         </div>
         <div class="pick">
-          <div class="pname">Qdrant (when you outgrow Chroma)</div>
+          <div class="pname">Qdrant (when I outgrow Chroma)</div>
           <div class="ptag">VECTOR DB · NEXT-TIER</div>
           <div class="pwhy">Rust, single binary, best filter expressiveness for per-user namespacing. Drops into K3s cleanly via Helm.</div>
-          <div class="pmeta">Stay on Chroma until you need this</div>
+          <div class="pmeta">Sticking with Chroma until I outgrow it</div>
         </div>
         <div class="pick">
           <div class="pname">Anthropic Filesystem Memory</div>
           <div class="ptag">TRANSPARENT · DIY</div>
-          <div class="pwhy">Exposes memory as <code>/memories</code>. Max control, min opinion — you build the semantic extraction yourself. Powerful for Claude-Code-style agents.</div>
-          <div class="pmeta">Only if you want to engineer it</div>
+          <div class="pwhy">Exposes memory as <code>/memories</code>. Max control, min opinion — I'd have to build the semantic extraction layer myself. Powerful for Claude-Code-style agents.</div>
+          <div class="pmeta">Only if I want to engineer it</div>
         </div>
       </div>
 
@@ -518,9 +535,9 @@ footer .heart{color:#ff2e88}
       <div class="picks">
         <div class="pick crown">
           <div class="pname">MCP — Model Context Protocol</div>
-          <div class="ptag">TOOL LAYER · YOU SHIP THIS</div>
+          <div class="ptag">TOOL LAYER · I SHIP THIS</div>
           <div class="pwhy">JSON-RPC&nbsp;2.0 over STDIO / SSE / Streamable&nbsp;HTTP. Anthropic-originated; donated to Linux Foundation AAIF Dec&nbsp;2025. ~9.4K servers; Stripe, Linear, Atlassian, Salesforce, GitHub ship first-party. <strong>2026-07-28 RC drops session state &amp; sticky routing</strong> — design stateless now.</div>
-          <div class="pmeta">Already in your time-boxing app</div>
+          <div class="pmeta">Already shipped in my time-boxing app</div>
         </div>
         <div class="pick">
           <div class="pname">A2A — Agent2Agent</div>
@@ -531,7 +548,7 @@ footer .heart{color:#ff2e88}
         <div class="pick">
           <div class="pname">AG-UI</div>
           <div class="ptag">AGENT ↔ USER UI</div>
-          <div class="pwhy">CopilotKit-driven. Agents render rich widgets / forms / charts back into your React app instead of dumping text into a chat. Useful for your time-boxing dashboard.</div>
+          <div class="pwhy">CopilotKit-driven. Agents render rich widgets / forms / charts back into my React app instead of dumping text into a chat. The natural next step for my time-boxing dashboard.</div>
           <div class="pmeta">Pairs naturally with Mastra</div>
         </div>
         <div class="pick">
@@ -550,11 +567,11 @@ footer .heart{color:#ff2e88}
           <div class="pname">IBM ACP (yes, different ACP)</div>
           <div class="ptag">IGNORE UNLESS IBM ORBIT</div>
           <div class="pwhy">Two specs named ACP both live under the LF umbrella. IBM's powers BeeAI. Not relevant outside that ecosystem.</div>
-          <div class="pmeta">Skip for your profile</div>
+          <div class="pmeta">Not for my stack</div>
         </div>
       </div>
 
-      <div class="callout win"><strong>Strategic call:</strong> You're already an MCP shipper. The single highest-leverage protocol move in 2026 is to <em>add an A2A endpoint</em> with a signed Agent Card — gets you Azure / Bedrock / Google interop for free.</div>
+      <div class="callout win"><strong>My next move:</strong> I'm already an MCP shipper. The single highest-leverage protocol play left for me in 2026 is to <em>add an A2A endpoint</em> with a signed Agent Card — that gets me Azure / Bedrock / Google interop for free.</div>
     </article>
 
     <!-- ===== LAYER 4 ===== -->
@@ -571,7 +588,7 @@ footer .heart{color:#ff2e88}
         </div>
         <div class="pick crown">
           <div class="pname">LangGraph.js</div>
-          <div class="ptag">KEEP · YOUR EXISTING WORK</div>
+          <div class="ptag">KEEP · MY EXISTING WORK</div>
           <div class="pwhy">Explicit StateGraph; deepest control + best HITL story. 42K weekly npm downloads; Replit / Uber / LinkedIn / JPMorgan in prod. Stay here for life-optimization — don't rewrite.</div>
           <div class="pmeta">Verbose. Recent CVE in SQLite checkpointer (March&nbsp;2026)</div>
         </div>
@@ -597,7 +614,7 @@ footer .heart{color:#ff2e88}
           <div class="pname">Pydantic AI</div>
           <div class="ptag">PYTHON · TYPE-SAFE</div>
           <div class="pwhy">17K stars; v1.x stable. Best type-safety in Python. Pair with Logfire to shift errors from runtime to write-time. Boring is good.</div>
-          <div class="pmeta">Python-only — not your stack</div>
+          <div class="pmeta">Python-only — not my stack</div>
         </div>
         <div class="pick">
           <div class="pname">Agno (formerly Phidata)</div>
@@ -608,13 +625,13 @@ footer .heart{color:#ff2e88}
         <div class="pick">
           <div class="pname">Microsoft Agent Framework</div>
           <div class="ptag">.NET / AZURE</div>
-          <div class="pwhy">1.0 GA April&nbsp;3&nbsp;2026 — merged AutoGen + Semantic Kernel into one framework. Wrong ecosystem for you.</div>
+          <div class="pwhy">1.0 GA April&nbsp;3&nbsp;2026 — merged AutoGen + Semantic Kernel into one framework. Wrong ecosystem for me.</div>
           <div class="pmeta">Skip</div>
         </div>
         <div class="pick">
           <div class="pname">Temporal / DBOS / Inngest</div>
           <div class="ptag">DURABILITY LAYER (not a framework)</div>
-          <div class="pwhy">Long-running agents need replay + checkpoint + HITL pauses. <strong>DBOS</strong> is a library on Postgres (no extra cluster) — perfect for your already-Postgres setup. Temporal for enterprise-scale.</div>
+          <div class="pwhy">Long-running agents need replay + checkpoint + HITL pauses. <strong>DBOS</strong> is a library on Postgres (no extra cluster) — perfect for my already-Postgres setup. Temporal is for enterprise-scale, which I'm not.</div>
           <div class="pmeta">Add when a run can take &gt;5 min</div>
         </div>
       </div>
@@ -629,7 +646,7 @@ footer .heart{color:#ff2e88}
         <div class="pick crown">
           <div class="pname">Hybrid&nbsp;+&nbsp;Graph&nbsp;+&nbsp;Agentic RAG</div>
           <div class="ptag">RETRIEVAL STACK</div>
-          <div class="pwhy"><strong>Hybrid</strong>: dense + sparse (SPLADE/BM25) for keyword + semantic. <strong>Graph</strong>: walk a KG superimposed on the corpus. <strong>Agentic</strong>: the LLM picks the source, writes the query, verifies the answer. Use all three — you already have the KG.</div>
+          <div class="pwhy"><strong>Hybrid</strong>: dense + sparse (SPLADE/BM25) for keyword + semantic. <strong>Graph</strong>: walk a KG superimposed on the corpus. <strong>Agentic</strong>: the LLM picks the source, writes the query, verifies the answer. I'm using all three — already have the KG.</div>
           <div class="pmeta">Hybrid + Graph + Agentic = current ceiling</div>
         </div>
         <div class="pick">
@@ -641,7 +658,7 @@ footer .heart{color:#ff2e88}
         <div class="pick">
           <div class="pname">E2B (sandbox · Firecracker)</div>
           <div class="ptag">SAFEST DEFAULT</div>
-          <div class="pwhy">Hardware-level microVM isolation. The safe default for running untrusted LLM-generated code. <strong>Don't run untrusted code in your own K3s.</strong></div>
+          <div class="pwhy">Hardware-level microVM isolation. The safe default for running untrusted LLM-generated code. <strong>I'm not running untrusted code inside my own K3s</strong> — Athena is too valuable to be a sandbox host.</div>
           <div class="pmeta">~Sub-second cold starts</div>
         </div>
         <div class="pick">
@@ -653,8 +670,8 @@ footer .heart{color:#ff2e88}
         <div class="pick crown">
           <div class="pname">Steel.dev (self-hosted browser)</div>
           <div class="ptag">ATHENA-NATIVE</div>
-          <div class="pwhy">Apache&nbsp;2.0, Docker one-liner, anti-detection plugins. Drop into K3s as a Deployment. <strong>The pick for your homelab.</strong></div>
-          <div class="pmeta">Stagehand if you go SaaS</div>
+          <div class="pwhy">Apache&nbsp;2.0, Docker one-liner, anti-detection plugins. I'll drop it into K3s as a Deployment. <strong>My pick for browser tools on Athena.</strong></div>
+          <div class="pmeta">Stagehand if I move to SaaS</div>
         </div>
         <div class="pick">
           <div class="pname">Browserbase + Stagehand v3</div>
@@ -665,19 +682,19 @@ footer .heart{color:#ff2e88}
         <div class="pick">
           <div class="pname">vLLM + KubeAI (self-hosted inference)</div>
           <div class="ptag">ATHENA · LOCAL MODELS</div>
-          <div class="pwhy">vLLM is the default; KubeAI is the K8s operator (handles model pulls, caching, cold-start buffering). <strong>SGLang</strong> if your workload is RAG-heavy — RadixAttention gives ~6× throughput on prefix-cached prompts.</div>
+          <div class="pwhy">vLLM is the default; KubeAI is the K8s operator (handles model pulls, caching, cold-start buffering). I'll reach for <strong>SGLang</strong> if my workload turns out RAG-heavy — RadixAttention gives ~6× throughput on prefix-cached prompts.</div>
           <div class="pmeta">Cost lever for routing-tier work</div>
         </div>
         <div class="pick">
           <div class="pname">LiteLLM (pinned) or Portkey OSS</div>
           <div class="ptag">MODEL GATEWAY</div>
           <div class="pwhy">In-cluster Service routing easy steps → local vLLM, hard steps → Claude/GPT. <strong>Pin LiteLLM — March&nbsp;2026 supply-chain attack on v1.82.7–8.</strong></div>
-          <div class="pmeta">Portkey if you want stronger governance OOTB</div>
+          <div class="pmeta">Portkey if I want stronger governance OOTB</div>
         </div>
         <div class="pick">
           <div class="pname">Anthropic MCP tunnels</div>
           <div class="ptag">PRIVATE TOOL EXPOSURE</div>
-          <div class="pwhy">Expose internal MCP servers to Claude Managed Agents without public internet exposure. Designed for exactly your K3s setup.</div>
+          <div class="pwhy">Expose internal MCP servers to Claude Managed Agents without public internet exposure. Could've been designed for my exact K3s setup.</div>
           <div class="pmeta">Shipped May&nbsp;2026</div>
         </div>
       </div>
@@ -692,7 +709,7 @@ footer .heart{color:#ff2e88}
         <div class="pick">
           <div class="pname">CopilotKit + AG-UI</div>
           <div class="ptag">GENERATIVE UI · TS-NATIVE</div>
-          <div class="pwhy">Agent renders live React widgets / forms / charts into your app. Pairs naturally with your existing time-boxing dashboard and Mastra workflows.</div>
+          <div class="pwhy">Agent renders live React widgets / forms / charts into my app. Pairs naturally with my time-boxing dashboard and any Mastra workflows I add.</div>
           <div class="pmeta">Real upgrade over chat-only UX</div>
         </div>
         <div class="pick">
@@ -721,19 +738,19 @@ footer .heart{color:#ff2e88}
     <!-- ===== LAYER 7 ===== -->
     <article class="layer-detail" id="L7">
       <div class="lh"><span class="num">L07</span><h3>Observability, Evals &amp; Security</h3></div>
-      <p class="role">The control plane. As agents touch databases, code, and money, output guardrails become insufficient — you need execution traces, eval gates, and threat-aware policy.</p>
+      <p class="role">The control plane. As my agents start touching databases, code, and money, output guardrails won't be enough — I need execution traces, eval gates, and threat-aware policy.</p>
 
       <div class="picks">
         <div class="pick crown">
           <div class="pname">Langfuse (self-hosted)</div>
           <div class="ptag">ATHENA · OBSERVABILITY</div>
-          <div class="pwhy">MIT-licensed; runs on Postgres + ClickHouse (you have Postgres). OTLP ingest. <strong>Acquired by ClickHouse Jan&nbsp;2026</strong>, still OSS. The clear self-host winner over LangSmith for your setup.</div>
+          <div class="pwhy">MIT-licensed; runs on Postgres + ClickHouse (Postgres I already have). OTLP ingest. <strong>Acquired by ClickHouse Jan&nbsp;2026</strong>, still OSS. The clear self-host winner over LangSmith for my setup.</div>
           <div class="pmeta">Helm chart available</div>
         </div>
         <div class="pick">
           <div class="pname">LangSmith</div>
           <div class="ptag">SAAS · DEEPEST LANGGRAPH INTEGRATION</div>
-          <div class="pwhy">Node-by-node state diffs, replay against new model versions. Pay if you stay on LangGraph and want zero ops.</div>
+          <div class="pwhy">Node-by-node state diffs, replay against new model versions. The pay option if I stay on LangGraph and want zero ops.</div>
           <div class="pmeta">$39/seat + $0.50/1k traces</div>
         </div>
         <div class="pick">
@@ -768,32 +785,32 @@ footer .heart{color:#ff2e88}
         </div>
       </div>
 
-      <div class="callout win"><strong>This is the gap.</strong> The #1 production blocker is quality (32%) and the highest-paid agent-engineer JDs all list evals + tracing. Closing this single gap is what converts your hobby agents into a portfolio piece.</div>
+      <div class="callout win"><strong>This is the gap I'm closing first.</strong> Quality is the #1 production blocker industry-wide (32% of teams), and every senior agent-engineer JD lists evals + tracing. Closing this single gap is what converts my hobby agents into a portfolio piece.</div>
     </article>
 
   </div>
 </section>
 
-<!-- ============================ YOUR STACK ============================ -->
+<!-- ============================ MY STACK ============================ -->
 <section class="block" id="yours">
   <div class="container">
     <div class="section-head">
-      <div class="section-eyebrow">// MAPPED TO WHAT YOU ALREADY HAVE</div>
-      <h2 class="section-title">Your Stack,<br/>Already&nbsp;In&nbsp;Place.</h2>
+      <div class="section-eyebrow">// MAPPED TO WHAT I ALREADY RUN</div>
+      <h2 class="section-title">My Stack,<br/>Already&nbsp;In&nbsp;Place.</h2>
       <p class="section-lead">
-        Your existing work isn't <em>preparation</em> for agentic AI — it <em>is</em> agentic AI infrastructure. The framing: <strong>you're accidentally positioned to be an <em>agent platform engineer</em></strong>, the rarer/stickier half of the market.
+        Looking at this from the outside helped me realise something — my existing work isn't <em>preparation</em> for agentic AI, it <em>is</em> agentic AI infrastructure. I'm accidentally positioned to be an <strong>agent platform engineer</strong>, which is the rarer/stickier half of the market. Here's what I'm building on.
       </p>
     </div>
 
     <div class="youstack">
-      <h4>YOUR ASSETS · MAY 2026</h4>
+      <h4>MY ASSETS · MAY 2026</h4>
       <div class="assets">
-        <div class="asset"><div class="ico">◆</div><div><div class="at">life-optimization</div><div class="av">LangGraph.js + Neo4j + Postgres + ChromaDB. A stateful, KG-backed, memory-rich agent in TS — exactly the architecture 89% of prod teams want observability on. Neo4j memory is ahead of the curve.</div></div></div>
-        <div class="asset"><div class="ico">◇</div><div><div class="at">time-boxing MCP server</div><div class="av">MCP is now a Linux Foundation standard with ~9.4K servers. You've shipped one. Real credibility artifact.</div></div></div>
-        <div class="asset"><div class="ico">▲</div><div><div class="at">Athena-HomeLab (K3s)</div><div class="av">This <em>is</em> the "agent control plane" enterprises are buying. Self-hosted inference + Langfuse + sandboxes is a paid problem.</div></div></div>
-        <div class="asset"><div class="ico">▶</div><div><div class="at">konfigura (DSL + Go)</div><div class="av">AI-generated DSLs are a known weak spot (sub-20% baseline accuracy → 85% with compiler-feedback loops). A DSL <em>designed</em> for agent feedback is a publishable niche.</div></div></div>
-        <div class="asset"><div class="ico">◀</div><div><div class="at">Lox / interpreters</div><div class="av">Compiler chops transfer 1:1 to konfigura and to evaluating LLM-generated DSLs. Don't sleep on this.</div></div></div>
-        <div class="asset"><div class="ico">●</div><div><div class="at">Go (learning)</div><div class="av">Every serious agent runtime / sandbox / infra tool ships in Go. ADK Go 1.0 shipped 2026. Finish it.</div></div></div>
+        <div class="asset"><div class="ico">◆</div><div><div class="at">life-optimization</div><div class="av">LangGraph.js + Neo4j + Postgres + ChromaDB. A stateful, KG-backed, memory-rich agent in TS — exactly the architecture 89% of prod teams say they want observability on. My Neo4j memory layer is genuinely ahead of where most teams are.</div></div></div>
+        <div class="asset"><div class="ico">◇</div><div><div class="at">time-boxing MCP server</div><div class="av">MCP is now a Linux Foundation standard with ~9.4K servers. I've already shipped one — a real credibility artifact for the protocol every major lab now ships against.</div></div></div>
+        <div class="asset"><div class="ico">▲</div><div><div class="at">Athena-HomeLab (K3s)</div><div class="av">This <em>is</em> the "agent control plane" enterprises are buying. Self-hosted inference + Langfuse + sandboxes is a paid problem — and I already operate the substrate.</div></div></div>
+        <div class="asset"><div class="ico">▶</div><div><div class="at">konfigura (DSL + Go)</div><div class="av">AI-generated DSLs are a known weak spot — sub-20% baseline accuracy that can be driven to ~85% with compiler-feedback loops. A DSL <em>designed</em> for agent feedback is the niche I'm aiming at.</div></div></div>
+        <div class="asset"><div class="ico">◀</div><div><div class="at">Lox / interpreters</div><div class="av">My compiler chops transfer 1:1 to konfigura and to evaluating LLM-generated DSLs. I'm not sleeping on this.</div></div></div>
+        <div class="asset"><div class="ico">●</div><div><div class="at">Go (learning)</div><div class="av">Every serious agent runtime / sandbox / infra tool ships in Go. ADK Go 1.0 dropped in 2026. I'm finishing the learning arc.</div></div></div>
       </div>
     </div>
   </div>
@@ -803,36 +820,36 @@ footer .heart{color:#ff2e88}
 <section class="block" id="path">
   <div class="container">
     <div class="section-head">
-      <div class="section-eyebrow">// EXECUTION PLAN</div>
-      <h2 class="section-title">The 12-Month Path</h2>
-      <p class="section-lead">Build on what you have. Close the highest-leverage gap first (evals/observability), then layer on multi-agent + HITL, then self-hosted inference, then make konfigura compounding, then ship one vertical.</p>
+      <div class="section-eyebrow">// MY EXECUTION PLAN</div>
+      <h2 class="section-title">My 12-Month Path</h2>
+      <p class="section-lead">Building on what I already have. Closing the highest-leverage gap first (evals + observability), then layering on multi-agent + HITL, then self-hosted inference, then making konfigura compound, and finally shipping one vertical end-to-end.</p>
     </div>
 
     <div class="timeline">
       <div class="tstep">
         <div class="tw">MONTHS&nbsp;1&nbsp;–&nbsp;2 · HIGHEST LEVERAGE</div>
         <div class="tt">Wire Langfuse + a 30-case eval suite into life-optimization</div>
-        <div class="td">Deploy Langfuse self-hosted on Athena (Helm chart, points at your existing Postgres). Add OpenTelemetry instrumentation to the LangGraph.js agent. Build a 30+ trajectory eval suite with DeepEval + LLM-as-judge rubric. <em>This single move turns a hobby agent into a portfolio piece.</em></div>
+        <div class="td">Deploy Langfuse self-hosted on Athena (Helm chart, pointed at my existing Postgres). Add OpenTelemetry instrumentation to the LangGraph.js agent. Build a 30+ trajectory eval suite with DeepEval + an LLM-as-judge rubric. <em>This single move turns my hobby agent into a portfolio piece.</em></div>
       </div>
       <div class="tstep">
         <div class="tw">MONTHS&nbsp;2&nbsp;–&nbsp;4 · MULTI-AGENT + HITL</div>
-        <div class="tt">Refactor to orchestrator-worker with interrupt() gates</div>
-        <div class="td">Split life-optimization into planner → Neo4j-write worker → retrieval worker → evaluator-optimizer pass. Add LangGraph <code>interrupt()</code> approval at every Neo4j write and external tool call. EU AI Act Article&nbsp;14 enforcement starts Aug&nbsp;2,&nbsp;2026.</div>
+        <div class="tt">Refactor life-optimization into orchestrator-worker with interrupt() gates</div>
+        <div class="td">Splitting it into planner → Neo4j-write worker → retrieval worker → evaluator-optimizer pass. Adding LangGraph <code>interrupt()</code> approval at every Neo4j write and external tool call. EU AI Act Article&nbsp;14 enforcement starts Aug&nbsp;2,&nbsp;2026 — HITL isn't optional anymore.</div>
       </div>
       <div class="tstep">
         <div class="tw">MONTHS&nbsp;4&nbsp;–&nbsp;6 · LOCAL INFERENCE</div>
         <div class="tt">vLLM + KubeAI on Athena serving Qwen3 235B-A22B</div>
-        <div class="td">Route via LiteLLM in-cluster: local model for classification / routing, Claude/GPT for hard reasoning. Publish the cost/latency comparison — that writeup alone is a job-market artifact.</div>
+        <div class="td">Routing via LiteLLM in-cluster — local model for classification + routing, Claude/GPT for the hard reasoning. I'm writing up the cost/latency comparison as a public artifact; that writeup alone is something I can put in front of a hiring manager.</div>
       </div>
       <div class="tstep">
         <div class="tw">MONTHS&nbsp;6&nbsp;–&nbsp;9 · DSL COMPOUNDING</div>
-        <div class="tt">Reframe konfigura as compiler-in-the-loop agent</div>
-        <div class="td">"AI-generated DSL + compiler-feedback agent loop" — sub-20% baseline accuracy → 85%. Go for the compiler, TS (Mastra) for the agent loop. Two birds, one project. The publishable angle is the feedback-loop architecture.</div>
+        <div class="tt">Reframing konfigura as a compiler-in-the-loop agent</div>
+        <div class="td">"AI-generated DSL + compiler-feedback agent loop" — taking sub-20% baseline accuracy to ~85%. Go for the compiler, TS (Mastra) for the agent loop. Two birds, one project. The publishable angle is the feedback-loop architecture.</div>
       </div>
       <div class="tstep">
         <div class="tw">MONTHS&nbsp;9&nbsp;–&nbsp;12 · SHIP ONE VERTICAL</div>
-        <div class="tt">One outcome-priced vertical agent, end-to-end</div>
-        <div class="td">Pick one surface (journaling-as-coaching, productivity analytics, infra automation) and ship the whole loop: agent + memory + tools + HITL + evals. <strong>This is the artifact that converts everything else into a job offer or a seed round.</strong> Sequoia/a16z 2026 thesis: vertical + narrow + outcome-priced wins.</div>
+        <div class="tt">Ship one outcome-priced vertical agent, end-to-end</div>
+        <div class="td">Picking one surface — journaling-as-coaching, productivity analytics, or infra automation — and shipping the whole loop: agent + memory + tools + HITL + evals. <strong>This is the artifact that converts everything else into a job offer or a seed round.</strong> Sequoia/a16z's 2026 thesis is vertical + narrow + outcome-priced wins, and I agree with them.</div>
       </div>
     </div>
   </div>
@@ -889,7 +906,7 @@ footer .heart{color:#ff2e88}
           <li><strong>MISSING · Code sandbox category</strong> · E2B / Modal / Daytona — table stakes for tool execution</li>
           <li><strong>MISSING · Browser automation</strong> · Stagehand / Steel / Browserbase — major 2026 category</li>
           <li><strong>MISSING · Evals tooling</strong> · DeepEval / Promptfoo / Braintrust — barely covered</li>
-          <li><strong>MISSING · Self-hosted inference layer</strong> · vLLM / SGLang / KubeAI — critical for your homelab</li>
+          <li><strong>MISSING · Self-hosted inference layer</strong> · vLLM / SGLang / KubeAI — critical for my homelab</li>
           <li><strong>MISSING · Anthropic Agent SDK June&nbsp;15&nbsp;billing change</strong> · 12-175× effective price increase for continuous use — material for builders</li>
         </ul>
       </div>
@@ -902,21 +919,21 @@ footer .heart{color:#ff2e88}
   <div class="container">
     <div class="section-head">
       <div class="section-eyebrow">// NEGATIVE SPACE</div>
-      <h2 class="section-title">What To Skip</h2>
-      <p class="section-lead">Saves months. Every "don't chase" below has a specific reason — either the tech isn't there yet, the market is wrong for your profile, or the work won't compound on what you've built.</p>
+      <h2 class="section-title">What I'm Skipping</h2>
+      <p class="section-lead">This list saves me months. Every item has a specific reason — either the tech isn't there yet, the market is wrong for me, or the work doesn't compound on what I've already built.</p>
     </div>
 
     <div class="skip">
-      <div class="skip-item"><div class="sn">Computer-use / OSWorld agents</div><div class="sw">Still 70–78% accuracy on OSWorld. Research preview dressed as product. Re-evaluate in 12 months.</div></div>
-      <div class="skip-item"><div class="sn">RL fine-tuning</div><div class="sw">57% of prod teams don't fine-tune. Low ROI for a backend-leaning engineer; prompt engineering + tool design + retrieval dominate.</div></div>
-      <div class="skip-item"><div class="sn">CrewAI as a primary skill</div><div class="sw">Useful to read; teams migrate <em>off</em> it at scale due to token bloat and doubt loops. Stay on LangGraph / Mastra.</div></div>
-      <div class="skip-item"><div class="sn">Voice agents (Vapi / Retell)</div><div class="sw">Great category, completely different infra / latency game — does <em>not</em> compound on your TS+KG stack.</div></div>
-      <div class="skip-item"><div class="sn">Microsoft Agent Framework</div><div class="sw">Wrong ecosystem (.NET / Azure) for your profile. Skip unless you take a corp role there.</div></div>
+      <div class="skip-item"><div class="sn">Computer-use / OSWorld agents</div><div class="sw">Still 70–78% accuracy on OSWorld. Research preview dressed as product. I'll re-evaluate in 12 months.</div></div>
+      <div class="skip-item"><div class="sn">RL fine-tuning</div><div class="sw">57% of prod teams don't fine-tune. Low ROI for a backend-leaning engineer like me; prompt engineering + tool design + retrieval dominate the value.</div></div>
+      <div class="skip-item"><div class="sn">CrewAI as a primary skill</div><div class="sw">Useful to read; teams migrate <em>off</em> it at scale due to token bloat and doubt loops. Staying on LangGraph / Mastra.</div></div>
+      <div class="skip-item"><div class="sn">Voice agents (Vapi / Retell)</div><div class="sw">Great category, completely different infra / latency game — doesn't compound on my TS+KG stack.</div></div>
+      <div class="skip-item"><div class="sn">Microsoft Agent Framework</div><div class="sw">Wrong ecosystem (.NET / Azure) for me. Skipping unless I end up in a corp role there.</div></div>
       <div class="skip-item"><div class="sn">Google ADK (production)</div><div class="sw">Wrong ecosystem (Gemini-only). Worth knowing exists; not worth building on.</div></div>
-      <div class="skip-item"><div class="sn">A horizontal chatbot startup</div><div class="sw">"A bet against Anthropic, OpenAI, and Google — you will lose." (a16z 2026 thesis · NEA · Sequoia all align here.)</div></div>
-      <div class="skip-item"><div class="sn">AGNTCY / IBM ACP / agent-passport drafts</div><div class="sw">Real standards work, not actionable today. Watch identity efforts; don't ship against them yet.</div></div>
-      <div class="skip-item"><div class="sn">Always-on workloads on Claude Agent SDK</div><div class="sw">June&nbsp;15&nbsp;2026 billing splits SDK into a separate credit pool — 12–175× effective price increase for continuous subscription use. Fine for occasional automation.</div></div>
-      <div class="skip-item"><div class="sn">Running untrusted code inside Athena</div><div class="sw">Use Modal / E2B / Daytona instead. Your homelab is too valuable to be a sandbox host.</div></div>
+      <div class="skip-item"><div class="sn">A horizontal chatbot startup</div><div class="sw">"A bet against Anthropic, OpenAI, and Google — you will lose." (a16z 2026 thesis · NEA · Sequoia all align here, and I agree.)</div></div>
+      <div class="skip-item"><div class="sn">AGNTCY / IBM ACP / agent-passport drafts</div><div class="sw">Real standards work, not actionable today. I'm watching identity efforts; not shipping against them yet.</div></div>
+      <div class="skip-item"><div class="sn">Always-on workloads on Claude Agent SDK</div><div class="sw">June&nbsp;15&nbsp;2026 billing splits the SDK into a separate credit pool — 12–175× effective price increase for continuous subscription use. Fine for occasional automation, not for what I'm building.</div></div>
+      <div class="skip-item"><div class="sn">Running untrusted code inside Athena</div><div class="sw">Using Modal / E2B / Daytona instead. My homelab is too valuable to be a sandbox host.</div></div>
     </div>
   </div>
 </section>
@@ -927,54 +944,204 @@ footer .heart{color:#ff2e88}
     <div class="section-head">
       <div class="section-eyebrow">// REFERENCE ARCHITECTURE</div>
       <h2 class="section-title">What This Looks<br/>Like On Athena</h2>
-      <p class="section-lead">All TypeScript on top, all self-hostable on K3s, plus cloud LLM APIs where they matter. MCP tunnels keep your internal services private while still reachable by Claude Managed Agents.</p>
+      <p class="section-lead">This is what I'm wiring up on Athena. All TypeScript on top, all self-hostable on my K3s cluster, with cloud LLM APIs reserved for the hard 10% of calls. MCP tunnels keep my internal services private while still reachable by Claude Managed Agents. Pieces tagged <span style="color:#ff2e88;font-weight:600">MINE</span> are already running today; the rest is the build-out.</p>
     </div>
 
-<pre class="ascii">                         ┌────────────────────────────┐
-                         │        USER / CLIENT       │
-                         │  (Web UI · Tablet · Slack)  │
-                         └─────────────┬──────────────┘
-                                       │
-                                       ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                  INGRESS  (Traefik on K3s · *.homelab.local)         │
-└──────────────────────────────────────────────────────────────────────┘
-                                       │
-                                       ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│   ORCHESTRATION LAYER  (Node.js pod)                                 │
-│   • LangGraph.js  (existing — life-optimization, graph + checkpoint) │
-│   • Mastra        (new TS work — workflows, memory, evals)           │
-│   • DBOS workflows on Postgres for cross-system durability           │
-└──────┬─────────────────────────────────┬────────────────┬────────────┘
-       │                                 │                │
-       ▼                                 ▼                ▼
-┌────────────────┐              ┌─────────────────┐   ┌──────────────────┐
-│ MODEL GATEWAY  │              │  TOOL LAYER     │   │  MEMORY LAYER    │
-│  in-cluster    │              │                 │   │                  │
-│  LiteLLM(pin'd)│              │ • Steel.dev     │   │ • Neo4j (KG)     │
-│  → Anthropic   │              │   (browser pod) │   │ • pgvector       │
-│  → OpenAI      │              │ • Modal / E2B   │   │ • Chroma (legacy)│
-│  → Bedrock     │              │   (managed code │   │ • Postgres state │
-│  → LOCAL vLLM  │              │    sandboxes)   │   │ • Letta if needed│
-│   (KubeAI pod) │              │ • MCP servers   │   │ • Mem0 / Zep for │
-│   Qwen3 / etc  │              │   over MCP      │   │   conv. memory   │
-└──────┬─────────┘              │   tunnels       │   └──────┬───────────┘
-       │                        └────────┬────────┘          │
-       └──────────────┬──────────────────┴───────────────────┘
-                      ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│   OBSERVABILITY + EVALS  (in-cluster)                                │
-│   • Langfuse self-hosted  (Postgres + ClickHouse · OTLP)             │
-│   • OTel Collector  (sidecar / DaemonSet)                            │
-│   • DeepEval + Promptfoo in CI  (GitHub Actions · gating)            │
-│   • Grafana + Prometheus  (you have these)                           │
-└──────────────────────────────────────────────────────────────────────┘
+<div class="archdiag">
+<svg viewBox="0 0 1200 950" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="archtitle archdesc">
+  <title id="archtitle">Athena agentic stack reference architecture</title>
+  <desc id="archdesc">User flows through Traefik ingress into a Node.js orchestration layer running LangGraph.js, Mastra, and DBOS. Orchestration branches into Model Gateway, Tool Layer, and Memory Layer, then converges into in-cluster Observability and Evals.</desc>
+  <defs>
+    <filter id="cyglow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="mgglow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#00f5d4"/>
+    </marker>
+    <marker id="arrmg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#ff2e88"/>
+    </marker>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40,0 L0,0 L0,40" stroke="#1f2937" stroke-width="0.4" fill="none" opacity="0.4"/>
+    </pattern>
+  </defs>
 
-External integrations:
-• Anthropic Claude Managed Agents ──► reach in via MCP tunnels
-• Browserbase / Stagehand Cloud ────► when in-cluster Steel can't keep up
-</pre>
+  <style>
+    .box{fill:#0d1119;stroke:#00f5d4;stroke-width:1.4;rx:10}
+    .box-mg{stroke:#ff2e88}
+    .corner{stroke:#00f5d4;stroke-width:1.6;fill:none}
+    .corner-mg{stroke:#ff2e88}
+    .tag{fill:#00f5d4;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;font-weight:700;letter-spacing:.15em}
+    .tag-mg{fill:#ff2e88}
+    .title{fill:#e7eaf0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14px;font-weight:700;letter-spacing:.03em}
+    .row{fill:#b8c0cf;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px}
+    .sub{fill:#8b95a7;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px}
+    .pipe{stroke:#00f5d4;stroke-width:1.5;fill:none;opacity:.75}
+    .pipe-fade{opacity:.45}
+    .mine-pill{fill:#ff2e88}
+    .mine-txt{fill:#0a0d14;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:9px;font-weight:800;letter-spacing:.12em}
+  </style>
+
+  <rect width="1200" height="950" fill="url(#grid)"/>
+
+  <!-- ============ USER ============ -->
+  <g>
+    <rect class="box" x="480" y="30" width="240" height="56" rx="10"/>
+    <text class="tag" x="600" y="50" text-anchor="middle">USER · ENTRY</text>
+    <text class="title" x="600" y="72" text-anchor="middle">Web · Tablet · Slack</text>
+  </g>
+
+  <!-- USER → INGRESS -->
+  <line class="pipe" x1="600" y1="86" x2="600" y2="125" marker-end="url(#arr)"/>
+
+  <!-- ============ INGRESS ============ -->
+  <g>
+    <rect class="box" x="340" y="130" width="520" height="58" rx="10"/>
+    <text class="tag" x="600" y="150" text-anchor="middle">INGRESS · TRAEFIK ON K3S</text>
+    <text class="title" x="600" y="172" text-anchor="middle">*.homelab.local</text>
+  </g>
+
+  <!-- INGRESS → ORCH -->
+  <line class="pipe" x1="600" y1="188" x2="600" y2="228" marker-end="url(#arr)"/>
+
+  <!-- ============ ORCHESTRATION ============ -->
+  <g>
+    <rect class="box" x="80" y="232" width="1040" height="140" rx="12"/>
+    <text class="tag" x="100" y="256">04 · ORCHESTRATION LAYER  ·  NODE.JS POD</text>
+
+    <text class="row" x="100" y="288">▸ LangGraph.js</text>
+    <text class="sub" x="280" y="288">existing — life-optimization · graph + checkpoint</text>
+    <rect class="mine-pill" x="708" y="278" width="44" height="14" rx="3"/>
+    <text class="mine-txt" x="730" y="288" text-anchor="middle">MINE</text>
+
+    <text class="row" x="100" y="314">▸ Mastra</text>
+    <text class="sub" x="280" y="314">new TS work — workflows, memory, evals</text>
+
+    <text class="row" x="100" y="340">▸ DBOS workflows</text>
+    <text class="sub" x="280" y="340">on Postgres for cross-system durability</text>
+  </g>
+
+  <!-- ORCH → split into 3 -->
+  <path class="pipe pipe-fade" d="M 600 372 L 600 398 L 240 398 L 240 432" fill="none"/>
+  <path class="pipe pipe-fade" d="M 600 372 L 600 432" fill="none"/>
+  <path class="pipe pipe-fade" d="M 600 372 L 600 398 L 960 398 L 960 432" fill="none"/>
+  <circle cx="240" cy="430" r="2.5" fill="#00f5d4"/>
+  <circle cx="600" cy="430" r="2.5" fill="#00f5d4"/>
+  <circle cx="960" cy="430" r="2.5" fill="#00f5d4"/>
+
+  <!-- ============ MODEL GATEWAY ============ -->
+  <g>
+    <rect class="box" x="80" y="436" width="320" height="260" rx="12"/>
+    <text class="tag" x="100" y="460">05a · MODEL GATEWAY</text>
+    <text class="title" x="100" y="484">LiteLLM (pinned)</text>
+    <text class="sub" x="100" y="502">in-cluster Service · routing tier</text>
+    <line x1="100" y1="516" x2="380" y2="516" stroke="#1f2937" stroke-width="1"/>
+
+    <text class="row" x="110" y="540">→ Anthropic API</text>
+    <text class="row" x="110" y="562">→ OpenAI API</text>
+    <text class="row" x="110" y="584">→ Bedrock</text>
+    <text class="row" x="110" y="612">→ LOCAL vLLM</text>
+    <text class="sub" x="124" y="630">KubeAI · Qwen3 / Llama 4</text>
+    <text class="sub" x="124" y="648">classification + drafts</text>
+    <rect class="mine-pill" x="320" y="602" width="60" height="14" rx="3" fill="#ffd166"/>
+    <text class="mine-txt" x="350" y="612" text-anchor="middle">PLANNED</text>
+  </g>
+
+  <!-- ============ TOOL LAYER ============ -->
+  <g>
+    <rect class="box" x="440" y="436" width="320" height="260" rx="12"/>
+    <text class="tag" x="460" y="460">05b · TOOL LAYER</text>
+    <text class="title" x="460" y="484">Sandboxes + Browser + MCP</text>
+    <line x1="460" y1="500" x2="740" y2="500" stroke="#1f2937" stroke-width="1"/>
+
+    <text class="row" x="470" y="524">• Steel.dev</text>
+    <text class="sub" x="484" y="542">browser-automation pod</text>
+
+    <text class="row" x="470" y="568">• Modal / E2B</text>
+    <text class="sub" x="484" y="586">managed code sandboxes</text>
+
+    <text class="row" x="470" y="612">• MCP servers</text>
+    <text class="sub" x="484" y="630">over MCP tunnels</text>
+    <rect class="mine-pill" x="680" y="602" width="44" height="14" rx="3"/>
+    <text class="mine-txt" x="702" y="612" text-anchor="middle">MINE</text>
+    <text class="sub" x="484" y="648">(time-boxing server already shipped)</text>
+  </g>
+
+  <!-- ============ MEMORY LAYER ============ -->
+  <g>
+    <rect class="box box-mg" x="800" y="436" width="320" height="260" rx="12"/>
+    <text class="tag tag-mg" x="820" y="460">05c · MEMORY LAYER</text>
+    <text class="title" x="820" y="484">GraphRAG + Vector + State</text>
+    <line x1="820" y1="500" x2="1100" y2="500" stroke="#1f2937" stroke-width="1"/>
+
+    <text class="row" x="830" y="522">• Neo4j  <tspan class="sub">(KG)</tspan></text>
+    <rect class="mine-pill" x="1040" y="512" width="44" height="14" rx="3"/>
+    <text class="mine-txt" x="1062" y="522" text-anchor="middle">MINE</text>
+
+    <text class="row" x="830" y="546">• pgvector</text>
+    <rect class="mine-pill" x="1040" y="536" width="44" height="14" rx="3"/>
+    <text class="mine-txt" x="1062" y="546" text-anchor="middle">MINE</text>
+
+    <text class="row" x="830" y="570">• Chroma  <tspan class="sub">(legacy)</tspan></text>
+    <rect class="mine-pill" x="1040" y="560" width="44" height="14" rx="3"/>
+    <text class="mine-txt" x="1062" y="570" text-anchor="middle">MINE</text>
+
+    <text class="row" x="830" y="594">• Postgres state</text>
+    <rect class="mine-pill" x="1040" y="584" width="44" height="14" rx="3"/>
+    <text class="mine-txt" x="1062" y="594" text-anchor="middle">MINE</text>
+
+    <text class="row" x="830" y="624">• Letta</text>
+    <text class="sub" x="880" y="624">if an agent runs for days</text>
+
+    <text class="row" x="830" y="652">• Mem0 / Zep</text>
+    <text class="sub" x="930" y="652">conversation memory</text>
+  </g>
+
+  <!-- merge 3 → OBS -->
+  <path class="pipe pipe-fade" d="M 240 696 L 240 720 L 600 720 L 600 745" fill="none"/>
+  <path class="pipe pipe-fade" d="M 600 696 L 600 720" fill="none"/>
+  <path class="pipe pipe-fade" d="M 960 696 L 960 720 L 600 720" fill="none"/>
+  <line class="pipe" x1="600" y1="720" x2="600" y2="755" marker-end="url(#arr)"/>
+
+  <!-- ============ OBSERVABILITY ============ -->
+  <g>
+    <rect class="box" x="80" y="760" width="1040" height="150" rx="12"/>
+    <text class="tag" x="100" y="784">07 · OBSERVABILITY + EVALS  ·  IN-CLUSTER</text>
+
+    <text class="row" x="100" y="816">▸ Langfuse</text>
+    <text class="sub" x="270" y="816">self-hosted · Postgres + ClickHouse · OTLP ingest</text>
+
+    <text class="row" x="100" y="842">▸ OTel Collector</text>
+    <text class="sub" x="270" y="842">sidecar / DaemonSet — traces every node</text>
+
+    <text class="row" x="100" y="868">▸ DeepEval + Promptfoo</text>
+    <text class="sub" x="270" y="868">in CI · regression gates · LLM-as-judge rubric</text>
+
+    <text class="row" x="100" y="894">▸ Grafana + Prometheus</text>
+    <text class="sub" x="270" y="894">infra metrics</text>
+    <rect class="mine-pill" x="476" y="884" width="44" height="14" rx="3"/>
+    <text class="mine-txt" x="498" y="894" text-anchor="middle">MINE</text>
+  </g>
+
+  <!-- ============ EXTERNAL ============ -->
+  <g transform="translate(80, 920)">
+    <text class="tag" x="0" y="0">EXTERNAL · REACH-IN</text>
+    <text class="sub" x="160" y="0">Anthropic Claude Managed Agents  →  via MCP tunnels  ·  Browserbase / Stagehand Cloud  →  when in-cluster Steel can't keep up</text>
+  </g>
+</svg>
+
+<div class="archdiag-legend">
+  <span><i class="swatch sw-cy"></i>cyan = data flow / cyan border = standard layer</span>
+  <span><i class="swatch sw-mg"></i>magenta = already running on Athena today</span>
+  <span><i class="swatch sw-yl"></i>amber = planned next</span>
+</div>
+</div>
+
   </div>
 </section>
 
@@ -1050,8 +1217,8 @@ External integrations:
 
 <footer>
   <div class="container">
-    <div>Compiled 2026-05-23 · for <span style="color:#00f5d4">bhargav@athena</span></div>
-    <div style="margin-top:8px;color:#5a6477">Hosted on K3s · Traefik · agentic.homelab.local · <span class="heart">◆</span></div>
+    <div>Written 2026-05-23 by <span style="color:#00f5d4">bhargav@athena</span> — for myself, mostly.</div>
+    <div style="margin-top:8px;color:#5a6477">A snapshot of where I'm placing my bets · <span class="heart">◆</span></div>
   </div>
 </footer>
 
