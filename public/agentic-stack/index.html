@@ -1,0 +1,1076 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#06070d" />
+<title>AGENTIC STACK 2026 // Bhargav's Field Guide</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>◆</text></svg>" />
+<style>
+/* ============================ RESET / BASE ============================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:90px}
+body{
+  font-family:'Inter','SF Pro Text',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  background:#06070d;color:#e7eaf0;line-height:1.6;font-size:17px;
+  min-height:100vh;overflow-x:hidden;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%,rgba(0,245,212,.08),transparent),
+    radial-gradient(ellipse 60% 50% at 90% 10%,rgba(255,46,136,.06),transparent),
+    linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+  background-size:auto,auto,42px 42px,42px 42px;
+  background-attachment:fixed;
+}
+img,svg{display:block;max-width:100%}
+a{color:#00f5d4;text-decoration:none;border-bottom:1px solid rgba(0,245,212,.3);transition:border-color .15s,color .15s}
+a:hover{color:#fff;border-color:#fff}
+code,kbd{font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:.92em;background:#161a25;padding:1px 6px;border-radius:4px;color:#ffd166;border:1px solid #1f2937}
+::selection{background:#00f5d4;color:#06070d}
+:focus-visible{outline:2px solid #00f5d4;outline-offset:3px;border-radius:4px}
+
+/* ============================ LAYOUT ============================ */
+.container{max-width:1180px;margin:0 auto;padding:0 24px}
+@media(min-width:768px){.container{padding:0 40px}}
+
+/* ============================ TOP NAV ============================ */
+header.topnav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(6,7,13,.78);
+  backdrop-filter:blur(14px) saturate(140%);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);
+  border-bottom:1px solid #1f2937;
+}
+.topnav .row{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:14px}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:#00f5d4;box-shadow:0 0 12px #00f5d4;animation:pulse 2.4s ease-in-out infinite}
+.back-link{
+  display:inline-flex;align-items:center;gap:6px;
+  color:#8b95a7;border:none;font-family:'JetBrains Mono',monospace;
+  font-size:12px;letter-spacing:.05em;text-transform:uppercase;
+  padding:6px 10px;border-radius:6px;transition:color .15s,background .15s;
+}
+.back-link:hover{color:#00f5d4;background:#161a25}
+.back-link .arr{font-size:14px;line-height:1}
+.brand-wrap{display:flex;align-items:center;gap:14px}
+.brand-wrap .sep{color:#1f2937;font-family:'JetBrains Mono',monospace}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.86)}}
+.brand .accent{color:#ff2e88}
+.topnav nav{display:none;gap:4px}
+.topnav nav a{
+  color:#8b95a7;border:none;font-size:13px;font-family:'JetBrains Mono',monospace;
+  text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-radius:6px;
+}
+.topnav nav a:hover{color:#e7eaf0;background:#161a25}
+@media(min-width:980px){.topnav nav{display:flex}}
+
+/* mobile menu button */
+.menu-btn{
+  background:#161a25;border:1px solid #1f2937;color:#e7eaf0;
+  padding:9px 14px;border-radius:8px;font-family:'JetBrains Mono',monospace;
+  font-size:13px;cursor:pointer;
+}
+@media(min-width:980px){.menu-btn{display:none}}
+
+/* mobile drawer */
+.drawer{
+  position:fixed;inset:64px 0 auto 0;background:#0d1119;border-bottom:1px solid #1f2937;
+  padding:8px 16px 16px;display:none;z-index:99;
+}
+.drawer.open{display:block}
+.drawer a{
+  display:block;color:#e7eaf0;border:none;padding:14px 12px;font-family:'JetBrains Mono',monospace;
+  font-size:14px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #1f2937;
+}
+.drawer a:last-child{border-bottom:none}
+.drawer a:hover{color:#00f5d4}
+
+/* ============================ HERO ============================ */
+section.hero{padding:48px 0 32px;position:relative}
+@media(min-width:768px){section.hero{padding:80px 0 48px}}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+  color:#00f5d4;background:rgba(0,245,212,.08);border:1px solid rgba(0,245,212,.3);
+  padding:6px 12px;border-radius:999px;margin-bottom:24px;
+}
+.eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:#00f5d4;box-shadow:0 0 8px #00f5d4}
+h1.title{
+  font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:-.02em;
+  font-size:clamp(36px,7vw,72px);line-height:1.05;text-transform:uppercase;
+  margin-bottom:20px;
+}
+h1.title .glow{
+  background:linear-gradient(120deg,#00f5d4 0%,#7af5ff 35%,#ff2e88 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 30px rgba(0,245,212,.25));
+}
+.subtitle{font-size:clamp(17px,2.2vw,22px);color:#8b95a7;max-width:760px;margin-bottom:36px;line-height:1.55}
+.subtitle strong{color:#e7eaf0;font-weight:500}
+
+.tldr{
+  display:grid;grid-template-columns:1fr;gap:14px;margin-top:32px;
+}
+@media(min-width:640px){.tldr{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:980px){.tldr{grid-template-columns:repeat(4,1fr)}}
+.tldr .card{
+  position:relative;padding:18px 18px 20px;background:#0d1119;border:1px solid #1f2937;
+  border-radius:14px;overflow:hidden;
+}
+.tldr .card::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:2px;
+  background:linear-gradient(90deg,#00f5d4,#ff2e88);
+}
+.tldr .num{font-family:'JetBrains Mono',monospace;font-size:11px;color:#8b95a7;letter-spacing:.15em}
+.tldr .punch{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:#e7eaf0;margin-top:6px;line-height:1.35}
+.tldr .ctx{font-size:13.5px;color:#8b95a7;margin-top:8px;line-height:1.5}
+
+/* ============================ SECTION ============================ */
+section.block{padding:64px 0;border-top:1px solid #1f2937;position:relative}
+@media(min-width:768px){section.block{padding:96px 0}}
+.section-head{margin-bottom:36px}
+.section-eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.18em;
+  text-transform:uppercase;color:#ff2e88;margin-bottom:12px;
+}
+.section-title{
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:clamp(26px,4vw,40px);
+  letter-spacing:-.01em;text-transform:uppercase;line-height:1.15;margin-bottom:14px;
+}
+.section-lead{font-size:18px;color:#8b95a7;max-width:760px;line-height:1.6}
+
+/* ============================ LAYER GRID ============================ */
+.layers{
+  display:grid;grid-template-columns:1fr;gap:14px;
+}
+@media(min-width:640px){.layers{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1100px){.layers{grid-template-columns:repeat(4,1fr)}}
+.layer-card{
+  display:flex;flex-direction:column;gap:6px;
+  padding:20px;background:#0d1119;border:1px solid #1f2937;border-radius:14px;
+  cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;
+  min-height:120px;text-align:left;color:inherit;
+  font-family:inherit;font-size:inherit;
+}
+.layer-card:hover{transform:translateY(-2px);border-color:#00f5d4;box-shadow:0 8px 30px -8px rgba(0,245,212,.25)}
+.layer-card .lnum{font-family:'JetBrains Mono',monospace;font-size:12px;color:#00f5d4;letter-spacing:.12em}
+.layer-card .lname{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.01em}
+.layer-card .ldesc{font-size:13.5px;color:#8b95a7;line-height:1.5}
+.layer-card .lmoat{
+  margin-top:auto;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;padding-top:10px;
+}
+.moat-low{color:#8b95a7}
+.moat-med{color:#ffd166}
+.moat-high{color:#06d6a0}
+
+/* ============================ LAYER DETAILS ============================ */
+.layer-detail{padding:48px 0;border-top:1px dashed #1f2937}
+.layer-detail:first-of-type{padding-top:0;border-top:none}
+.layer-detail .lh{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.layer-detail .lh .num{
+  font-family:'JetBrains Mono',monospace;font-size:14px;color:#ff2e88;letter-spacing:.15em;
+  padding:4px 10px;border:1px solid rgba(255,46,136,.4);border-radius:6px;background:rgba(255,46,136,.06);
+}
+.layer-detail .lh h3{
+  font-family:'JetBrains Mono',monospace;font-size:clamp(22px,3vw,30px);
+  text-transform:uppercase;letter-spacing:-.005em;font-weight:700;
+}
+.layer-detail .role{color:#8b95a7;margin-bottom:24px;font-size:16px}
+
+.picks{
+  display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:24px;
+}
+@media(min-width:760px){.picks{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1100px){.picks{grid-template-columns:repeat(3,1fr)}}
+.pick{
+  padding:18px;background:#0d1119;border:1px solid #1f2937;border-radius:12px;
+  display:flex;flex-direction:column;gap:8px;position:relative;
+}
+.pick.crown{border-color:rgba(0,245,212,.5);background:linear-gradient(180deg,rgba(0,245,212,.04),#0d1119 60%)}
+.pick.crown::after{
+  content:"YOUR STACK";position:absolute;top:-10px;right:14px;
+  background:#00f5d4;color:#06070d;font-family:'JetBrains Mono',monospace;
+  font-size:10px;font-weight:700;letter-spacing:.15em;padding:3px 8px;border-radius:4px;
+}
+.pick .pname{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:#e7eaf0}
+.pick .ptag{font-size:13px;color:#00f5d4;font-family:'JetBrains Mono',monospace;letter-spacing:.04em}
+.pick.crown .ptag{color:#7af5ff}
+.pick .pwhy{font-size:14px;color:#b8c0cf;line-height:1.55}
+.pick .pmeta{font-size:12px;color:#8b95a7;font-family:'JetBrains Mono',monospace;margin-top:auto;padding-top:6px}
+
+.callout{
+  border-left:3px solid #ffd166;background:rgba(255,209,102,.05);
+  padding:14px 18px;border-radius:0 10px 10px 0;font-size:14.5px;color:#e7eaf0;margin-bottom:16px;
+}
+.callout.warn{border-color:#ef476f;background:rgba(239,71,111,.06)}
+.callout.win{border-color:#06d6a0;background:rgba(6,214,160,.05)}
+.callout strong{color:#ffd166}
+.callout.warn strong{color:#ef476f}
+.callout.win strong{color:#06d6a0}
+
+/* ============================ YOUR PATH / TIMELINE ============================ */
+.youstack{
+  background:linear-gradient(160deg,rgba(0,245,212,.06),rgba(255,46,136,.04));
+  border:1px solid rgba(0,245,212,.25);border-radius:18px;padding:28px;margin-bottom:32px;
+}
+.youstack h4{
+  font-family:'JetBrains Mono',monospace;font-size:18px;text-transform:uppercase;
+  letter-spacing:.04em;margin-bottom:14px;
+}
+.assets{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:720px){.assets{grid-template-columns:repeat(2,1fr)}}
+.asset{display:flex;gap:12px;padding:12px;background:rgba(6,7,13,.45);border:1px solid #1f2937;border-radius:10px}
+.asset .ico{
+  width:36px;height:36px;border-radius:8px;background:#161a25;border:1px solid #1f2937;
+  display:flex;align-items:center;justify-content:center;color:#00f5d4;flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:14px;
+}
+.asset .at{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:#e7eaf0}
+.asset .av{font-size:13px;color:#8b95a7;line-height:1.5;margin-top:2px}
+
+.timeline{position:relative;padding-left:28px;margin-top:8px}
+.timeline::before{
+  content:"";position:absolute;left:8px;top:8px;bottom:8px;width:2px;
+  background:linear-gradient(180deg,#00f5d4,#ff2e88);border-radius:2px;
+}
+.tstep{position:relative;padding:14px 0 22px}
+.tstep::before{
+  content:"";position:absolute;left:-26px;top:18px;width:14px;height:14px;border-radius:50%;
+  background:#06070d;border:2px solid #00f5d4;box-shadow:0 0 12px rgba(0,245,212,.5);
+}
+.tstep .tw{font-family:'JetBrains Mono',monospace;font-size:12px;color:#ff2e88;letter-spacing:.12em;text-transform:uppercase}
+.tstep .tt{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;margin-top:4px;color:#e7eaf0}
+.tstep .td{font-size:14.5px;color:#b8c0cf;margin-top:6px;line-height:1.55}
+
+/* ============================ VALIDATION GRID ============================ */
+.validation{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:880px){.validation{grid-template-columns:repeat(3,1fr)}}
+.vcol{padding:18px;background:#0d1119;border:1px solid #1f2937;border-radius:12px}
+.vcol h5{
+  font-family:'JetBrains Mono',monospace;font-size:13px;text-transform:uppercase;
+  letter-spacing:.1em;margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+.vcol.solid h5{color:#06d6a0}
+.vcol.iffy h5{color:#ffd166}
+.vcol.skep h5{color:#ef476f}
+.vcol h5 span{
+  width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:50%;font-size:13px;
+}
+.vcol.solid h5 span{background:rgba(6,214,160,.15);border:1px solid rgba(6,214,160,.4)}
+.vcol.iffy h5 span{background:rgba(255,209,102,.15);border:1px solid rgba(255,209,102,.4)}
+.vcol.skep h5 span{background:rgba(239,71,111,.15);border:1px solid rgba(239,71,111,.4)}
+.vcol ul{list-style:none}
+.vcol li{padding:8px 0;border-top:1px dashed #1f2937;font-size:14px;color:#b8c0cf;line-height:1.5}
+.vcol li:first-child{border-top:none}
+.vcol li strong{color:#e7eaf0;font-family:'JetBrains Mono',monospace;font-size:13px}
+
+/* ============================ SKIP LIST ============================ */
+.skip{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:720px){.skip{grid-template-columns:repeat(2,1fr)}}
+.skip-item{
+  padding:14px 16px;background:#0d1119;border:1px solid #1f2937;border-left:3px solid #ef476f;
+  border-radius:0 10px 10px 0;display:flex;flex-direction:column;gap:4px;
+}
+.skip-item .sn{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:#e7eaf0}
+.skip-item .sw{font-size:13.5px;color:#8b95a7;line-height:1.5}
+
+/* ============================ ARCH ASCII ============================ */
+pre.ascii{
+  background:#0d1119;border:1px solid #1f2937;border-radius:12px;padding:18px;
+  color:#b8c0cf;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.5;
+  overflow-x:auto;white-space:pre;
+}
+
+/* ============================ FOOTER ============================ */
+footer{
+  border-top:1px solid #1f2937;padding:36px 0 48px;color:#8b95a7;font-size:13.5px;
+  text-align:center;font-family:'JetBrains Mono',monospace;
+}
+footer .heart{color:#ff2e88}
+
+/* ============================ FLOATING ACTION ============================ */
+.fab{
+  position:fixed;bottom:20px;right:20px;z-index:90;
+  background:#00f5d4;color:#06070d;border:none;
+  padding:14px 16px;border-radius:999px;font-family:'JetBrains Mono',monospace;
+  font-size:12px;font-weight:700;letter-spacing:.1em;cursor:pointer;
+  box-shadow:0 10px 30px -10px rgba(0,245,212,.7);
+  text-transform:uppercase;display:flex;align-items:center;gap:8px;
+}
+.fab:hover{background:#7af5ff}
+.fab .arrow{transition:transform .2s}
+.fab:hover .arrow{transform:translateY(-2px)}
+@media(max-width:560px){.fab{padding:12px 14px;font-size:11px}}
+
+/* ============================ TINY UTIL ============================ */
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;padding:4px 10px;border-radius:999px;
+  background:#161a25;border:1px solid #1f2937;color:#8b95a7;
+}
+.chip.cy{color:#00f5d4;border-color:rgba(0,245,212,.3);background:rgba(0,245,212,.06)}
+.chip.mg{color:#ff2e88;border-color:rgba(255,46,136,.3);background:rgba(255,46,136,.06)}
+.chip.yl{color:#ffd166;border-color:rgba(255,209,102,.3);background:rgba(255,209,102,.06)}
+.chip.gn{color:#06d6a0;border-color:rgba(6,214,160,.3);background:rgba(6,214,160,.06)}
+
+/* ============================ MOTION ============================ */
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<header class="topnav">
+  <div class="container row" style="height:64px;gap:16px;align-items:center">
+    <div class="brand-wrap">
+      <a class="back-link" href="/" title="Back to Agent Quest roadmap"><span class="arr">←</span> Roadmap</a>
+      <span class="sep">/</span>
+      <div class="brand"><span class="dot"></span>AGENTIC<span class="accent">/</span>2026</div>
+    </div>
+    <nav>
+      <a href="#tldr">TL;DR</a>
+      <a href="#layers">7 Layers</a>
+      <a href="#yours">Your Stack</a>
+      <a href="#path">12-mo Path</a>
+      <a href="#validation">Validation</a>
+      <a href="#skip">Skip List</a>
+      <a href="#sources">Sources</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu">MENU</button>
+  </div>
+  <div class="drawer" id="drawer">
+    <a href="#tldr">TL;DR</a>
+    <a href="#layers">7 Layers</a>
+    <a href="#yours">Your Stack</a>
+    <a href="#path">12-Month Path</a>
+    <a href="#validation">Validation</a>
+    <a href="#skip">Skip List</a>
+    <a href="#sources">Sources</a>
+  </div>
+</header>
+
+<!-- ============================ HERO ============================ -->
+<section class="hero">
+  <div class="container">
+    <div class="eyebrow">FIELD GUIDE · MAY 2026 · BHARGAV.M</div>
+    <h1 class="title">THE AGENTIC<br/><span class="glow">STACK&nbsp;2026</span></h1>
+    <p class="subtitle">
+      A merged, validated, opinionated reading of the agentic-AI ecosystem — cross-checked
+      across <strong>four parallel research agents</strong> and Google&nbsp;Gemini's seven-layer
+      framing. Built around <strong>what you already have</strong>: LangGraph.js, Neo4j, MCP, K3s.
+    </p>
+
+    <div class="tldr" id="tldr">
+      <div class="card">
+        <div class="num">01 / PROTOCOL WAR</div>
+        <div class="punch">MCP&nbsp;won.</div>
+        <div class="ctx">~9.4K servers in the wild. Anthropic donated it to the Linux Foundation's new Agentic AI Foundation in Dec&nbsp;2025 alongside OpenAI, Google, AWS &amp; Microsoft.</div>
+      </div>
+      <div class="card">
+        <div class="num">02 / TS ORCHESTRATION</div>
+        <div class="punch">Mastra&nbsp;&gt;&nbsp;LangGraph.js for new work.</div>
+        <div class="ctx">22K stars in 15&nbsp;months, 300K weekly npm downloads, Replit&nbsp;/&nbsp;SoftBank&nbsp;/&nbsp;PayPal in prod. Keep LangGraph.js for your existing graph-heavy work.</div>
+      </div>
+      <div class="card">
+        <div class="num">03 / YOUR EDGE</div>
+        <div class="punch">Neo4j memory is ahead of the curve.</div>
+        <div class="ctx">GraphRAG (vector + Cypher traversal) shows +26% comprehensiveness vs flat vector. Most teams haven't graduated yet — you already did.</div>
+      </div>
+      <div class="card">
+        <div class="num">04 / THE GAP TO CLOSE</div>
+        <div class="punch">Evals&nbsp;+&nbsp;HITL,&nbsp;not&nbsp;more&nbsp;frameworks.</div>
+        <div class="ctx">Quality is the #1 production blocker (32% of teams). EU AI Act Article&nbsp;14 enforceable Aug&nbsp;2,&nbsp;2026 — HITL is no longer optional.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ THE 7 LAYERS OVERVIEW ============================ -->
+<section class="block" id="layers">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">// THE 7-LAYER MODEL</div>
+      <h2 class="section-title">Anatomy of an<br/>Agentic System</h2>
+      <p class="section-lead">
+        Gemini's seven-layer decomposition holds up under scrutiny — it's the best framing in circulation. Strategic moat (where lasting value accrues) is colour-coded: <span class="chip gn">HIGH</span> <span class="chip yl">MEDIUM</span> <span class="chip">LOW</span>
+      </p>
+    </div>
+
+    <div class="layers">
+      <a href="#L1" class="layer-card"><span class="lnum">LAYER&nbsp;01</span><span class="lname">Foundation Models</span><span class="ldesc">Frontier LLMs, routing economics, on-prem inference.</span><span class="lmoat moat-low">▼ MOAT: LOW</span></a>
+      <a href="#L2" class="layer-card"><span class="lnum">LAYER&nbsp;02</span><span class="lname">Memory &amp; Cognition</span><span class="ldesc">Persistent state, episodic memory, KG retrieval.</span><span class="lmoat moat-med">◆ MOAT: MEDIUM</span></a>
+      <a href="#L3" class="layer-card"><span class="lnum">LAYER&nbsp;03</span><span class="lname">Protocols</span><span class="ldesc">MCP (tool), A2A (agent-to-agent), OAuth identity.</span><span class="lmoat moat-low">▼ MOAT: LOW</span></a>
+      <a href="#L4" class="layer-card"><span class="lnum">LAYER&nbsp;04</span><span class="lname">Orchestration</span><span class="ldesc">LangGraph, Mastra, Agno, CrewAI, vendor SDKs.</span><span class="lmoat moat-med">◆ MOAT: MEDIUM</span></a>
+      <a href="#L5" class="layer-card"><span class="lnum">LAYER&nbsp;05</span><span class="lname">Tools, RAG &amp; Sandboxes</span><span class="ldesc">Hybrid + Graph + Agentic RAG, browser, code sandboxes.</span><span class="lmoat moat-high">▲ MOAT: HIGH</span></a>
+      <a href="#L6" class="layer-card"><span class="lnum">LAYER&nbsp;06</span><span class="lname">App / Agent UI</span><span class="ldesc">AG-UI, CopilotKit, generative widgets, chat surfaces.</span><span class="lmoat moat-low">▼ MOAT: LOW</span></a>
+      <a href="#L7" class="layer-card"><span class="lnum">LAYER&nbsp;07</span><span class="lname">Observability &amp; Security</span><span class="ldesc">Langfuse, evals, OWASP agentic threats, HITL.</span><span class="lmoat moat-high">▲ MOAT: HIGH</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ LAYER DETAILS ============================ -->
+<section class="block">
+  <div class="container">
+
+    <!-- ===== LAYER 1 ===== -->
+    <article class="layer-detail" id="L1">
+      <div class="lh"><span class="num">L01</span><h3>Foundation Models</h3></div>
+      <p class="role">The processors. In May&nbsp;2026 the "best model" question has fractured into <em>routing tiers</em> — cheap models do 90% of internal steps, flagship models reserved for hard synthesis.</p>
+
+      <div class="picks">
+        <div class="pick">
+          <div class="pname">Claude&nbsp;Opus&nbsp;4.7</div>
+          <div class="ptag">CODING / SYNTHESIS</div>
+          <div class="pwhy">Leads SWE-bench&nbsp;Pro at&nbsp;~64%. The default for multi-file coding agents.</div>
+          <div class="pmeta">~$5 / $25 per 1M tok · 1M context</div>
+        </div>
+        <div class="pick">
+          <div class="pname">GPT-5.5</div>
+          <div class="ptag">TERMINAL / TOOLS</div>
+          <div class="pwhy">Terminal-Bench&nbsp;2.0 ~82.7%; SWE-bench Verified ~88.7%. Strongest tool-use behaviour.</div>
+          <div class="pmeta">~$1.25 / $10 per 1M tok</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Gemini&nbsp;3.1&nbsp;Pro</div>
+          <div class="ptag">PURE REASONING</div>
+          <div class="pwhy">GPQA&nbsp;Diamond ~94.3%. Use selectively inside planner / evaluator nodes.</div>
+          <div class="pmeta">Reasoning is slow / pricey — use sparingly</div>
+        </div>
+        <div class="pick crown">
+          <div class="pname">Gemini&nbsp;3.5&nbsp;Flash</div>
+          <div class="ptag">ROUTING WORKHORSE</div>
+          <div class="pwhy">Top MCP&nbsp;Atlas score (83.6%), ~289&nbsp;tok/s. Drive 90% of internal steps here, escalate to Opus / GPT-5.5 for the hard 10%.</div>
+          <div class="pmeta">~$0.50 / $3 per 1M tok</div>
+        </div>
+        <div class="pick crown">
+          <div class="pname">Qwen3-235B-A22B (local)</div>
+          <div class="ptag">SELF-HOSTED · ATHENA</div>
+          <div class="pwhy">MoE; usable for classification, drafting, &amp; routing-tier work on your K3s cluster. Serve via vLLM through KubeAI operator.</div>
+          <div class="pmeta">Cheap. Private. Yours.</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Llama&nbsp;4 / DeepSeek&nbsp;V4 / GLM-5.1</div>
+          <div class="ptag">OPEN-WEIGHT BENCH</div>
+          <div class="pwhy">Credible self-hosted alternatives. ~40% of enterprise workloads now include some local inference.</div>
+          <div class="pmeta">Pick one, stop tab-hopping</div>
+        </div>
+      </div>
+
+      <div class="callout"><strong>Reality check:</strong> Gemini's report leans into "Antigravity 2.0" runtime &amp; "Dell Deskside Agentic AI" with claimed 87% cost savings. These are real-ish hyperscaler/OEM announcements but heavy on marketing — treat the % savings as vendor claims, not benchmarks.</div>
+    </article>
+
+    <!-- ===== LAYER 2 ===== -->
+    <article class="layer-detail" id="L2">
+      <div class="lh"><span class="num">L02</span><h3>Memory &amp; Cognition</h3></div>
+      <p class="role">The operating system. Solves "the goldfish problem" — stateless LLMs can't accumulate context across sessions. True agent memory is <em>stateful, mutable, time-aware,</em> scoped per project.</p>
+
+      <div class="picks">
+        <div class="pick crown">
+          <div class="pname">Neo4j&nbsp;+&nbsp;pgvector hybrid</div>
+          <div class="ptag">GRAPHRAG · YOU HAVE THIS</div>
+          <div class="pwhy">Vector recall + Cypher multi-hop. Microsoft GraphRAG benchmarks: +26% comprehensiveness, +57% diversity over flat vector. You're already running this.</div>
+          <div class="pmeta">Athena infrastructure · already in life-optimization</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Mem0</div>
+          <div class="ptag">SENSIBLE DEFAULT</div>
+          <div class="pwhy">Auto-extracts facts to vector + graph + KV. Handles deduplication and write-time contradictions. ~90% token-reduction vs naive baselines; 26% LoCoMo improvement.</div>
+          <div class="pmeta">Drop-in for chatbot-style memory</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Letta (MemGPT)</div>
+          <div class="ptag">DAY-SCALE AGENTS</div>
+          <div class="pwhy">OS-inspired tiered memory; agent pages memory in/out via tools. The only choice for agents running autonomously for days. Reliability gap if the model fails to call the save tool.</div>
+          <div class="pmeta">Composable with LangGraph / Mastra</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Zep (Graphiti)</div>
+          <div class="ptag">TEMPORAL KG</div>
+          <div class="pwhy">Every fact has <code>valid_from</code>/<code>valid_to</code>. Handles entity mutations cleanly ("used to live in London, now Tokyo"). Best when state evolves.</div>
+          <div class="pmeta">Needs Neo4j / FalkorDB under it</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Qdrant (when you outgrow Chroma)</div>
+          <div class="ptag">VECTOR DB · NEXT-TIER</div>
+          <div class="pwhy">Rust, single binary, best filter expressiveness for per-user namespacing. Drops into K3s cleanly via Helm.</div>
+          <div class="pmeta">Stay on Chroma until you need this</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Anthropic Filesystem Memory</div>
+          <div class="ptag">TRANSPARENT · DIY</div>
+          <div class="pwhy">Exposes memory as <code>/memories</code>. Max control, min opinion — you build the semantic extraction yourself. Powerful for Claude-Code-style agents.</div>
+          <div class="pmeta">Only if you want to engineer it</div>
+        </div>
+      </div>
+
+      <div class="callout warn"><strong>Gemini's outlier picks:</strong> "Evermind / EverOS" (claimed 83% LongMemEval-S, 93% LoCoMo) and "MinnsDB" (49 native connectors) are real products but didn't show up in cross-checks — treat as <em>watch list</em>, not <em>bet list</em>, until adoption signal is clearer.</div>
+    </article>
+
+    <!-- ===== LAYER 3 ===== -->
+    <article class="layer-detail" id="L3">
+      <div class="lh"><span class="num">L03</span><h3>Protocols &amp; Interoperability</h3></div>
+      <p class="role">Solves the NxM problem — <em>N</em> models × <em>M</em> tools = a combinatorial mess of bespoke integrations. Standards eliminate the friction.</p>
+
+      <div class="picks">
+        <div class="pick crown">
+          <div class="pname">MCP — Model Context Protocol</div>
+          <div class="ptag">TOOL LAYER · YOU SHIP THIS</div>
+          <div class="pwhy">JSON-RPC&nbsp;2.0 over STDIO / SSE / Streamable&nbsp;HTTP. Anthropic-originated; donated to Linux Foundation AAIF Dec&nbsp;2025. ~9.4K servers; Stripe, Linear, Atlassian, Salesforce, GitHub ship first-party. <strong>2026-07-28 RC drops session state &amp; sticky routing</strong> — design stateless now.</div>
+          <div class="pmeta">Already in your time-boxing app</div>
+        </div>
+        <div class="pick">
+          <div class="pname">A2A — Agent2Agent</div>
+          <div class="ptag">AGENT-TO-AGENT · LEARN NEXT</div>
+          <div class="pwhy">Google-originated, donated to LF June&nbsp;2025; v1.0 with Signed Agent Cards. 150+ orgs, native in Azure AI Foundry, Bedrock AgentCore, Google Cloud. <strong>Different lane from MCP</strong> — orchestration, not tools. Q3 2026 MCP/A2A joint spec in flight.</div>
+          <div class="pmeta">Build an A2A endpoint after MCP is solid</div>
+        </div>
+        <div class="pick">
+          <div class="pname">AG-UI</div>
+          <div class="ptag">AGENT ↔ USER UI</div>
+          <div class="pwhy">CopilotKit-driven. Agents render rich widgets / forms / charts back into your React app instead of dumping text into a chat. Useful for your time-boxing dashboard.</div>
+          <div class="pmeta">Pairs naturally with Mastra</div>
+        </div>
+        <div class="pick">
+          <div class="pname">OAuth 2.1 + PRM + CIMD</div>
+          <div class="ptag">AUTH FOR MCP SERVERS</div>
+          <div class="pwhy">Dynamic Client Registration is out; <code>Protected Resource Metadata</code> (RFC&nbsp;9728) and Client&nbsp;ID Metadata Documents are now the recommended path. Cloudflare's enterprise-MCP architecture is the reference.</div>
+          <div class="pmeta">Required for anything multi-tenant</div>
+        </div>
+        <div class="pick">
+          <div class="pname">AGNTCY (Cisco-led)</div>
+          <div class="ptag">WATCH · DON'T SHIP</div>
+          <div class="pwhy">Agent identity, directory, ACP messaging, OASF schema. Real code, real members, thin adoption. Useful for identity standards when they harden.</div>
+          <div class="pmeta">Not actionable today</div>
+        </div>
+        <div class="pick">
+          <div class="pname">IBM ACP (yes, different ACP)</div>
+          <div class="ptag">IGNORE UNLESS IBM ORBIT</div>
+          <div class="pwhy">Two specs named ACP both live under the LF umbrella. IBM's powers BeeAI. Not relevant outside that ecosystem.</div>
+          <div class="pmeta">Skip for your profile</div>
+        </div>
+      </div>
+
+      <div class="callout win"><strong>Strategic call:</strong> You're already an MCP shipper. The single highest-leverage protocol move in 2026 is to <em>add an A2A endpoint</em> with a signed Agent Card — gets you Azure / Bedrock / Google interop for free.</div>
+    </article>
+
+    <!-- ===== LAYER 4 ===== -->
+    <article class="layer-detail" id="L4">
+      <div class="lh"><span class="num">L04</span><h3>Orchestration Frameworks</h3></div>
+      <p class="role">Defines <em>how</em> agents reason — graph? crew? swarm? handoffs? The single highest-impact architectural decision after model choice.</p>
+
+      <div class="picks">
+        <div class="pick crown">
+          <div class="pname">Mastra (TypeScript)</div>
+          <div class="ptag">NEW WORK · DEFAULT</div>
+          <div class="pwhy">YC&nbsp;W25, $13M seed, 22K stars in 15 months, 300K weekly npm. Deploys on Vercel / Cloudflare (LangGraph Platform can't). Built-in memory, workflows, evals. Sits on Vercel AI SDK.</div>
+          <div class="pmeta">Caveat: multi-agent is rated "⚠️" vs LangGraph "✅"</div>
+        </div>
+        <div class="pick crown">
+          <div class="pname">LangGraph.js</div>
+          <div class="ptag">KEEP · YOUR EXISTING WORK</div>
+          <div class="pwhy">Explicit StateGraph; deepest control + best HITL story. 42K weekly npm downloads; Replit / Uber / LinkedIn / JPMorgan in prod. Stay here for life-optimization — don't rewrite.</div>
+          <div class="pmeta">Verbose. Recent CVE in SQLite checkpointer (March&nbsp;2026)</div>
+        </div>
+        <div class="pick">
+          <div class="pname">OpenAI Agents SDK</div>
+          <div class="ptag">OPENAI-CENTRIC</div>
+          <div class="pwhy">Evolved from Swarm; handoffs as tool calls. Temporal integration <strong>GA March 2026</strong> for durable execution. Sandboxing + guardrails built-in.</div>
+          <div class="pmeta">26K stars; less "graph" thinking than LangGraph</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Anthropic Claude Agent SDK</div>
+          <div class="ptag">⚠ BILLING SHIFT JUNE 2026</div>
+          <div class="pwhy">Same agent loop that powers Claude Code. <strong>Heads-up:</strong> June&nbsp;15&nbsp;2026 billing splits SDK into a separate credit pool — community analyses show 12-175× effective price increases for continuous workloads on subscription plans.</div>
+          <div class="pmeta">Fine for occasional automation; expensive always-on</div>
+        </div>
+        <div class="pick">
+          <div class="pname">CrewAI</div>
+          <div class="ptag">FASTEST PROTOTYPE · WORST PROD</div>
+          <div class="pwhy">47K stars, role-based crews. Benchmarks show ~3× tokens / 3× latency vs LangChain on basic tasks; "doubting loops" retrigger searches up to 35× per run. Teams migrate off at scale.</div>
+          <div class="pmeta">Demos &gt; production</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Pydantic AI</div>
+          <div class="ptag">PYTHON · TYPE-SAFE</div>
+          <div class="pwhy">17K stars; v1.x stable. Best type-safety in Python. Pair with Logfire to shift errors from runtime to write-time. Boring is good.</div>
+          <div class="pmeta">Python-only — not your stack</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Agno (formerly Phidata)</div>
+          <div class="ptag">PYTHON · BATTERIES INCLUDED</div>
+          <div class="pwhy">Bundles AgentOS — control-plane UI, session mgmt, local-DB memory. Easiest path for Python teams that don't want graph plumbing.</div>
+          <div class="pmeta">Python-only</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Microsoft Agent Framework</div>
+          <div class="ptag">.NET / AZURE</div>
+          <div class="pwhy">1.0 GA April&nbsp;3&nbsp;2026 — merged AutoGen + Semantic Kernel into one framework. Wrong ecosystem for you.</div>
+          <div class="pmeta">Skip</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Temporal / DBOS / Inngest</div>
+          <div class="ptag">DURABILITY LAYER (not a framework)</div>
+          <div class="pwhy">Long-running agents need replay + checkpoint + HITL pauses. <strong>DBOS</strong> is a library on Postgres (no extra cluster) — perfect for your already-Postgres setup. Temporal for enterprise-scale.</div>
+          <div class="pmeta">Add when a run can take &gt;5 min</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ===== LAYER 5 ===== -->
+    <article class="layer-detail" id="L5">
+      <div class="lh"><span class="num">L05</span><h3>Tools, RAG &amp; Sandboxes</h3></div>
+      <p class="role">Where agents touch the world. Highest-moat layer — frameworks commoditize, proprietary tools + curated data stay defensible.</p>
+
+      <div class="picks">
+        <div class="pick crown">
+          <div class="pname">Hybrid&nbsp;+&nbsp;Graph&nbsp;+&nbsp;Agentic RAG</div>
+          <div class="ptag">RETRIEVAL STACK</div>
+          <div class="pwhy"><strong>Hybrid</strong>: dense + sparse (SPLADE/BM25) for keyword + semantic. <strong>Graph</strong>: walk a KG superimposed on the corpus. <strong>Agentic</strong>: the LLM picks the source, writes the query, verifies the answer. Use all three — you already have the KG.</div>
+          <div class="pmeta">Hybrid + Graph + Agentic = current ceiling</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Modal (sandbox · GPU-capable)</div>
+          <div class="ptag">CODE EXECUTION</div>
+          <div class="pwhy">gVisor isolation; <strong>only sandbox provider whose sandbox can hold a GPU</strong>. Pick if the agent runs inference inside the sandbox.</div>
+          <div class="pmeta">Officially integrated with OpenAI Agents SDK</div>
+        </div>
+        <div class="pick">
+          <div class="pname">E2B (sandbox · Firecracker)</div>
+          <div class="ptag">SAFEST DEFAULT</div>
+          <div class="pwhy">Hardware-level microVM isolation. The safe default for running untrusted LLM-generated code. <strong>Don't run untrusted code in your own K3s.</strong></div>
+          <div class="pmeta">~Sub-second cold starts</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Daytona</div>
+          <div class="ptag">PERSISTENT ENVS</div>
+          <div class="pwhy">Docker-based, sub-90ms cold starts (27ms tuned), persistent envs across sessions. Best when the agent comes back to the same workspace.</div>
+          <div class="pmeta">For dev-environment-style agents</div>
+        </div>
+        <div class="pick crown">
+          <div class="pname">Steel.dev (self-hosted browser)</div>
+          <div class="ptag">ATHENA-NATIVE</div>
+          <div class="pwhy">Apache&nbsp;2.0, Docker one-liner, anti-detection plugins. Drop into K3s as a Deployment. <strong>The pick for your homelab.</strong></div>
+          <div class="pmeta">Stagehand if you go SaaS</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Browserbase + Stagehand v3</div>
+          <div class="ptag">MANAGED BROWSER</div>
+          <div class="pwhy">"AWS for headless browsers." Stagehand v3 (Feb&nbsp;2026, 44% faster) is the TS-native control plane. Use when self-hosted Steel can't keep up.</div>
+          <div class="pmeta">$40M Series B at $300M val</div>
+        </div>
+        <div class="pick">
+          <div class="pname">vLLM + KubeAI (self-hosted inference)</div>
+          <div class="ptag">ATHENA · LOCAL MODELS</div>
+          <div class="pwhy">vLLM is the default; KubeAI is the K8s operator (handles model pulls, caching, cold-start buffering). <strong>SGLang</strong> if your workload is RAG-heavy — RadixAttention gives ~6× throughput on prefix-cached prompts.</div>
+          <div class="pmeta">Cost lever for routing-tier work</div>
+        </div>
+        <div class="pick">
+          <div class="pname">LiteLLM (pinned) or Portkey OSS</div>
+          <div class="ptag">MODEL GATEWAY</div>
+          <div class="pwhy">In-cluster Service routing easy steps → local vLLM, hard steps → Claude/GPT. <strong>Pin LiteLLM — March&nbsp;2026 supply-chain attack on v1.82.7–8.</strong></div>
+          <div class="pmeta">Portkey if you want stronger governance OOTB</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Anthropic MCP tunnels</div>
+          <div class="ptag">PRIVATE TOOL EXPOSURE</div>
+          <div class="pwhy">Expose internal MCP servers to Claude Managed Agents without public internet exposure. Designed for exactly your K3s setup.</div>
+          <div class="pmeta">Shipped May&nbsp;2026</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ===== LAYER 6 ===== -->
+    <article class="layer-detail" id="L6">
+      <div class="lh"><span class="num">L06</span><h3>Application / Agent UI</h3></div>
+      <p class="role">The terminal interface. Chatbots are commodity; generative UI is the frontier. Coding-agent UX has matured fastest — the rest is catching up.</p>
+
+      <div class="picks">
+        <div class="pick">
+          <div class="pname">CopilotKit + AG-UI</div>
+          <div class="ptag">GENERATIVE UI · TS-NATIVE</div>
+          <div class="pwhy">Agent renders live React widgets / forms / charts into your app. Pairs naturally with your existing time-boxing dashboard and Mastra workflows.</div>
+          <div class="pmeta">Real upgrade over chat-only UX</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Vercel AI SDK v6</div>
+          <div class="ptag">STREAMING + AGENT ABSTRACTION</div>
+          <div class="pwhy">v6 added a real <code>Agent</code> abstraction with <code>stopWhen</code>, tool-approval, MCP, DevTools. Best for chat-UI-first apps. Mastra sits on top of this.</div>
+          <div class="pmeta">Already part of the TS surface area</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Claude Code / Cursor / Windsurf</div>
+          <div class="ptag">CODING AGENT SURFACES</div>
+          <div class="pwhy">The most mature application of agentic AI. Cursor/Windsurf in IDE, Claude Code in terminal. Use them — don't build them.</div>
+          <div class="pmeta">Compounding compounders</div>
+        </div>
+        <div class="pick">
+          <div class="pname">AIMock-style proxies</div>
+          <div class="ptag">AGENT TEST INFRA</div>
+          <div class="pwhy">Single-config proxy for 11+ LLM providers; supports drift detection, schema validation, chaos injection (500s, mid-stream disconnects). Critical for non-deterministic systems.</div>
+          <div class="pmeta">Real category, multiple competitors</div>
+        </div>
+      </div>
+
+      <div class="callout"><strong>Moat note:</strong> horizontal chat UIs are crowded and easily replicated. <strong>Vertical SaaS</strong> embedding agentic workflow into a niche industry is what compounds — 28% YoY growth, 3–5× retention vs horizontal competitors.</div>
+    </article>
+
+    <!-- ===== LAYER 7 ===== -->
+    <article class="layer-detail" id="L7">
+      <div class="lh"><span class="num">L07</span><h3>Observability, Evals &amp; Security</h3></div>
+      <p class="role">The control plane. As agents touch databases, code, and money, output guardrails become insufficient — you need execution traces, eval gates, and threat-aware policy.</p>
+
+      <div class="picks">
+        <div class="pick crown">
+          <div class="pname">Langfuse (self-hosted)</div>
+          <div class="ptag">ATHENA · OBSERVABILITY</div>
+          <div class="pwhy">MIT-licensed; runs on Postgres + ClickHouse (you have Postgres). OTLP ingest. <strong>Acquired by ClickHouse Jan&nbsp;2026</strong>, still OSS. The clear self-host winner over LangSmith for your setup.</div>
+          <div class="pmeta">Helm chart available</div>
+        </div>
+        <div class="pick">
+          <div class="pname">LangSmith</div>
+          <div class="ptag">SAAS · DEEPEST LANGGRAPH INTEGRATION</div>
+          <div class="pwhy">Node-by-node state diffs, replay against new model versions. Pay if you stay on LangGraph and want zero ops.</div>
+          <div class="pmeta">$39/seat + $0.50/1k traces</div>
+        </div>
+        <div class="pick">
+          <div class="pname">DeepEval</div>
+          <div class="ptag">EVALS · CI GATING</div>
+          <div class="pwhy">50+ metrics including agent-specific (task completion, tool correctness, step efficiency). Pytest-flavoured.</div>
+          <div class="pmeta">First eval lib to learn</div>
+        </div>
+        <div class="pick">
+          <div class="pname">Promptfoo</div>
+          <div class="ptag">EVALS · RED-TEAMING</div>
+          <div class="pwhy">Node.js-native. <strong>Acquired by OpenAI March&nbsp;2026</strong>, MIT core stays.</div>
+          <div class="pmeta">Pair with DeepEval</div>
+        </div>
+        <div class="pick">
+          <div class="pname">OWASP Agentic AI Threats</div>
+          <div class="ptag">SECURITY FRAMEWORK</div>
+          <div class="pwhy">15 scenarios unique to autonomous systems. Watch especially <strong>T6 Intent Breaking</strong> (Shadow Escape exploit hit Gemini/ChatGPT), <strong>ASCII smuggling</strong>, <strong>T2 AI-in-the-Middle phishing</strong>, <strong>T5 Cascading Hallucinations</strong>.</div>
+          <div class="pmeta">Audit against this before going public</div>
+        </div>
+        <div class="pick">
+          <div class="pname">HITL (human-in-the-loop)</div>
+          <div class="ptag">REGULATORY · MANDATORY</div>
+          <div class="pwhy">EU AI Act Article&nbsp;14 enforceable Aug&nbsp;2,&nbsp;2026; California SB-833 July&nbsp;1. HITL document extraction hits 99.9% vs 92% AI-only. Use LangGraph <code>interrupt()</code> at every Neo4j write and external tool call.</div>
+          <div class="pmeta">No longer optional</div>
+        </div>
+        <div class="pick">
+          <div class="pname">OPA + Lakera + BigID</div>
+          <div class="ptag">POLICY · INLINE SAFETY · PRIVACY</div>
+          <div class="pwhy">Open Policy Agent for granular permission, Lakera for inline action evaluation, BigID for data-privacy enforcement. Layered defense.</div>
+          <div class="pmeta">Enterprise — overkill for solo</div>
+        </div>
+      </div>
+
+      <div class="callout win"><strong>This is the gap.</strong> The #1 production blocker is quality (32%) and the highest-paid agent-engineer JDs all list evals + tracing. Closing this single gap is what converts your hobby agents into a portfolio piece.</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ============================ YOUR STACK ============================ -->
+<section class="block" id="yours">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">// MAPPED TO WHAT YOU ALREADY HAVE</div>
+      <h2 class="section-title">Your Stack,<br/>Already&nbsp;In&nbsp;Place.</h2>
+      <p class="section-lead">
+        Your existing work isn't <em>preparation</em> for agentic AI — it <em>is</em> agentic AI infrastructure. The framing: <strong>you're accidentally positioned to be an <em>agent platform engineer</em></strong>, the rarer/stickier half of the market.
+      </p>
+    </div>
+
+    <div class="youstack">
+      <h4>YOUR ASSETS · MAY 2026</h4>
+      <div class="assets">
+        <div class="asset"><div class="ico">◆</div><div><div class="at">life-optimization</div><div class="av">LangGraph.js + Neo4j + Postgres + ChromaDB. A stateful, KG-backed, memory-rich agent in TS — exactly the architecture 89% of prod teams want observability on. Neo4j memory is ahead of the curve.</div></div></div>
+        <div class="asset"><div class="ico">◇</div><div><div class="at">time-boxing MCP server</div><div class="av">MCP is now a Linux Foundation standard with ~9.4K servers. You've shipped one. Real credibility artifact.</div></div></div>
+        <div class="asset"><div class="ico">▲</div><div><div class="at">Athena-HomeLab (K3s)</div><div class="av">This <em>is</em> the "agent control plane" enterprises are buying. Self-hosted inference + Langfuse + sandboxes is a paid problem.</div></div></div>
+        <div class="asset"><div class="ico">▶</div><div><div class="at">konfigura (DSL + Go)</div><div class="av">AI-generated DSLs are a known weak spot (sub-20% baseline accuracy → 85% with compiler-feedback loops). A DSL <em>designed</em> for agent feedback is a publishable niche.</div></div></div>
+        <div class="asset"><div class="ico">◀</div><div><div class="at">Lox / interpreters</div><div class="av">Compiler chops transfer 1:1 to konfigura and to evaluating LLM-generated DSLs. Don't sleep on this.</div></div></div>
+        <div class="asset"><div class="ico">●</div><div><div class="at">Go (learning)</div><div class="av">Every serious agent runtime / sandbox / infra tool ships in Go. ADK Go 1.0 shipped 2026. Finish it.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 12-MONTH PATH ============================ -->
+<section class="block" id="path">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">// EXECUTION PLAN</div>
+      <h2 class="section-title">The 12-Month Path</h2>
+      <p class="section-lead">Build on what you have. Close the highest-leverage gap first (evals/observability), then layer on multi-agent + HITL, then self-hosted inference, then make konfigura compounding, then ship one vertical.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="tstep">
+        <div class="tw">MONTHS&nbsp;1&nbsp;–&nbsp;2 · HIGHEST LEVERAGE</div>
+        <div class="tt">Wire Langfuse + a 30-case eval suite into life-optimization</div>
+        <div class="td">Deploy Langfuse self-hosted on Athena (Helm chart, points at your existing Postgres). Add OpenTelemetry instrumentation to the LangGraph.js agent. Build a 30+ trajectory eval suite with DeepEval + LLM-as-judge rubric. <em>This single move turns a hobby agent into a portfolio piece.</em></div>
+      </div>
+      <div class="tstep">
+        <div class="tw">MONTHS&nbsp;2&nbsp;–&nbsp;4 · MULTI-AGENT + HITL</div>
+        <div class="tt">Refactor to orchestrator-worker with interrupt() gates</div>
+        <div class="td">Split life-optimization into planner → Neo4j-write worker → retrieval worker → evaluator-optimizer pass. Add LangGraph <code>interrupt()</code> approval at every Neo4j write and external tool call. EU AI Act Article&nbsp;14 enforcement starts Aug&nbsp;2,&nbsp;2026.</div>
+      </div>
+      <div class="tstep">
+        <div class="tw">MONTHS&nbsp;4&nbsp;–&nbsp;6 · LOCAL INFERENCE</div>
+        <div class="tt">vLLM + KubeAI on Athena serving Qwen3 235B-A22B</div>
+        <div class="td">Route via LiteLLM in-cluster: local model for classification / routing, Claude/GPT for hard reasoning. Publish the cost/latency comparison — that writeup alone is a job-market artifact.</div>
+      </div>
+      <div class="tstep">
+        <div class="tw">MONTHS&nbsp;6&nbsp;–&nbsp;9 · DSL COMPOUNDING</div>
+        <div class="tt">Reframe konfigura as compiler-in-the-loop agent</div>
+        <div class="td">"AI-generated DSL + compiler-feedback agent loop" — sub-20% baseline accuracy → 85%. Go for the compiler, TS (Mastra) for the agent loop. Two birds, one project. The publishable angle is the feedback-loop architecture.</div>
+      </div>
+      <div class="tstep">
+        <div class="tw">MONTHS&nbsp;9&nbsp;–&nbsp;12 · SHIP ONE VERTICAL</div>
+        <div class="tt">One outcome-priced vertical agent, end-to-end</div>
+        <div class="td">Pick one surface (journaling-as-coaching, productivity analytics, infra automation) and ship the whole loop: agent + memory + tools + HITL + evals. <strong>This is the artifact that converts everything else into a job offer or a seed round.</strong> Sequoia/a16z 2026 thesis: vertical + narrow + outcome-priced wins.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ VALIDATION ============================ -->
+<section class="block" id="validation">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">// CROSS-CHECK</div>
+      <h2 class="section-title">What Gemini Got<br/>Right · Iffy · Skeptical</h2>
+      <p class="section-lead">Gemini's seven-layer report is solid scaffolding but light on TS specifics, the durability layer, sandboxing, and the protocol war beyond MCP. Here's the grid after cross-checking with primary sources.</p>
+    </div>
+
+    <div class="validation">
+      <div class="vcol solid">
+        <h5><span>✓</span> SOLID — USE AS-IS</h5>
+        <ul>
+          <li><strong>7-layer framing</strong> · best organizing model in circulation</li>
+          <li><strong>MCP won the protocol war</strong> · matches every cross-check</li>
+          <li><strong>Mastra TS-first, 300K weekly npm</strong> · accurate</li>
+          <li><strong>LangGraph as Python prod standard</strong> · backed by Uber/LinkedIn/Klarna/JPMorgan adoption</li>
+          <li><strong>CrewAI's managerial overhead</strong> · 3× token cost, 35× doubt loops — matches benchmarks</li>
+          <li><strong>Microsoft Agent Framework = unified AutoGen + Semantic Kernel</strong> · 1.0 GA April&nbsp;2026 confirmed</li>
+          <li><strong>Mem0 / Letta / Zep tradeoffs</strong> · accurate</li>
+          <li><strong>Hybrid → Graph → Agentic RAG progression</strong> · canonical 2026 framing</li>
+          <li><strong>OWASP Agentic AI Threats Framework</strong> · real and authoritative</li>
+          <li><strong>Langfuse for observability</strong> · clear self-host winner</li>
+          <li><strong>Strategic moat ranking</strong> · honest read of where value accrues</li>
+        </ul>
+      </div>
+      <div class="vcol iffy">
+        <h5><span>~</span> IFFY — VERIFY BEFORE QUOTING</h5>
+        <ul>
+          <li><strong>Model pricing table</strong> · ballparks are right, exact $/M tokens drift weekly — re-check before budgeting</li>
+          <li><strong>Claude "Opus 4.6" listed twice at different scores</strong> · likely version confusion; current flagship is <em>Opus 4.7</em></li>
+          <li><strong>$10.86B → $199.05B at 43.84% CAGR</strong> · analyst projection, not measurement</li>
+          <li><strong>"40% of enterprise apps by end of 2026"</strong> · Gartner-style forecast — directionally fair, exact % is marketing</li>
+          <li><strong>Dell Deskside Agentic AI · "87% cost reduction"</strong> · real product line, savings are vendor-internal math</li>
+          <li><strong>Google "Antigravity 2.0" runtime</strong> · plausible IO&nbsp;2026 announcement, treat as marketing until adoption signal</li>
+          <li><strong>AG-UI / CopilotKit framing</strong> · real and useful, but newer than the MCP/A2A pair</li>
+        </ul>
+      </div>
+      <div class="vcol skep">
+        <h5><span>!</span> SKEPTICAL / MISSING</h5>
+        <ul>
+          <li><strong>"Evermind / EverOS" 83% LongMemEval-S</strong> · niche product, didn't surface in cross-checks — watch list, not bet list</li>
+          <li><strong>"MinnsDB" 49 connectors</strong> · low signal in independent sources</li>
+          <li><strong>"OpenShell sandboxed runtime"</strong> · not validated; if real, very niche</li>
+          <li><strong>MISSING · A2A protocol</strong> · Google's agent-to-agent layer, 150+ orgs, native AWS/Azure/GCP. Should be paired with MCP, not omitted.</li>
+          <li><strong>MISSING · Linux Foundation AAIF</strong> · Dec&nbsp;2025 — MCP donated; this is the governance event of the year</li>
+          <li><strong>MISSING · Streamable HTTP / 2026-07-28 stateless MCP RC</strong> · biggest spec delta in MCP's history</li>
+          <li><strong>MISSING · Durability layer</strong> · Temporal / DBOS / Inngest are essential for long-running agents</li>
+          <li><strong>MISSING · Code sandbox category</strong> · E2B / Modal / Daytona — table stakes for tool execution</li>
+          <li><strong>MISSING · Browser automation</strong> · Stagehand / Steel / Browserbase — major 2026 category</li>
+          <li><strong>MISSING · Evals tooling</strong> · DeepEval / Promptfoo / Braintrust — barely covered</li>
+          <li><strong>MISSING · Self-hosted inference layer</strong> · vLLM / SGLang / KubeAI — critical for your homelab</li>
+          <li><strong>MISSING · Anthropic Agent SDK June&nbsp;15&nbsp;billing change</strong> · 12-175× effective price increase for continuous use — material for builders</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ SKIP LIST ============================ -->
+<section class="block" id="skip">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">// NEGATIVE SPACE</div>
+      <h2 class="section-title">What To Skip</h2>
+      <p class="section-lead">Saves months. Every "don't chase" below has a specific reason — either the tech isn't there yet, the market is wrong for your profile, or the work won't compound on what you've built.</p>
+    </div>
+
+    <div class="skip">
+      <div class="skip-item"><div class="sn">Computer-use / OSWorld agents</div><div class="sw">Still 70–78% accuracy on OSWorld. Research preview dressed as product. Re-evaluate in 12 months.</div></div>
+      <div class="skip-item"><div class="sn">RL fine-tuning</div><div class="sw">57% of prod teams don't fine-tune. Low ROI for a backend-leaning engineer; prompt engineering + tool design + retrieval dominate.</div></div>
+      <div class="skip-item"><div class="sn">CrewAI as a primary skill</div><div class="sw">Useful to read; teams migrate <em>off</em> it at scale due to token bloat and doubt loops. Stay on LangGraph / Mastra.</div></div>
+      <div class="skip-item"><div class="sn">Voice agents (Vapi / Retell)</div><div class="sw">Great category, completely different infra / latency game — does <em>not</em> compound on your TS+KG stack.</div></div>
+      <div class="skip-item"><div class="sn">Microsoft Agent Framework</div><div class="sw">Wrong ecosystem (.NET / Azure) for your profile. Skip unless you take a corp role there.</div></div>
+      <div class="skip-item"><div class="sn">Google ADK (production)</div><div class="sw">Wrong ecosystem (Gemini-only). Worth knowing exists; not worth building on.</div></div>
+      <div class="skip-item"><div class="sn">A horizontal chatbot startup</div><div class="sw">"A bet against Anthropic, OpenAI, and Google — you will lose." (a16z 2026 thesis · NEA · Sequoia all align here.)</div></div>
+      <div class="skip-item"><div class="sn">AGNTCY / IBM ACP / agent-passport drafts</div><div class="sw">Real standards work, not actionable today. Watch identity efforts; don't ship against them yet.</div></div>
+      <div class="skip-item"><div class="sn">Always-on workloads on Claude Agent SDK</div><div class="sw">June&nbsp;15&nbsp;2026 billing splits SDK into a separate credit pool — 12–175× effective price increase for continuous subscription use. Fine for occasional automation.</div></div>
+      <div class="skip-item"><div class="sn">Running untrusted code inside Athena</div><div class="sw">Use Modal / E2B / Daytona instead. Your homelab is too valuable to be a sandbox host.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ REFERENCE ARCH ============================ -->
+<section class="block">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">// REFERENCE ARCHITECTURE</div>
+      <h2 class="section-title">What This Looks<br/>Like On Athena</h2>
+      <p class="section-lead">All TypeScript on top, all self-hostable on K3s, plus cloud LLM APIs where they matter. MCP tunnels keep your internal services private while still reachable by Claude Managed Agents.</p>
+    </div>
+
+<pre class="ascii">                         ┌────────────────────────────┐
+                         │        USER / CLIENT       │
+                         │  (Web UI · Tablet · Slack)  │
+                         └─────────────┬──────────────┘
+                                       │
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│                  INGRESS  (Traefik on K3s · *.homelab.local)         │
+└──────────────────────────────────────────────────────────────────────┘
+                                       │
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│   ORCHESTRATION LAYER  (Node.js pod)                                 │
+│   • LangGraph.js  (existing — life-optimization, graph + checkpoint) │
+│   • Mastra        (new TS work — workflows, memory, evals)           │
+│   • DBOS workflows on Postgres for cross-system durability           │
+└──────┬─────────────────────────────────┬────────────────┬────────────┘
+       │                                 │                │
+       ▼                                 ▼                ▼
+┌────────────────┐              ┌─────────────────┐   ┌──────────────────┐
+│ MODEL GATEWAY  │              │  TOOL LAYER     │   │  MEMORY LAYER    │
+│  in-cluster    │              │                 │   │                  │
+│  LiteLLM(pin'd)│              │ • Steel.dev     │   │ • Neo4j (KG)     │
+│  → Anthropic   │              │   (browser pod) │   │ • pgvector       │
+│  → OpenAI      │              │ • Modal / E2B   │   │ • Chroma (legacy)│
+│  → Bedrock     │              │   (managed code │   │ • Postgres state │
+│  → LOCAL vLLM  │              │    sandboxes)   │   │ • Letta if needed│
+│   (KubeAI pod) │              │ • MCP servers   │   │ • Mem0 / Zep for │
+│   Qwen3 / etc  │              │   over MCP      │   │   conv. memory   │
+└──────┬─────────┘              │   tunnels       │   └──────┬───────────┘
+       │                        └────────┬────────┘          │
+       └──────────────┬──────────────────┴───────────────────┘
+                      ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│   OBSERVABILITY + EVALS  (in-cluster)                                │
+│   • Langfuse self-hosted  (Postgres + ClickHouse · OTLP)             │
+│   • OTel Collector  (sidecar / DaemonSet)                            │
+│   • DeepEval + Promptfoo in CI  (GitHub Actions · gating)            │
+│   • Grafana + Prometheus  (you have these)                           │
+└──────────────────────────────────────────────────────────────────────┘
+
+External integrations:
+• Anthropic Claude Managed Agents ──► reach in via MCP tunnels
+• Browserbase / Stagehand Cloud ────► when in-cluster Steel can't keep up
+</pre>
+  </div>
+</section>
+
+<!-- ============================ SOURCES ============================ -->
+<section class="block" id="sources">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">// CITATIONS</div>
+      <h2 class="section-title">Sources</h2>
+      <p class="section-lead">Cross-checked across primary sources where possible. Listicles and secondary blogs only used to surface consensus.</p>
+    </div>
+
+    <div class="picks">
+      <div class="pick">
+        <div class="pname">Frameworks</div>
+        <div class="pwhy">
+          <a href="https://github.com/langchain-ai/langgraphjs">LangGraph.js GitHub</a> ·
+          <a href="https://blog.langchain.com/is-langgraph-used-in-production/">LangGraph in production</a> ·
+          <a href="https://mastra.ai/blog/seed-round">Mastra seed round</a> ·
+          <a href="https://mastra.ai/blog/choosing-a-js-agent-framework">Mastra TS framework picker</a> ·
+          <a href="https://www.speakeasy.com/blog/ai-agent-framework-comparison">Speakeasy comparison</a> ·
+          <a href="https://openai.com/index/the-next-evolution-of-the-agents-sdk/">OpenAI Agents SDK</a>
+        </div>
+      </div>
+      <div class="pick">
+        <div class="pname">Protocols</div>
+        <div class="pwhy">
+          <a href="https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/">MCP 2026 Roadmap</a> ·
+          <a href="https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/">MCP 2026-07-28 RC</a> ·
+          <a href="https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation">LF · AAIF formation</a> ·
+          <a href="https://www.linuxfoundation.org/press/a2a-protocol-surpasses-150-organizations-lands-in-major-cloud-platforms-and-sees-enterprise-production-use-in-first-year">A2A 1-year milestone</a> ·
+          <a href="https://blog.cloudflare.com/enterprise-mcp/">Cloudflare enterprise MCP</a>
+        </div>
+      </div>
+      <div class="pick">
+        <div class="pname">Memory &amp; Vector</div>
+        <div class="pwhy">
+          <a href="https://explore.n1n.ai/blog/ai-agent-memory-comparison-2026-mem0-zep-letta-cognee-2026-04-23">Memory framework comparison</a> ·
+          <a href="https://mem0.ai/blog/state-of-ai-agent-memory-2026">Mem0 · State of agent memory</a> ·
+          <a href="https://docs.letta.com/concepts/letta/">Letta concepts</a> ·
+          <a href="https://learn.microsoft.com/en-us/agent-framework/integrations/neo4j-graphrag">Neo4j GraphRAG</a>
+        </div>
+      </div>
+      <div class="pick">
+        <div class="pname">Observability &amp; Evals</div>
+        <div class="pwhy">
+          <a href="https://www.braintrust.dev/articles/best-llm-tracing-tools-2026">Best tracing tools 2026</a> ·
+          <a href="https://latitude.so/blog/best-llm-observability-tools-agents-latitude-vs-langfuse-langsmith">Langfuse vs LangSmith</a> ·
+          <a href="https://inference.net/content/llm-evaluation-tools-comparison/">Eval tools comparison</a>
+        </div>
+      </div>
+      <div class="pick">
+        <div class="pname">Sandboxes &amp; Browser</div>
+        <div class="pwhy">
+          <a href="https://modal.com/resources/best-sandbox-openai-agents-sdk">Modal · sandbox comparison</a> ·
+          <a href="https://northflank.com/blog/daytona-vs-e2b-ai-code-execution-sandboxes">Daytona vs E2B</a> ·
+          <a href="https://www.firecrawl.dev/blog/best-browser-agents">Best browser agents</a> ·
+          <a href="https://the-decoder.com/anthropic-adds-self-hosted-sandboxes-and-mcp-tunnels-to-claude-managed-agents/">Anthropic MCP tunnels</a>
+        </div>
+      </div>
+      <div class="pick">
+        <div class="pname">Strategic / market</div>
+        <div class="pwhy">
+          <a href="https://www.anthropic.com/research/building-effective-agents">Anthropic · Building Effective Agents</a> ·
+          <a href="https://www.langchain.com/state-of-agent-engineering">LangChain · State of Agent Engineering</a> ·
+          <a href="https://a16z.com/newsletter/big-ideas-2026-part-1/">a16z Big Ideas 2026</a> ·
+          <a href="https://www.latent.space/p/2026">Latent Space · 2026 thesis</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div>Compiled 2026-05-23 · for <span style="color:#00f5d4">bhargav@athena</span></div>
+    <div style="margin-top:8px;color:#5a6477">Hosted on K3s · Traefik · agentic.homelab.local · <span class="heart">◆</span></div>
+  </div>
+</footer>
+
+<button class="fab" id="topBtn" aria-label="Back to top"><span class="arrow">▲</span> TOP</button>
+
+<script>
+(function(){
+  // Mobile drawer
+  var btn=document.getElementById('menuBtn');
+  var drw=document.getElementById('drawer');
+  if(btn){btn.addEventListener('click',function(){drw.classList.toggle('open');});}
+  drw && drw.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){drw.classList.remove('open');});});
+  // Top button
+  var top=document.getElementById('topBtn');
+  function toggleTop(){top.style.display=window.scrollY>800?'flex':'none';}
+  toggleTop();window.addEventListener('scroll',toggleTop,{passive:true});
+  top.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+})();
+</script>
+
+</body>
+</html>

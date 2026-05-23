@@ -5,9 +5,10 @@ interface ArcReactorMenuProps {
   onNavigate: (index: number) => void;
   items: { label: string; range: number[] }[];
   activeSection: number;
+  externalLinks?: { label: string; href: string; badge: string }[];
 }
 
-export const ArcReactorMenu = ({ onNavigate, items, activeSection }: ArcReactorMenuProps) => {
+export const ArcReactorMenu = ({ onNavigate, items, activeSection, externalLinks = [] }: ArcReactorMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -46,6 +47,24 @@ export const ArcReactorMenu = ({ onNavigate, items, activeSection }: ArcReactorM
                   }`}
                 />
               </motion.button>
+            ))}
+
+            {externalLinks.map((link, idx) => (
+              <motion.a
+                key={link.href}
+                href={link.href}
+                initial={{ x: 20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: (items.length + idx) * 0.05 }}
+                onClick={() => setIsOpen(false)}
+                className="w-full flex items-center justify-end gap-3 px-4 py-3 rounded-xl backdrop-blur-xl border bg-arc-reactor/15 border-arc-reactor text-arc-reactor shadow-[0_0_15px_rgba(255,193,7,0.35)] no-underline"
+              >
+                <span className="text-[9px] tracking-widest font-bold bg-arc-reactor text-black px-1.5 py-0.5 rounded">
+                  {link.badge}
+                </span>
+                <span className="font-display tracking-widest uppercase text-sm">◆ {link.label}</span>
+                <div className="w-2 h-2 rounded-full bg-arc-reactor shadow-[0_0_10px_#FFC107]" />
+              </motion.a>
             ))}
           </motion.div>
         )}
