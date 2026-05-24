@@ -82,69 +82,37 @@ export const IronManScroll = () => {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    /**
-     * Adaptive fit. The source frames are landscape (1920×1080). On a portrait
-     * tablet/phone viewport, plain "cover" upscales the source ~3.5× to fill
-     * the viewport height — which looks soft no matter how clean the source.
-     *
-     * Strategy: compute the upscale factor cover *would* require. If it exceeds
-     * MAX_COVER_UPSCALE (1.5× — beyond this, blur is perceptible), fall back to
-     * "contain" which letterboxes with black bars but renders the image at
-     * near-native resolution. Result: full-bleed on landscape, sharp +
-     * cinematic on portrait.
-     */
-    const MAX_COVER_UPSCALE = 1.5;
-
     const unsubscribe = frameIndex.on('change', (latest) => {
       const index = Math.round(latest);
       const img = images[index];
 
       if (img && img.complete) {
-        // Black fill (we have alpha: false but explicit is safer for letterbox)
+        // Always cover-fit: image fills the viewport so the parts-assembling
+        // effect reads at full impact, even on portrait phones/tablets.
+        // Sharpness is addressed at the source level (HD WebP) — letterboxing
+        // would shrink the image and kill the visual.
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         const imgAspect = img.width / img.height;
         const canvasAspect = canvas.width / canvas.height;
 
-        // What scale-factor would COVER require?
-        const coverScale = imgAspect > canvasAspect
-          ? canvas.height / img.height // scale-to-fit-height
-          : canvas.width / img.width;   // scale-to-fit-width
-
-        const useContain = coverScale > MAX_COVER_UPSCALE;
-
         let drawWidth, drawHeight, offsetX, offsetY;
 
-        if (useContain) {
-          // Contain: fit entirely, letterbox
-          if (imgAspect > canvasAspect) {
-            drawWidth = canvas.width;
-            drawHeight = drawWidth / imgAspect;
-            offsetX = 0;
-            offsetY = (canvas.height - drawHeight) / 2;
-          } else {
-            drawHeight = canvas.height;
-            drawWidth = drawHeight * imgAspect;
-            offsetX = (canvas.width - drawWidth) / 2;
-            offsetY = 0;
-          }
+        if (imgAspect > canvasAspect) {
+          // Image is wider than canvas — fit height, crop sides
+          drawHeight = canvas.height;
+          drawWidth = drawHeight * imgAspect;
+          offsetX = (canvas.width - drawWidth) / 2;
+          offsetY = 0;
         } else {
-          // Cover: fill canvas, crop overflow
-          if (imgAspect > canvasAspect) {
-            drawHeight = canvas.height;
-            drawWidth = drawHeight * imgAspect;
-            offsetX = (canvas.width - drawWidth) / 2;
-            offsetY = 0;
-          } else {
-            drawWidth = canvas.width;
-            drawHeight = drawWidth / imgAspect;
-            offsetX = 0;
-            offsetY = (canvas.height - drawHeight) / 2;
-          }
+          // Image is taller than canvas — fit width, crop top/bottom
+          drawWidth = canvas.width;
+          drawHeight = drawWidth / imgAspect;
+          offsetX = 0;
+          offsetY = (canvas.height - drawHeight) / 2;
         }
 
-        // Round to integer pixels to avoid sub-pixel sampling blur
         ctx.drawImage(
           img,
           Math.round(offsetX),
