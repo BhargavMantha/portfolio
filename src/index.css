@@ -106,3 +106,18 @@ h1, h2, h3, h4, h5, h6 {
   background: rgba(0, 212, 255, 0.2);
   color: #fff;
 }
+
+/* Restore the system cursor on touch devices — there's nothing to hide */
+@media (pointer: coarse) {
+  * { cursor: auto !important; }
+}
+
+/* Respect prefers-reduced-motion — kill long-running animations and ease */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -5,8 +5,11 @@ import { ArcReactorLoader } from '../ui/ArcReactorLoader';
 import { SectionOverlay } from './SectionOverlay';
 import { Navigation } from '../Navigation';
 
-const TOTAL_FRAMES = 80;
-const IMAGE_PATH = '/sequence-new';
+const TOTAL_FRAMES = 120;
+const IMAGE_PATH = '/sequence-hd';
+/** Reveal the page once the first ~12 frames are decoded — the rest stream in
+ *  while the user is reading the hero. Keeps first paint snappy. */
+const PRIME_FRAMES = 12;
 
 export const IronManScroll = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -28,8 +31,12 @@ export const IronManScroll = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Load image sequence
-  const { images, loading, progress, error } = useImageSequence(IMAGE_PATH, TOTAL_FRAMES);
+  // Load image sequence (WebP, chunked, with prime-then-stream)
+  const { images, loading, progress, error } = useImageSequence(IMAGE_PATH, TOTAL_FRAMES, 1, {
+    extension: 'webp',
+    concurrency: 8,
+    primeCount: PRIME_FRAMES,
+  });
 
   // Scroll progress
   const { scrollYProgress } = useScroll({
@@ -40,11 +47,11 @@ export const IronManScroll = () => {
   // Map scroll to frame index
   const frameIndex = useTransform(scrollYProgress, [0, 1], [0, TOTAL_FRAMES - 1]);
 
-  // Update canvas size on mount and resize
+  // Update canvas size on mount and resize. Cap DPR at 2 — on 3× displays
+  // the extra detail isn't visible and tripling canvas memory tanks scroll FPS.
   useEffect(() => {
     const updateCanvasSize = () => {
-      // Cap DPR at 2 for performance on mobile/high-DPI screens while maintaining quality
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       setCanvasSize({
         width: Math.floor(window.innerWidth * dpr),
         height: Math.floor(window.innerHeight * dpr),
@@ -52,8 +59,8 @@ export const IronManScroll = () => {
     };
 
     updateCanvasSize();
-    window.addEventListener('resize', updateCanvasSize);
-    window.addEventListener('orientationchange', updateCanvasSize);
+    window.addEventListener('resize', updateCanvasSize, { passive: true });
+    window.addEventListener('orientationchange', updateCanvasSize, { passive: true });
     return () => {
       window.removeEventListener('resize', updateCanvasSize);
       window.removeEventListener('orientationchange', updateCanvasSize);
@@ -141,10 +148,9 @@ export const IronManScroll = () => {
           width={canvasSize.width}
           height={canvasSize.height}
           className="w-full h-full object-cover"
-          style={{ 
+          style={{
             width: '100%',
             height: '100%',
-            filter: 'contrast(1.15) saturate(1.1)' 
           }}
         />
         
