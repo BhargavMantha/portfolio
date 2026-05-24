@@ -5,8 +5,11 @@ import { ArcReactorLoader } from '../ui/ArcReactorLoader';
 import { SectionOverlay } from './SectionOverlay';
 import { Navigation } from '../Navigation';
 
-const TOTAL_FRAMES = 80;
-const IMAGE_PATH = '/sequence-new';
+const TOTAL_FRAMES = 120;
+const IMAGE_PATH = '/sequence-hd';
+/** Reveal the page once the first ~12 frames are decoded — the rest stream in
+ *  while the user is reading the hero. Keeps first paint snappy. */
+const PRIME_FRAMES = 12;
 
 export const IronManScroll = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -28,8 +31,12 @@ export const IronManScroll = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Load image sequence
-  const { images, loading, progress, error } = useImageSequence(IMAGE_PATH, TOTAL_FRAMES);
+  // Load image sequence (WebP, chunked, with prime-then-stream)
+  const { images, loading, progress, error } = useImageSequence(IMAGE_PATH, TOTAL_FRAMES, 1, {
+    extension: 'webp',
+    concurrency: 8,
+    primeCount: PRIME_FRAMES,
+  });
 
   // Scroll progress
   const { scrollYProgress } = useScroll({
@@ -40,11 +47,11 @@ export const IronManScroll = () => {
   // Map scroll to frame index
   const frameIndex = useTransform(scrollYProgress, [0, 1], [0, TOTAL_FRAMES - 1]);
 
-  // Update canvas size on mount and resize
+  // Update canvas size on mount and resize. Cap DPR at 2 — on 3× displays
+  // the extra detail isn't visible and tripling canvas memory tanks scroll FPS.
   useEffect(() => {
     const updateCanvasSize = () => {
-      // Cap DPR at 2 for performance on mobile/high-DPI screens while maintaining quality
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       setCanvasSize({
         width: Math.floor(window.innerWidth * dpr),
         height: Math.floor(window.innerHeight * dpr),
@@ -52,8 +59,8 @@ export const IronManScroll = () => {
     };
 
     updateCanvasSize();
-    window.addEventListener('resize', updateCanvasSize);
-    window.addEventListener('orientationchange', updateCanvasSize);
+    window.addEventListener('resize', updateCanvasSize, { passive: true });
+    window.addEventListener('orientationchange', updateCanvasSize, { passive: true });
     return () => {
       window.removeEventListener('resize', updateCanvasSize);
       window.removeEventListener('orientationchange', updateCanvasSize);
@@ -75,41 +82,75 @@ export const IronManScroll = () => {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
+    /**
+     * Adaptive fit. The source frames are landscape (1920×1080). On a portrait
+     * tablet/phone viewport, plain "cover" upscales the source ~3.5× to fill
+     * the viewport height — which looks soft no matter how clean the source.
+     *
+     * Strategy: compute the upscale factor cover *would* require. If it exceeds
+     * MAX_COVER_UPSCALE (1.5× — beyond this, blur is perceptible), fall back to
+     * "contain" which letterboxes with black bars but renders the image at
+     * near-native resolution. Result: full-bleed on landscape, sharp +
+     * cinematic on portrait.
+     */
+    const MAX_COVER_UPSCALE = 1.5;
+
     const unsubscribe = frameIndex.on('change', (latest) => {
       const index = Math.round(latest);
       const img = images[index];
 
       if (img && img.complete) {
-        // Clear canvas with integer dimensions
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Black fill (we have alpha: false but explicit is safer for letterbox)
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Calculate scaling to cover entire canvas while maintaining aspect ratio
         const imgAspect = img.width / img.height;
         const canvasAspect = canvas.width / canvas.height;
 
+        // What scale-factor would COVER require?
+        const coverScale = imgAspect > canvasAspect
+          ? canvas.height / img.height // scale-to-fit-height
+          : canvas.width / img.width;   // scale-to-fit-width
+
+        const useContain = coverScale > MAX_COVER_UPSCALE;
+
         let drawWidth, drawHeight, offsetX, offsetY;
 
-        if (imgAspect > canvasAspect) {
-          // Image is wider than canvas
-          drawHeight = canvas.height;
-          drawWidth = drawHeight * imgAspect;
-          offsetX = (canvas.width - drawWidth) / 2;
-          offsetY = 0;
+        if (useContain) {
+          // Contain: fit entirely, letterbox
+          if (imgAspect > canvasAspect) {
+            drawWidth = canvas.width;
+            drawHeight = drawWidth / imgAspect;
+            offsetX = 0;
+            offsetY = (canvas.height - drawHeight) / 2;
+          } else {
+            drawHeight = canvas.height;
+            drawWidth = drawHeight * imgAspect;
+            offsetX = (canvas.width - drawWidth) / 2;
+            offsetY = 0;
+          }
         } else {
-          // Image is taller than canvas
-          drawWidth = canvas.width;
-          drawHeight = drawWidth / imgAspect;
-          offsetX = 0;
-          offsetY = (canvas.height - drawHeight) / 2;
+          // Cover: fill canvas, crop overflow
+          if (imgAspect > canvasAspect) {
+            drawHeight = canvas.height;
+            drawWidth = drawHeight * imgAspect;
+            offsetX = (canvas.width - drawWidth) / 2;
+            offsetY = 0;
+          } else {
+            drawWidth = canvas.width;
+            drawHeight = drawWidth / imgAspect;
+            offsetX = 0;
+            offsetY = (canvas.height - drawHeight) / 2;
+          }
         }
 
-        // Draw with rounded coordinates to prevent sub-pixel blur
+        // Round to integer pixels to avoid sub-pixel sampling blur
         ctx.drawImage(
-          img, 
-          Math.floor(offsetX), 
-          Math.floor(offsetY), 
-          Math.ceil(drawWidth), 
-          Math.ceil(drawHeight)
+          img,
+          Math.round(offsetX),
+          Math.round(offsetY),
+          Math.round(drawWidth),
+          Math.round(drawHeight)
         );
       }
     });
@@ -140,11 +181,14 @@ export const IronManScroll = () => {
           ref={canvasRef}
           width={canvasSize.width}
           height={canvasSize.height}
-          className="w-full h-full object-cover"
-          style={{ 
+          className="w-full h-full block"
+          style={{
             width: '100%',
             height: '100%',
-            filter: 'contrast(1.15) saturate(1.1)' 
+            // Hint the browser to use a sharper downscale filter when the canvas
+            // is bigger than its CSS box. Falls back gracefully on browsers
+            // that don't recognise either value.
+            imageRendering: 'auto',
           }}
         />
         
