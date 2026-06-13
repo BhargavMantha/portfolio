@@ -1,13 +1,7 @@
-import { IronManScroll } from './components/scrollytelling/IronManScroll';
-import { CustomCursor } from './components/ui/CustomCursor';
+import { FlightExperience } from './flight/FlightExperience';
 
 function App() {
-  return (
-    <div className="relative w-full min-h-screen bg-primary cursor-none">
-      <CustomCursor />
-      <IronManScroll />
-    </div>
-  );
+  return <FlightExperience />;
 }
 
 export default App;
