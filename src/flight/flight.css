@@ -1,0 +1,269 @@
+/* flight.css — standalone token bundle for the Flight Experience page.
+   Extracted from the Stark HUD design system (Bhargav Mantha).
+   Fonts load from Google Fonts so this folder has zero other deps. */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300..800&family=Space+Grotesk:wght@300..700&family=Space+Mono:wght@400;700&display=swap');
+
+/* ============================================================
+   COLORS — Bhargav Mantha "Stark HUD" portfolio system
+   Iron-Man-inspired: deep void black, electric blue + arc-reactor
+   gold accents, glassmorphism. Lifted from the live codebase
+   (tailwind.config.js, constants/colors.ts, glassmorphism.css).
+   ============================================================ */
+
+:root {
+  /* ---- Base / void backgrounds ---- */
+  --void-950: #050505;   /* Deep Void Black — page bg in app */
+  --void-900: #000814;   /* Space Black — primary canvas */
+  --navy-900: #001029;   /* Navy depth */
+  --navy-800: #001d3d;   /* Deep Navy — glass tint base */
+  --panel-900: #0a0a0a;  /* Iron panel black */
+  --panel-800: #0f0f0f;  /* Panel black */
+  --panel-700: #1a1a1a;  /* Border / highlight black */
+  --panel-600: #2a2a2a;  /* Scrollbar / hairline */
+
+  /* ---- Electric blue family (core HUD accent) ---- */
+  --blue-cyan: #00f5ff;     /* Bright cyan */
+  --blue-electric: #00d4ff; /* Electric Blue — primary accent */
+  --blue-medium: #0096ff;   /* Medium blue */
+  --blue-deep: #0077b6;     /* Deep blue */
+  --blue-ice: #e0f4ff;      /* Ice / white-blue glow */
+  --blue-core: #007acc;     /* Gradient end for blue text */
+
+  /* ---- Arc-reactor gold family (secondary accent) ---- */
+  --gold: #ffc107;          /* Vibrant Gold — arc reactor */
+  --gold-deep: #ff8f00;     /* Amber / gradient end */
+
+  /* ---- Neutrals / text ---- */
+  --white: #ffffff;
+  --gray-100: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+
+  /* ---- Glass surfaces (translucent, used with backdrop-blur) ---- */
+  --glass-white: rgba(255, 255, 255, 0.03);   /* faint frost card */
+  --glass-white-2: rgba(255, 255, 255, 0.05); /* stark glass */
+  --glass-navy: rgba(0, 29, 61, 0.7);          /* deep navy glass panel */
+  --glass-black: rgba(0, 0, 0, 0.6);           /* dim overlay panel */
+  --glass-border: rgba(255, 255, 255, 0.1);    /* hairline on glass */
+  --glass-border-soft: rgba(255, 255, 255, 0.05);
+  --blue-glow-border: rgba(0, 212, 255, 0.2);  /* electric-blue ring */
+  --blue-glow-soft: rgba(0, 212, 255, 0.1);
+  --gold-glow-soft: rgba(255, 193, 7, 0.2);
+
+  /* ============================================================
+     SEMANTIC ALIASES — prefer these in components
+     ============================================================ */
+  --surface-bg: var(--void-950);          /* app canvas */
+  --surface-deep: var(--void-900);         /* hero / space sections */
+  --surface-panel: var(--panel-800);       /* solid panels */
+  --surface-card: var(--glass-white);      /* default glass card */
+  --surface-card-hover: var(--glass-white-2);
+  --surface-glass: var(--glass-navy);      /* prominent navy glass */
+  --surface-overlay: var(--glass-black);   /* content backdrop */
+
+  --border-hairline: var(--glass-border);
+  --border-soft: var(--glass-border-soft);
+  --border-accent: var(--blue-glow-border);
+
+  --text-primary: var(--white);
+  --text-secondary: var(--gray-400);
+  --text-tertiary: var(--gray-500);
+  --text-muted: var(--gray-600);
+
+  --accent: var(--blue-electric);          /* primary interactive */
+  --accent-bright: var(--blue-cyan);
+  --accent-deep: var(--blue-deep);
+  --accent-gold: var(--gold);              /* arc-reactor highlight */
+  --accent-gold-deep: var(--gold-deep);
+
+  --focus-ring: var(--blue-electric);
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   Display/HUD: Space Grotesk · Body/UI: Montserrat · Mono: Space Mono
+   ============================================================ */
+
+:root {
+  /* ---- Families ---- */
+  --font-display: 'Space Grotesk', 'Montserrat', system-ui, sans-serif;
+  --font-body: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* ---- Weights ---- */
+  --fw-thin: 200;    /* @kind font */
+  --fw-light: 300;   /* @kind font */
+  --fw-regular: 400; /* @kind font */
+  --fw-medium: 500;  /* @kind font */
+  --fw-semibold: 600;/* @kind font */
+  --fw-bold: 700;    /* @kind font */
+
+  /* ---- Fluid type scale (mobile-first; clamps up on wider screens) ---- */
+  --text-xs: 0.75rem;    /* 12 — micro labels */
+  --text-sm: 0.875rem;   /* 14 — captions, tags */
+  --text-base: 1rem;     /* 16 — body */
+  --text-lg: 1.125rem;   /* 18 — lead body */
+  --text-xl: 1.375rem;   /* 22 — card titles */
+  --text-2xl: 1.75rem;   /* 28 — card titles / sub-heads */
+  --text-3xl: 2.25rem;   /* 36 — metric values */
+  --text-4xl: 2.75rem;   /* 44 — section headings */
+  --text-5xl: 3.5rem;    /* 56 — page titles */
+  --text-display: 5rem;  /* 80 — hero name (scale up via clamp inline where needed) */
+
+  /* ---- Line heights ---- */
+  --leading-tight: 1.05;
+  --leading-snug: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+
+  /* ---- Letter spacing (HUD loves wide tracking) ---- */
+  --tracking-tighter: -0.03em;  /* big display names */
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.08em;      /* eyebrow labels */
+  --tracking-wider: 0.16em;     /* HUD captions */
+  --tracking-widest: 0.28em;    /* "INITIALIZE SYSTEM" */
+}
+
+/* ============================================================
+   SPACING · RADII · SHADOWS · GLOWS · MOTION
+   ============================================================ */
+
+:root {
+  /* ---- Spacing scale (4px base) ---- */
+  --space-0: 0;
+  --space-1: 0.25rem;  /* 4 */
+  --space-2: 0.5rem;   /* 8 */
+  --space-3: 0.75rem;  /* 12 */
+  --space-4: 1rem;     /* 16 */
+  --space-5: 1.25rem;  /* 20 */
+  --space-6: 1.5rem;   /* 24 */
+  --space-8: 2rem;     /* 32 */
+  --space-10: 2.5rem;  /* 40 */
+  --space-12: 3rem;    /* 48 */
+  --space-16: 4rem;    /* 64 */
+  --space-20: 5rem;    /* 80 */
+  --space-24: 6rem;    /* 96 */
+
+  /* ---- Radii ---- */
+  --radius-xs: 4px;     /* tiny chips / scrollbar */
+  --radius-sm: 8px;     /* buttons, small tags */
+  --radius-md: 12px;    /* inputs, mid cards */
+  --radius-lg: 16px;    /* glass cards (default) */
+  --radius-xl: 24px;    /* big panels / hero card */
+  --radius-2xl: 32px;
+  --radius-pill: 9999px;
+
+  /* ---- Borders ---- */
+  --border-width: 1px;
+  --border-width-2: 2px;
+
+  /* ---- Elevation shadows ---- */
+  --shadow-glass: 0 4px 30px rgba(0, 0, 0, 0.1);
+  --shadow-panel: 0 8px 32px 0 rgba(0, 119, 182, 0.3);  /* navy-blue panel lift */
+  --shadow-card: 0 10px 40px -12px rgba(0, 0, 0, 0.6);
+  --shadow-contact: 0 0 80px -20px rgba(0, 212, 255, 0.3);
+
+  /* ---- Reactor glows (the signature effect) ---- */
+  --glow-blue-sm: 0 0 10px rgba(0, 212, 255, 0.2);
+  --glow-blue-md: 0 0 15px rgba(0, 212, 255, 0.4);
+  --glow-blue-lg: 0 0 30px rgba(0, 212, 255, 0.5);
+  --glow-gold-sm: 0 0 10px rgba(255, 193, 7, 0.2);
+  --glow-gold-md: 0 0 20px rgba(255, 193, 7, 0.45);
+  --glow-gold-lg: 0 0 40px rgba(255, 193, 7, 0.5);
+  --glow-text-blue: 0 0 10px rgba(0, 212, 255, 0.5);
+
+  /* ---- Blur (glassmorphism) ---- */
+  --blur-card: 10px;
+  --blur-panel: 20px;
+
+  /* ---- Motion ---- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);   /* @kind other */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* @kind other */
+  --dur-fast: 0.2s;  /* @kind other */
+  --dur-base: 0.3s;  /* @kind other */
+  --dur-slow: 0.5s;  /* @kind other */
+}
+
+/* ============================================================
+   EFFECTS & UTILITIES — signature Stark-HUD surface treatments.
+   Class utilities that compose the design tokens. Use in cards,
+   specimens and UI kits so the glow/glass language stays consistent.
+   ============================================================ */
+
+/* ---- Glassmorphism cards ---- */
+.hud-glass {
+  background: var(--surface-card);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  border: var(--border-width) solid var(--border-hairline);
+  box-shadow: var(--shadow-glass);
+  border-radius: var(--radius-lg);
+}
+
+.hud-panel {
+  background: var(--surface-glass);
+  backdrop-filter: blur(var(--blur-panel));
+  -webkit-backdrop-filter: blur(var(--blur-panel));
+  border: var(--border-width) solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+}
+
+/* ---- Reactor border ring ---- */
+.hud-border-glow {
+  border: var(--border-width) solid var(--blue-glow-border);
+  box-shadow: var(--glow-blue-sm);
+}
+
+/* ---- Pulsing glows (signature ambient animation) ---- */
+@keyframes hud-pulse-blue {
+  0%, 100% { box-shadow: var(--glow-blue-sm); }
+  50%      { box-shadow: var(--glow-blue-md); }
+}
+@keyframes hud-pulse-gold {
+  0%, 100% { box-shadow: var(--glow-gold-sm); }
+  50%      { box-shadow: var(--glow-gold-md); }
+}
+.glow-blue { animation: hud-pulse-blue 3s infinite ease-in-out; }
+.glow-gold { animation: hud-pulse-gold 3s infinite ease-in-out; }
+
+/* ---- Text gradients ---- */
+.text-gradient-gold {
+  background: linear-gradient(to bottom right, var(--gold), var(--gold-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.text-gradient-blue {
+  background: linear-gradient(to bottom right, var(--blue-electric), var(--blue-core));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---- HUD eyebrow / mono label ---- */
+.hud-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ---- Scan-line overlay ---- */
+@keyframes hud-scan { 0% { background-position: 0 0; } 100% { background-position: 0 100%; } }
+.scan-line {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 212, 255, 0.05) 50%, transparent 100%);
+  background-size: 100% 4px;
+  animation: hud-scan 8s linear infinite;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow-blue, .glow-gold, .scan-line { animation: none; }
+}
