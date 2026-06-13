@@ -176,4 +176,23 @@ export const CALLOUTS: Callout[] = [
 export const CONTACT = {
   email: 'manthabhargav@gmail.com',
   linkedin: 'https://www.linkedin.com/in/bhargav-mantha/',
+  resume: '/Bhargav_Mantha.pdf',
+  // Prefilled into the "Send Transmission" mailto so it opens ready to send.
+  subject: 'Flight uplink — let’s talk',
+  body: [
+    'Hi Bhargav,',
+    '',
+    'I came across your portfolio and would like to connect about an opportunity.',
+    '',
+    'A bit about the role / team:',
+    '',
+    '',
+    '— ',
+  ].join('\n'),
 };
+
+/** Build the mailto: URL with subject + body prefilled. */
+export function buildMailto(): string {
+  const q = `subject=${encodeURIComponent(CONTACT.subject)}&body=${encodeURIComponent(CONTACT.body)}`;
+  return `mailto:${CONTACT.email}?${q}`;
+}

@@ -5,7 +5,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { BootSplash } from './BootSplash';
 import { useFlightEngine, type FlightRefs } from './useFlightEngine';
-import { CHAPTERS, CONTACT, type Chapter } from './flightData';
+import { CHAPTERS, CONTACT, buildMailto, type Chapter } from './flightData';
 import './flight.css';
 import './flight-layout.css';
 
@@ -48,11 +48,14 @@ function ChapterSection({ ch }: { ch: Chapter }) {
           <h2>{ch.title}</h2>
           <p className="lead">{ch.lead}</p>
           <div className="btnrow">
-            <a className="btn solid" href={'mailto:' + CONTACT.email}>
+            <a className="btn solid" href={buildMailto()}>
               Send Transmission
             </a>
             <a className="btn ghosty" href={CONTACT.linkedin} target="_blank" rel="noreferrer">
               Connect on LinkedIn
+            </a>
+            <a className="btn ghosty" href={CONTACT.resume} download>
+              Download Résumé
             </a>
           </div>
           <div className="foot">© BHARGAV MANTHA · MUMBAI · I LIVE TO CODE</div>
