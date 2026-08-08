@@ -52,3 +52,7 @@ coverage
 .temp
 .tmp
 
+
+# Plaintext source for the encrypted /plan page — never commit this.
+plan-source/
+The Gentle Plan.html

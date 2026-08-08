@@ -2,6 +2,19 @@
   publish = "dist"
   command = "npm ci --legacy-peer-deps && npm run build"
 
+# Static sub-pages resolve before the SPA catch-all below.
+# (Existing files also shadow redirect rules, but being explicit is cheaper
+# than debugging a 404 on someone's phone.)
+[[redirects]]
+  from = "/plan"
+  to = "/plan/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/agentic-stack"
+  to = "/agentic-stack/index.html"
+  status = 200
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
