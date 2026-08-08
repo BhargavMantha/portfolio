@@ -103,6 +103,28 @@ Custom Iron Man color palette defined in `tailwind.config.js`:
 - `electric-blue`: Accent color (#00d4ff)
 - `arc-reactor`: Gold highlights (#ffc107)
 
+### The private `/plan` page
+
+`/plan` is a static sub-page served from `public/plan/index.html`. It ships as
+**ciphertext**: the page content is AES-256-GCM encrypted, and the key is derived
+in the browser from a username + password via PBKDF2-SHA256. There is no server
+check — without the credentials the file is unreadable, so nothing sensitive sits
+in the repo or on the CDN in the clear.
+
+The plaintext lives in `plan-source/`, which is gitignored. To edit and republish:
+
+```bash
+# edit plan-source/content.html (markup + CSS) or plan-source/behaviour.js
+PLAN_USER='...' PLAN_PASS='...' node scripts/encrypt-plan.mjs
+```
+
+That regenerates `public/plan/index.html` from `scripts/plan-gate.template.html`.
+Re-running it with different credentials is all it takes to change the password.
+
+Because the ciphertext is downloadable, its security is exactly the strength of
+the passphrase plus the PBKDF2 work factor (`ITERATIONS` in the script). Prefer a
+long passphrase over a short complex one.
+
 ## 📄 License
 
 This project is open source and available under the [MIT License](LICENSE).

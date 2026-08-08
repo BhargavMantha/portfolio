@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b120e" />
+  <title>Private</title>
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="color-scheme" content="dark" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2255%22 r=%2238%22 fill=%22%23cdf463%22/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet" />
+
+  <script>document.documentElement.className = 'js';</script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+    html { -webkit-text-size-adjust: 100%; overflow-x: clip }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: #0b120e;
+      color: #efeee6;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: clip;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: rgba(205, 244, 99, .18);
+    }
+
+    /* ── the gate ───────────────────────────────────────────── */
+    #gate {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+      background-image:
+        radial-gradient(ellipse 90% 44% at 50% 0%, rgba(205, 244, 99, .09), transparent 70%),
+        radial-gradient(ellipse 70% 40% at 90% 10%, rgba(126, 200, 227, .05), transparent 70%);
+    }
+
+    .gate-card {
+      width: 100%;
+      max-width: 400px;
+      background: #101b14;
+      border: 1px solid rgba(239, 238, 230, .10);
+      border-radius: 20px;
+      padding: clamp(24px, 7vw, 34px);
+    }
+
+    .gate-brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: 'Space Mono', ui-monospace, monospace;
+      font-size: 12.5px;
+      letter-spacing: .06em;
+      color: rgba(239, 238, 230, .62);
+      margin-bottom: 22px;
+    }
+
+    .gate-brand .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #cdf463;
+      box-shadow: 0 0 10px rgba(205, 244, 99, .7);
+      flex: none;
+    }
+
+    .gate-card h1 {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(24px, 6.5vw, 30px);
+      font-weight: 600;
+      letter-spacing: -.02em;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+
+    .gate-card .sub {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: rgba(239, 238, 230, .62);
+      margin-bottom: 24px;
+    }
+
+    .field {
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .field span {
+      display: block;
+      font-family: 'Space Mono', ui-monospace, monospace;
+      font-size: 10.5px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(239, 238, 230, .42);
+      margin-bottom: 7px;
+    }
+
+    .field input {
+      width: 100%;
+      /* 16px keeps iOS Safari from zooming the viewport on focus */
+      font-size: 16px;
+      font-family: inherit;
+      color: #efeee6;
+      background: rgba(11, 18, 14, .7);
+      border: 1px solid rgba(239, 238, 230, .18);
+      border-radius: 12px;
+      padding: 13px 14px;
+      min-height: 50px;
+      transition: border-color .15s;
+    }
+
+    .field input:focus {
+      outline: none;
+      border-color: rgba(205, 244, 99, .6);
+    }
+
+    #unlock {
+      width: 100%;
+      min-height: 52px;
+      margin-top: 8px;
+      border: 0;
+      border-radius: 999px;
+      background: #cdf463;
+      color: #0b120e;
+      font-family: inherit;
+      font-size: 15.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+
+    #unlock[disabled] {
+      opacity: .55;
+      cursor: progress;
+    }
+
+    #msg {
+      min-height: 20px;
+      margin-top: 14px;
+      font-family: 'Space Mono', ui-monospace, monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgba(239, 238, 230, .42);
+    }
+
+    #msg.err {
+      color: #ff8f8f;
+    }
+
+    .gate-foot {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(239, 238, 230, .10);
+      font-family: 'Space Mono', ui-monospace, monospace;
+      font-size: 10.5px;
+      line-height: 1.7;
+      letter-spacing: .03em;
+      color: rgba(239, 238, 230, .34);
+    }
+
+    .gate-foot a {
+      color: rgba(239, 238, 230, .5);
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding-right: 10px;
+    }
+
+    :focus-visible {
+      outline: 2px solid #cdf463;
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition-duration: .001ms !important }
+    }
+  </style>
+</head>
+
+<body>
+  <main id="gate">
+    <form class="gate-card" id="form" autocomplete="on">
+      <div class="gate-brand"><span class="dot" aria-hidden="true"></span> the gentle plan</div>
+      <h1>This one's private</h1>
+      <p class="sub">The page is stored encrypted. Your username and password derive the key that unlocks it — nothing
+        is checked against a server, because there isn't one.</p>
+
+      <label class="field">
+        <span>Username</span>
+        <input type="text" id="user" name="username" autocomplete="username" autocapitalize="off" autocorrect="off"
+          spellcheck="false" required />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" id="pass" name="password" autocomplete="current-password" required />
+      </label>
+
+      <button type="submit" id="unlock">Unlock</button>
+      <p id="msg" role="status" aria-live="polite"></p>
+
+      <p class="gate-foot">
+        AES-256-GCM · PBKDF2-SHA256 · __ITER_LABEL__ iterations<br />
+        <a href="/">← back to bhargavmantha.dev</a>
+      </p>
+    </form>
+  </main>
+
+  <script type="application/json" id="payload">__PAYLOAD__</script>
+
+  <script>
+    (function () {
+      var P = JSON.parse(document.getElementById('payload').textContent);
+      var form = document.getElementById('form');
+      var btn = document.getElementById('unlock');
+      var msg = document.getElementById('msg');
+      var SKEY = 'gentle-plan-key';
+
+      function b64(s) {
+        var bin = atob(s), out = new Uint8Array(bin.length);
+        for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+        return out;
+      }
+
+      function say(text, isErr) {
+        msg.textContent = text;
+        msg.classList.toggle('err', !!isErr);
+      }
+
+      async function deriveKey(user, pass) {
+        var material = await crypto.subtle.importKey(
+          'raw', new TextEncoder().encode(user.trim().toLowerCase() + '\n' + pass),
+          'PBKDF2', false, ['deriveKey']);
+        return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: b64(P.salt), iterations: P.iterations, hash: 'SHA-256' },
+          material, { name: 'AES-GCM', length: 256 }, true, ['decrypt']);
+      }
+
+      async function decrypt(key) {
+        var plain = await crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv: b64(P.iv) }, key, b64(P.data));
+        return new TextDecoder().decode(plain);
+      }
+
+      function render(html) {
+        document.title = P.title;
+        document.body.innerHTML = html;
+        document.body.id = 'top';
+        // Content is injected, so its inline <script> never ran — start it here.
+        // (This code ships in the clear; it holds no secrets, only page behaviour.)
+        __BEHAVIOUR__
+        var hash = location.hash;
+        if (hash) {
+          var t = document.querySelector(hash);
+          if (t) t.scrollIntoView();
+        }
+      }
+
+      // Already unlocked in this tab? Skip straight through.
+      (async function resume() {
+        var stored = sessionStorage.getItem(SKEY);
+        if (!stored) return;
+        try {
+          var key = await crypto.subtle.importKey(
+            'raw', b64(stored), 'AES-GCM', true, ['decrypt']);
+          render(await decrypt(key));
+        } catch (e) {
+          sessionStorage.removeItem(SKEY);
+        }
+      })();
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var user = document.getElementById('user').value;
+        var pass = document.getElementById('pass').value;
+        if (!user || !pass) return;
+
+        btn.disabled = true;
+        say('Deriving key…');
+
+        try {
+          var key = await deriveKey(user, pass);
+          var html = await decrypt(key);
+          var raw = await crypto.subtle.exportKey('raw', key);
+          try {
+            sessionStorage.setItem(SKEY,
+              btoa(String.fromCharCode.apply(null, new Uint8Array(raw))));
+          } catch (ignored) { }
+          render(html);
+        } catch (err) {
+          btn.disabled = false;
+          say('That username and password don’t unlock this page.', true);
+          document.getElementById('pass').select();
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>
