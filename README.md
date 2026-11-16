@@ -1,25 +1,24 @@
 # Bhargav Mantha - Portfolio
 
-> **Iron Man Themed Interactive Portfolio** with scrollytelling experience
+> A space-flight portfolio: fly a starship between planets, where each planet is a chapter of my career.
 
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://bhargavmantha.dev)
 [![Built with React](https://img.shields.io/badge/React-18.2-61DAFB?logo=react)](https://react.dev)
 [![Powered by Vite](https://img.shields.io/badge/Vite-4.4-646CFF?logo=vite)](https://vitejs.dev)
 
-## 🚀 Features
+## Features
 
-- **Scrollytelling Experience**: 120-frame image sequence animation synchronized with scroll
-- **Iron Man HUD Theme**: Arc reactor loader, electric blue accents, and futuristic UI
-- **Smooth Animations**: Powered by Framer Motion for buttery-smooth transitions
-- **Responsive Design**: Optimized for all screen sizes and high-DPI displays
-- **Interactive Navigation**: Floating nav bar with smooth scroll-to-section
-- **Performance Optimized**: High-quality canvas rendering with device pixel ratio scaling
+- **Fly the story**: steer with WASD, drag with the mouse or a finger, or press Space for autopilot to the next stop
+- **Planets as chapters**: arrive at a planet and its chapter opens; a route bar jumps to any stop
+- **Collect skills**: skill orbs along the route fill in the capability map
+- **Plain version**: a "Skip to portfolio" button, and phones, reduced-motion users and browsers without WebGL get a fast scrolling page automatically (`?view=classic` / `?view=game` force either)
+- **All procedural**: ship, planets, station and nebula are generated in code, so there are no model downloads
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend**: React 18, TypeScript
-- **Animation**: Framer Motion
-- **Styling**: Tailwind CSS
+- **3D**: Three.js with bloom post-processing and custom GLSL shaders
+- **Styling**: CSS (Montserrat, navy and sky blue), Tailwind base
 - **Build Tool**: Vite
 - **Deployment**: Netlify / Vercel
 
@@ -58,50 +57,19 @@ npm run preview
 - `npm run lint:fix` - Fix ESLint errors
 - `npm run format` - Format code with Prettier
 
-## 🎨 Project Structure
+## Project Structure
 
 ```
-portfolio/
-├── public/
-│   ├── sequence/          # 120 Iron Man animation frames
-│   ├── models/            # 3D models and assets
-│   └── Bhargav_Mantha.pdf # Resume
-├── src/
-│   ├── components/
-│   │   ├── scrollytelling/  # Scroll-based animations
-│   │   ├── ui/              # Reusable UI components
-│   │   └── Navigation.tsx   # Floating navigation bar
-│   ├── hooks/             # Custom React hooks
-│   ├── constants/         # Content and configuration
-│   └── App.tsx           # Main application
-└── ...
+src/
+├── App.tsx                  # picks the game or the plain page
+└── space/
+    ├── content.ts           # all copy: hero, stops, skills, contact (edit the story here)
+    ├── engine.ts            # renderer, flight model, autopilot, docking, skill pickups
+    ├── world.ts             # procedural ship, planets, station, beacon, stars, nebula
+    ├── SpaceExperience.tsx  # game HUD, intro, chapter panels, route bar
+    ├── Classic.tsx          # plain scrolling portfolio
+    └── space.css
 ```
-
-## 🌟 Key Components
-
-### Scrollytelling
-- **IronManScroll**: Main scroll container with image sequence
-- **SectionOverlay**: Content sections (Hero, About, Experience, Projects, Contact)
-- **Navigation**: Floating nav bar with active section tracking
-
-### UI Components
-- **ArcReactorLoader**: Custom loading animation
-- High-quality canvas rendering with image smoothing
-
-## 🔧 Configuration
-
-### Environment Variables
-Create a `.env` file for any environment-specific configuration:
-
-```env
-# Add your environment variables here
-```
-
-### Tailwind Theme
-Custom Iron Man color palette defined in `tailwind.config.js`:
-- `primary`: Dark background (#0a0a0a)
-- `electric-blue`: Accent color (#00d4ff)
-- `arc-reactor`: Gold highlights (#ffc107)
 
 ### Private pages (`/plan`, `/syllabus`)
 
