@@ -27,6 +27,8 @@ const ITERATIONS = 2_000_000;
 // source: gitignored folder holding content.html + behaviour.js
 // out:    folder under public/ that the page is served from
 // skey:   sessionStorage key, unique per page so unlocking one never clobbers another
+// theme:  optional HTML file (fonts + CSS overrides) injected into the gate's <head>
+// themeColor / iconColor: browser UI colour and favicon dot colour (hex without # for the icon)
 const PAGES = {
   plan: {
     title: 'The Gentle Plan',
@@ -34,6 +36,8 @@ const PAGES = {
     source: 'plan-source',
     out: 'public/plan',
     skey: 'gentle-plan-key',
+    themeColor: '#0b120e',
+    iconColor: 'cdf463',
   },
   syllabus: {
     title: 'Staff AI Platform Engineer — Syllabus',
@@ -41,6 +45,9 @@ const PAGES = {
     source: 'syllabus-source',
     out: 'public/syllabus',
     skey: 'staff-syllabus-key',
+    theme: 'scripts/themes/syllabus-gate.html',
+    themeColor: '#0d1726',
+    iconColor: '87ceeb',
   },
 };
 
@@ -91,6 +98,9 @@ const html = template
   .replace('__BEHAVIOUR__', () => behaviour)
   .replace('__BRAND__', () => page.brand)
   .replace('__SKEY__', () => page.skey)
+  .replace('__THEME_COLOR__', () => page.themeColor)
+  .replace('__ICON_COLOR__', () => page.iconColor)
+  .replace('__HEAD_EXTRA__', () => (page.theme ? readFileSync(resolve(root, page.theme), 'utf8').trim() : ''))
   .replace('__ITER_LABEL__', () => ITERATIONS.toLocaleString('en-US'));
 
 const outFile = resolve(root, page.out, 'index.html');
