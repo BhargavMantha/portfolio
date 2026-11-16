@@ -193,7 +193,7 @@
 <body>
   <main id="gate">
     <form class="gate-card" id="form" autocomplete="on">
-      <div class="gate-brand"><span class="dot" aria-hidden="true"></span> the gentle plan</div>
+      <div class="gate-brand"><span class="dot" aria-hidden="true"></span> __BRAND__</div>
       <h1>This one's private</h1>
       <p class="sub">The page is stored encrypted. Your username and password derive the key that unlocks it — nothing
         is checked against a server, because there isn't one.</p>
@@ -226,7 +226,7 @@
       var form = document.getElementById('form');
       var btn = document.getElementById('unlock');
       var msg = document.getElementById('msg');
-      var SKEY = 'gentle-plan-key';
+      var SKEY = '__SKEY__';
 
       function b64(s) {
         var bin = atob(s), out = new Uint8Array(bin.length);

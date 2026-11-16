@@ -5,6 +5,7 @@
   "rewrites": [
     { "source": "/plan", "destination": "/plan/index.html" },
     { "source": "/agentic-stack", "destination": "/agentic-stack/index.html" },
+    { "source": "/syllabus", "destination": "/syllabus/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
