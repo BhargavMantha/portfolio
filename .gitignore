@@ -53,6 +53,7 @@ coverage
 .tmp
 
 
-# Plaintext source for the encrypted /plan page — never commit this.
+# Plaintext sources for the encrypted private pages — never commit these.
 plan-source/
+syllabus-source/
 The Gentle Plan.html

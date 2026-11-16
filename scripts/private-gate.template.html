@@ -4,13 +4,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b120e" />
+  <meta name="theme-color" content="__THEME_COLOR__" />
   <title>Private</title>
   <meta name="robots" content="noindex, nofollow, noarchive" />
   <meta name="referrer" content="no-referrer" />
   <meta name="color-scheme" content="dark" />
   <link rel="icon"
-    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2255%22 r=%2238%22 fill=%22%23cdf463%22/></svg>" />
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2255%22 r=%2238%22 fill=%22%23__ICON_COLOR__%22/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -188,12 +188,13 @@
       * { transition-duration: .001ms !important }
     }
   </style>
+  __HEAD_EXTRA__
 </head>
 
 <body>
   <main id="gate">
     <form class="gate-card" id="form" autocomplete="on">
-      <div class="gate-brand"><span class="dot" aria-hidden="true"></span> the gentle plan</div>
+      <div class="gate-brand"><span class="dot" aria-hidden="true"></span> __BRAND__</div>
       <h1>This one's private</h1>
       <p class="sub">The page is stored encrypted. Your username and password derive the key that unlocks it — nothing
         is checked against a server, because there isn't one.</p>
@@ -226,7 +227,7 @@
       var form = document.getElementById('form');
       var btn = document.getElementById('unlock');
       var msg = document.getElementById('msg');
-      var SKEY = 'gentle-plan-key';
+      var SKEY = '__SKEY__';
 
       function b64(s) {
         var bin = atob(s), out = new Uint8Array(bin.length);

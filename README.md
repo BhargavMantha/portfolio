@@ -103,23 +103,26 @@ Custom Iron Man color palette defined in `tailwind.config.js`:
 - `electric-blue`: Accent color (#00d4ff)
 - `arc-reactor`: Gold highlights (#ffc107)
 
-### The private `/plan` page
+### Private pages (`/plan`, `/syllabus`)
 
-`/plan` is a static sub-page served from `public/plan/index.html`. It ships as
-**ciphertext**: the page content is AES-256-GCM encrypted, and the key is derived
-in the browser from a username + password via PBKDF2-SHA256. There is no server
-check — without the credentials the file is unreadable, so nothing sensitive sits
-in the repo or on the CDN in the clear.
+`/plan` and `/syllabus` are static sub-pages served from `public/<page>/index.html`.
+Each ships as **ciphertext**: the page content is AES-256-GCM encrypted, and the
+key is derived in the browser from a username + password via PBKDF2-SHA256.
+There is no server check — without the credentials the file is unreadable, so
+nothing sensitive sits in the repo or on the CDN in the clear.
 
-The plaintext lives in `plan-source/`, which is gitignored. To edit and republish:
+The plaintext for each page lives in a gitignored folder (`plan-source/`,
+`syllabus-source/`) holding `content.html` (markup + CSS) and `behaviour.js`.
+To edit and republish a page:
 
 ```bash
-# edit plan-source/content.html (markup + CSS) or plan-source/behaviour.js
-PLAN_USER='...' PLAN_PASS='...' node scripts/encrypt-plan.mjs
+PAGE_USER='...' PAGE_PASS='...' node scripts/encrypt-page.mjs syllabus   # or: plan
 ```
 
-That regenerates `public/plan/index.html` from `scripts/plan-gate.template.html`.
+That regenerates `public/<page>/index.html` from `scripts/private-gate.template.html`.
 Re-running it with different credentials is all it takes to change the password.
+New pages are added to the `PAGES` map in the script, plus a rewrite in
+`vercel.json` and `netlify.toml`.
 
 Because the ciphertext is downloadable, its security is exactly the strength of
 the passphrase plus the PBKDF2 work factor (`ITERATIONS` in the script). Prefer a
