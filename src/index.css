@@ -1,13 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap');
-@import './styles/glassmorphism.css';
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  --cursor-size: 20px;
-}
 
 * {
   margin: 0;
@@ -15,107 +10,13 @@
   box-sizing: border-box;
 }
 
-body {
-  background-color: #050505; /* Deep Void Black */
-  overflow-x: hidden;
-  overflow-y: auto;
-  color: #ffffff;
-}
-
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Typography Overrides */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Space Grotesk', sans-serif;
-}
-
-/* -- GLASSMORPHISM & UTILITIES -- */
-
-.stark-glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-}
-
-.stark-border-glow {
-  border: 1px solid rgba(0, 212, 255, 0.2);
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
-}
-
-/* Animated Glows */
-@keyframes pulse-glow-blue {
-  0%, 100% { box-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
-  50% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); }
-}
-
-@keyframes pulse-glow-gold {
-  0%, 100% { box-shadow: 0 0 10px rgba(255, 193, 7, 0.2); }
-  50% { box-shadow: 0 0 20px rgba(255, 193, 7, 0.4); }
-}
-
-.glow-blue {
-  animation: pulse-glow-blue 3s infinite ease-in-out;
-}
-
-.glow-gold {
-  animation: pulse-glow-gold 3s infinite ease-in-out;
-}
-
-/* Text Gradients */
-.text-gradient-gold {
-  background: linear-gradient(to bottom right, #FFC107, #FF8F00);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.text-gradient-blue {
-  background: linear-gradient(to bottom right, #00D4FF, #007ACC);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #050505;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #00D4FF;
-}
-
-/* Custom Selection */
-::selection {
-  background: rgba(0, 212, 255, 0.2);
-  color: #fff;
-}
-
-/* Restore the system cursor on touch devices — there's nothing to hide */
-@media (pointer: coarse) {
-  * { cursor: auto !important; }
-}
-
-/* Respect prefers-reduced-motion — kill long-running animations and ease */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+body {
+  background-color: #060b16;
+  color: #eaf2fb;
+  font-family: 'Montserrat', system-ui, sans-serif;
+  overflow-x: hidden;
 }

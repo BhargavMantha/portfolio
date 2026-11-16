@@ -4,16 +4,13 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Outfit', 'sans-serif'],
-        display: ['Space Grotesk', 'sans-serif'],
+        sans: ['Montserrat', 'system-ui', 'sans-serif'],
+        display: ['Montserrat', 'system-ui', 'sans-serif'],
       },
       colors: {
-        primary: '#000000',           // Deep Void Black (Matches Image Sequence)
-        secondary: '#0F0F0F',         // Panel Black
-        tertiary: '#1A1A1A',          // Border/Highlight
-        'arc-reactor': '#FFC107',     // Gold
-        'electric-blue': '#00D4FF',   // Core Blue
-        'stark-glass': 'rgba(255, 255, 255, 0.05)',
+        void: '#060b16',
+        navy: '#0d1726',
+        sky: '#87ceeb',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
