@@ -1,0 +1,59 @@
+:root {
+  --night: #0b1026;
+  --indigo: #1d1b4b;
+  --purple: #5b2a86;
+  --gold: #f2b631;
+  --cream: #f7f1e5;
+
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-script: 'Italianno', 'Snell Roundhand', cursive;
+
+  --radius: 2px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--night);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.08;
+  margin: 0;
+}
+
+.fr {
+  font-family: var(--font-script);
+  font-size: 1.7em;
+  line-height: 1.1;
+  color: var(--gold);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}

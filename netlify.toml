@@ -1,6 +1,8 @@
 [build]
   publish = "dist"
-  command = "npm ci --legacy-peer-deps && npm run build"
+  # The portfolio builds first; the anniversary site in loveletter/ is then built
+  # on its own and copied in, so it is served at /loveletter/.
+  command = "npm ci --legacy-peer-deps && npm run build && npm --prefix loveletter ci && npm --prefix loveletter run build && cp -r loveletter/dist dist/loveletter"
 
 # Static sub-pages resolve before the SPA catch-all below.
 # (Existing files also shadow redirect rules, but being explicit is cheaper
@@ -18,6 +20,17 @@
 [[redirects]]
   from = "/syllabus"
   to = "/syllabus/index.html"
+  status = 200
+
+# /loveletter is its own single-page app.
+[[redirects]]
+  from = "/loveletter"
+  to = "/loveletter/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/loveletter/*"
+  to = "/loveletter/index.html"
   status = 200
 
 [[redirects]]
