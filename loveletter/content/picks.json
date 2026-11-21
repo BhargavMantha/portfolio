@@ -1,0 +1,81 @@
+{
+  "roots": {
+    "W": "/media/bhargav/Misc/5-Photos/#AtoBFOREVER",
+    "G": "/media/bhargav/Misc/5-Photos/Google-Photos"
+  },
+  "folders": {
+    "haldi": "W/#1-Haldi",
+    "groom-haldi": "W/#2-Groom_Haldi",
+    "mehendi": "W/#3-Mahendi",
+    "ankurarpanam": "W/#4-Ankurarpanam",
+    "tota-sambaram": "W/5-Tota Sambaram",
+    "reception": "W/6-Reception",
+    "shaadi": "W/7-Shadi",
+    "google": "G"
+  },
+  "picks": [
+    { "id": "quiet-01", "chapter": "quiet", "folder": "reception", "stem": "JRP03637", "focal": [0.42, 0.45] },
+    { "id": "quiet-02", "chapter": "quiet", "folder": "reception", "stem": "JRP03675", "focal": [0.88, 0.4] },
+    { "id": "quiet-03", "chapter": "quiet", "folder": "reception", "stem": "JRP03687", "focal": [0.5, 0.3] },
+    { "id": "quiet-04", "chapter": "quiet", "folder": "reception", "stem": "JRP03641", "focal": [0.4, 0.5] },
+
+    { "id": "lumiere-01", "chapter": "lumiere", "folder": "reception", "stem": "JRP03811", "focal": [0.5, 0.5] },
+    { "id": "lumiere-02", "chapter": "lumiere", "folder": "reception", "stem": "JRP03736", "focal": [0.45, 0.4] },
+    { "id": "lumiere-03", "chapter": "lumiere", "folder": "reception", "stem": "JRP03788", "focal": [0.5, 0.4] },
+    { "id": "lumiere-04", "chapter": "lumiere", "folder": "reception", "stem": "JRP03864", "focal": [0.5, 0.3] },
+    { "id": "lumiere-05", "chapter": "lumiere", "folder": "reception", "stem": "JRP04282", "focal": [0.5, 0.25] },
+    { "id": "lumiere-06", "chapter": "lumiere", "folder": "reception", "stem": "JRP04010", "focal": [0.4, 0.4] },
+
+    { "id": "haldi-01", "chapter": "colours", "ceremony": "haldi", "folder": "haldi", "stem": "0S0A8702", "focal": [0.5, 0.4] },
+    { "id": "haldi-02", "chapter": "colours", "ceremony": "haldi", "folder": "haldi", "stem": "0S0A8825", "focal": [0.45, 0.4] },
+    { "id": "haldi-03", "chapter": "colours", "ceremony": "haldi", "folder": "haldi", "stem": "0S0A8903", "focal": [0.55, 0.4] },
+    { "id": "haldi-04", "chapter": "colours", "ceremony": "haldi", "folder": "haldi", "stem": "0S0A9177", "focal": [0.5, 0.4] },
+
+    { "id": "groom-haldi-01", "chapter": "colours", "ceremony": "groom-haldi", "folder": "groom-haldi", "stem": "IMG_8124", "focal": [0.6, 0.45] },
+    { "id": "groom-haldi-02", "chapter": "colours", "ceremony": "groom-haldi", "folder": "groom-haldi", "stem": "IMG_8313", "focal": [0.7, 0.45] },
+
+    { "id": "mehendi-01", "chapter": "colours", "ceremony": "mehendi", "folder": "mehendi", "stem": "IMG_0652", "focal": [0.5, 0.45] },
+    { "id": "mehendi-02", "chapter": "colours", "ceremony": "mehendi", "folder": "mehendi", "stem": "IMG_0781", "focal": [0.5, 0.4] },
+    { "id": "mehendi-03", "chapter": "colours", "ceremony": "mehendi", "folder": "mehendi", "stem": "IMG_0814", "focal": [0.5, 0.55] },
+
+    { "id": "ankurarpanam-01", "chapter": "colours", "ceremony": "ankurarpanam", "folder": "ankurarpanam", "stem": "JRP03035", "focal": [0.5, 0.25] },
+    { "id": "ankurarpanam-02", "chapter": "colours", "ceremony": "ankurarpanam", "folder": "ankurarpanam", "stem": "JRP03064", "focal": [0.6, 0.4] },
+    { "id": "ankurarpanam-03", "chapter": "colours", "ceremony": "ankurarpanam", "folder": "ankurarpanam", "stem": "JRP03116", "focal": [0.5, 0.25] },
+
+    { "id": "tota-01", "chapter": "colours", "ceremony": "tota-sambaram", "folder": "tota-sambaram", "stem": "JRP03174", "focal": [0.5, 0.5] },
+    { "id": "tota-02", "chapter": "colours", "ceremony": "tota-sambaram", "folder": "tota-sambaram", "stem": "JRP03363", "focal": [0.35, 0.4] },
+    { "id": "tota-03", "chapter": "colours", "ceremony": "tota-sambaram", "folder": "tota-sambaram", "stem": "JRP03381", "focal": [0.6, 0.4] },
+    { "id": "tota-04", "chapter": "colours", "ceremony": "tota-sambaram", "folder": "tota-sambaram", "stem": "JRP03523", "focal": [0.5, 0.4] },
+    { "id": "tota-05", "chapter": "colours", "ceremony": "tota-sambaram", "folder": "tota-sambaram", "stem": "JRP03544", "focal": [0.5, 0.35] },
+    { "id": "tota-06", "chapter": "colours", "ceremony": "tota-sambaram", "folder": "tota-sambaram", "stem": "JRP03547", "focal": [0.5, 0.45] },
+
+    { "id": "reception-01", "chapter": "colours", "ceremony": "reception", "folder": "reception", "stem": "JRP03827", "focal": [0.5, 0.25] },
+    { "id": "reception-02", "chapter": "colours", "ceremony": "reception", "folder": "reception", "stem": "JRP03900", "focal": [0.5, 0.35] },
+    { "id": "reception-03", "chapter": "colours", "ceremony": "reception", "folder": "reception", "stem": "JRP03928", "focal": [0.5, 0.4] },
+    { "id": "reception-04", "chapter": "colours", "ceremony": "reception", "folder": "reception", "stem": "JRP04058", "focal": [0.5, 0.4] },
+    { "id": "reception-05", "chapter": "colours", "ceremony": "reception", "folder": "reception", "stem": "JRP04215", "focal": [0.5, 0.4] },
+    { "id": "reception-06", "chapter": "colours", "ceremony": "reception", "folder": "reception", "stem": "JRP04404", "focal": [0.5, 0.3] },
+
+    { "id": "shaadi-01", "chapter": "colours", "ceremony": "shaadi", "folder": "shaadi", "stem": "JRP04515", "focal": [0.6, 0.4] },
+    { "id": "shaadi-02", "chapter": "colours", "ceremony": "shaadi", "folder": "shaadi", "stem": "JRP04556", "focal": [0.5, 0.5] },
+    { "id": "shaadi-03", "chapter": "colours", "ceremony": "shaadi", "folder": "shaadi", "stem": "JRP04564", "focal": [0.55, 0.45] },
+    { "id": "shaadi-04", "chapter": "colours", "ceremony": "shaadi", "folder": "shaadi", "stem": "JRP04606", "focal": [0.55, 0.45] },
+    { "id": "shaadi-05", "chapter": "colours", "ceremony": "shaadi", "folder": "shaadi", "stem": "JRP04619", "focal": [0.5, 0.6] },
+    { "id": "shaadi-06", "chapter": "colours", "ceremony": "shaadi", "folder": "shaadi", "stem": "JRP04718", "focal": [0.5, 0.5] },
+    { "id": "shaadi-07", "chapter": "colours", "ceremony": "shaadi", "folder": "shaadi", "stem": "JRP04763", "focal": [0.5, 0.45] },
+    { "id": "shaadi-08", "chapter": "colours", "ceremony": "shaadi", "folder": "shaadi", "stem": "JRP04796", "focal": [0.55, 0.4] },
+    { "id": "shaadi-09", "chapter": "colours", "ceremony": "shaadi", "folder": "shaadi", "stem": "JRP04799", "focal": [0.5, 0.45] },
+    { "id": "shaadi-10", "chapter": "colours", "ceremony": "shaadi", "folder": "shaadi", "stem": "JRP04822", "focal": [0.5, 0.4] },
+    { "id": "shaadi-11", "chapter": "colours", "ceremony": "shaadi", "folder": "shaadi", "stem": "JRP04875", "focal": [0.5, 0.4] },
+
+    { "id": "home-2022", "chapter": "home", "year": 2022, "folder": "google", "stem": "PXL_20221222_020456226", "focal": [0.5, 0.65] },
+    { "id": "home-2025a", "chapter": "home", "year": 2025, "folder": "google", "stem": "PXL_20251011_154913631.RAW-01", "focal": [0.65, 0.5] },
+    { "id": "home-2025b", "chapter": "home", "year": 2025, "folder": "google", "stem": "PXL_20251226_070654785.TS-000.MP", "focal": [0.5, 0.5] },
+    { "id": "home-2025c", "chapter": "home", "year": 2025, "folder": "google", "stem": "PXL_20251231_145406316.TS-000", "focal": [0.5, 0.4] },
+    { "id": "home-2026a", "chapter": "home", "year": 2026, "folder": "google", "stem": "PXL_20260510_082831680.RAW-01", "focal": [0.5, 0.5] },
+    { "id": "home-2026b", "chapter": "home", "year": 2026, "folder": "google", "stem": "PXL_20261016_175820709.NIGHT.RAW-01", "focal": [0.5, 0.5] },
+    { "id": "home-2026c", "chapter": "home", "year": 2026, "folder": "google", "stem": "PXL_20261019_121525612.RAW-01", "focal": [0.55, 0.45] },
+    { "id": "home-2026d", "chapter": "home", "year": 2026, "folder": "google", "stem": "PXL_20261023_084607403", "focal": [0.5, 0.45] },
+    { "id": "home-2026e", "chapter": "home", "year": 2026, "folder": "google", "stem": "PXL_20261023_155105999", "focal": [0.5, 0.5] }
+  ]
+}

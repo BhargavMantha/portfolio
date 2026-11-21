@@ -1,0 +1,8 @@
+node_modules
+dist
+.superpowers
+# Private photos never enter git
+content/sheets
+content/shortlist.json
+.private
+content/words.private.json
