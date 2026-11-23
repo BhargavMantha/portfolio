@@ -68,13 +68,13 @@ export function Hud({ touch }: { touch: boolean }) {
       ) : (
         <p className="hud__keys" aria-live="polite">
           {touch ? (
-            'Tap the ground, or a glade, to ride there'
+            'Tap the ground, or a glade, to ride there · drag to look around'
           ) : (
             <>
               <kbd>W</kbd>
               <kbd>A</kbd>
               <kbd>S</kbd>
-              <kbd>D</kbd> or arrow keys to ride · click the ground to set a course
+              <kbd>D</kbd> to ride · <kbd>Shift</kbd> gallop · <kbd>Space</kbd> jump · drag to look
             </>
           )}
         </p>

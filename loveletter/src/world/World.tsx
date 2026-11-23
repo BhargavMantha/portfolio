@@ -6,6 +6,7 @@ import {
   AnimationMixer,
   CanvasTexture,
   BackSide,
+  Box3,
   BufferGeometry,
   Color,
   DataTexture,
@@ -14,6 +15,8 @@ import {
   Group,
   IcosahedronGeometry,
   InstancedMesh,
+  LineBasicMaterial,
+  LineSegments,
   LinearFilter,
   type Mesh,
   MeshStandardMaterial,
@@ -21,6 +24,7 @@ import {
   Quaternion,
   MeshToonMaterial,
   NearestFilter,
+  type PerspectiveCamera,
   PlaneGeometry,
   type Fog,
   RGBAFormat,
@@ -37,7 +41,7 @@ import { ROCKS, TREES, groupOf } from './forest'
 import { ISLANDS, SEA_BOUNDS, bearingTo, islandOf, nearestDockable, type Island } from './islands'
 import { sea } from './sea'
 import { fireflyFragment, fireflyVertex, groundFragment, groundVertex, skyFragment, skyVertex } from './shaders'
-import { forward, pushOut, stepBoat } from './steer'
+import { GALLOP_SPEED, JUMP_SPEED, forward, pushOut, stepBoat, stepJump } from './steer'
 import { TRAIL_LENGTH, createTrail, flatten, pushSample } from './trail'
 
 const GOLD = '#f2b631'
@@ -223,14 +227,16 @@ function Ground() {
     ;(scene.fog as Fog | null)?.color.copy(uniforms.uHorizon.value)
   })
 
-  const tap = (e: ThreeEvent<PointerEvent>) => {
+  const tap = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation()
+    // A drag is the camera looking around, not a request to ride somewhere.
+    if (e.delta > 8) return
     sea.target = { x: e.point.x, z: e.point.z }
     sea.ripples = [{ x: e.point.x, z: e.point.z, t: sea.now }, ...sea.ripples].slice(0, 4)
   }
 
   return (
-    <mesh geometry={geometry} position={[0, 0, -62]} onPointerDown={tap}>
+    <mesh geometry={geometry} position={[0, 0, -62]} onClick={tap}>
       <shaderMaterial uniforms={uniforms} vertexShader={groundVertex} fragmentShader={groundFragment} />
     </mesh>
   )
@@ -331,6 +337,8 @@ function Sky() {
 const HORSE_URL = `${import.meta.env.BASE_URL}models/horse.glb`
 /** The model is in its own large units; this brings it to about 2.3 high. */
 const HORSE_SCALE = 0.0125
+/** Length of one stride of the model's gallop clip, in seconds. */
+const STRIDE = 1.5
 
 /** Position of one vertex of a morph-animated mesh, in the mesh's own space, at this instant. */
 function morphed(mesh: Mesh, index: number, out: Vector3) {
@@ -341,105 +349,229 @@ function morphed(mesh: Mesh, index: number, out: Vector3) {
   if (!targets || !weights) return out
   const relative = mesh.geometry.morphTargetsRelative
   const v = new Vector3()
-  let sum = 0
   const origin = out.clone()
   for (let i = 0; i < targets.length; i++) {
     const w = weights[i]
     if (!w) continue
     v.fromBufferAttribute(targets[i], index)
     if (relative) out.addScaledVector(v, w)
-    else {
-      out.addScaledVector(v.sub(origin), w)
-      sum += w
-    }
+    else out.addScaledVector(v.sub(origin), w)
   }
   return out
 }
 
+const UP = new Vector3(0, 1, 0)
+type V3 = [number, number, number]
+/** A limb: a tapered cylinder running from one joint to another. */
+function Limb({ from, to, r, material }: { from: V3; to: V3; r: number; material: MeshToonMaterial }) {
+  const { pos, quat, len } = useMemo(() => {
+    const a = new Vector3(...from)
+    const b = new Vector3(...to)
+    const d = b.clone().sub(a)
+    return { pos: a.add(b).multiplyScalar(0.5), quat: new Quaternion().setFromUnitVectors(UP, d.clone().normalize()), len: d.length() }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [from.join(), to.join()])
+  return (
+    <mesh position={pos} quaternion={quat} material={material}>
+      <cylinderGeometry args={[r * 0.85, r, len, 7]} />
+    </mesh>
+  )
+}
+
+/** Picks the vertex with the greatest `score`, among those `keep` allows. */
+function pick(pos: BufferGeometry['attributes']['position'], keep: (x: number, y: number, z: number) => boolean, score: (x: number, y: number, z: number) => number) {
+  let best = -Infinity
+  let at = 0
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i)
+    const y = pos.getY(i)
+    const z = pos.getZ(i)
+    if (!keep(x, y, z)) continue
+    const s = score(x, y, z)
+    if (s > best) {
+      best = s
+      at = i
+    }
+  }
+  return at
+}
+
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t
+const damp = (a: number, b: number, rate: number, dt: number) => lerp(a, b, 1 - Math.exp(-rate * dt))
+
 /**
  * Ana on her unicorn. The unicorn is a modelled horse with a real galloping
- * stride; the horn and Ana are attached to points on its head and back, so
- * they move with every stride.
+ * stride. Ana sits astride it at the saddle, just behind the withers, and is
+ * carried up and down by every stride. The horse leans into turns, lifts into
+ * jumps and settles to a stand; Ana leans with the pace, her hair and dupatta
+ * stream behind her, and she holds the reins.
  */
 function Rider() {
   const ref = useRef<Group>(null)
+  const turned = useRef<Group>(null)
   const horn = useRef<Group>(null)
   const ana = useRef<Group>(null)
+  const torso = useRef<Group>(null)
+  const head = useRef<Group>(null)
+  const hair = useRef<Group>(null)
+  const scarf = useRef<Group>(null)
+  const skirt = useRef<Group>(null)
+  const hands = [useRef<Mesh>(null), useRef<Mesh>(null)]
   const gltf = useGLTF(HORSE_URL)
 
-  const { horse, mixer, head, seat, facing } = useMemo(() => {
+  const { horse, mixer, action, body, top, seat, mouth, facing } = useMemo(() => {
     const horse = gltf.scene.clone(true)
     let mesh: Mesh | null = null
     horse.traverse((o) => {
       if ((o as Mesh).isMesh) mesh = o as Mesh
     })
-    const m = mesh as unknown as Mesh
+    const body = mesh as unknown as Mesh
     // A white coat, shaded in flat facets like the rest of the world.
-    m.material = new MeshStandardMaterial({ color: '#fdfaf6', roughness: 0.85, metalness: 0, flatShading: true })
-    const pos = m.geometry.attributes.position
-    m.geometry.computeBoundingBox()
-    const box = m.geometry.boundingBox!
+    body.material = new MeshStandardMaterial({ color: '#fdfaf6', roughness: 0.85, metalness: 0, flatShading: true })
+    const pos = body.geometry.attributes.position
+    // The resting shape only. geometry.computeBoundingBox() also spans every
+    // morph target of the gallop, which is ten times larger and put the seat
+    // (and so Ana) beside the horse instead of on it.
+    const box = new Box3().setFromBufferAttribute(pos as Float32BufferAttribute)
+    const len = box.max.z - box.min.z
+    const midZ = (box.min.z + box.max.z) / 2
     // Which end is the head? The neck holds it high, so the highest points sit at that end.
     let high = 0
     let count = 0
-    let top = 0
     for (let i = 0; i < pos.count; i++) {
       if (pos.getY(i) > box.max.y * 0.86) {
         high += pos.getZ(i)
         count++
       }
-      if (pos.getY(i) > pos.getY(top)) top = i
     }
-    const midZ = (box.min.z + box.max.z) / 2
     const facing = high / Math.max(1, count) > midZ ? 1 : -1
-    // The seat: the highest point on the back, a little behind the middle.
-    const seatZ = midZ - facing * (box.max.z - box.min.z) * 0.06
-    let seat = 0
-    let best = -Infinity
-    for (let i = 0; i < pos.count; i++) {
-      if (Math.abs(pos.getZ(i) - seatZ) < 12 && Math.abs(pos.getX(i)) < 9 && pos.getY(i) > best) {
-        best = pos.getY(i)
-        seat = i
-      }
-    }
+    const top = pick(pos, () => true, (_x, y) => y)
+    // The saddle: the top of the back in the dip just behind the withers.
+    // The model is low-poly, so look along the spine's centre line, where the topline vertices are.
+    const seatZ = midZ + facing * len * 0.1
+    const seat = pick(pos, (x, _y, z) => Math.abs(z - seatZ) < 10 && Math.abs(x) < 2, (_x, y, z) => y - Math.abs(z - seatZ) * 0.2)
+    // The muzzle, where the reins run to.
+    const mouth = pick(pos, (_x, y) => y > box.max.y * 0.6, (_x, _y, z) => z * facing)
     const mixer = new AnimationMixer(horse)
-    if (gltf.animations[0]) mixer.clipAction(gltf.animations[0]).play()
-    return { horse, mixer, mesh: m, head: top, seat, facing }
+    const clip = gltf.animations[0]
+    const action = clip ? mixer.clipAction(clip) : null
+    action?.play()
+    return { horse, mixer, action, body, top, seat, mouth, facing }
   }, [gltf])
 
-  const body = useMemo(() => {
-    let mesh: Mesh | null = null
-    horse.traverse((o) => {
-      if ((o as Mesh).isMesh) mesh = o as Mesh
-    })
-    return mesh as unknown as Mesh
-  }, [horse])
+  const mats = useMemo(() => {
+    const toon = (color: string, glow = 0) => new MeshToonMaterial({ gradientMap: ramp, color, emissive: color, emissiveIntensity: glow })
+    const gown = toon('#7b4bb3', 0.12)
+    const skirtMat = toon('#7b4bb3', 0.12)
+    skirtMat.side = DoubleSide
+    const scarfMat = toon('#f39cc3', 0.2)
+    scarfMat.side = DoubleSide
+    const saddleMat = toon('#b23a5b', 0.08)
+    saddleMat.side = DoubleSide
+    return {
+      gown,
+      skirt: skirtMat,
+      scarf: scarfMat,
+      skin: toon('#c58d68'),
+      hair: toon('#231629'),
+      boot: toon('#4a2a3a'),
+      saddle: saddleMat,
+      leather: toon('#7a4a2e'),
+      gold: new MeshStandardMaterial({ color: '#ffd76a', emissive: '#ffb82e', emissiveIntensity: 0.5, metalness: 0.5, roughness: 0.3 }),
+    }
+  }, [])
+
+  // Two reins, from her hands to the unicorn's muzzle.
+  const reins = useMemo(() => {
+    const g = new BufferGeometry().setAttribute('position', new Float32BufferAttribute(new Float32Array(12), 3))
+    const line = new LineSegments(g, new LineBasicMaterial({ color: '#5a3320' }))
+    line.frustumCulled = false
+    return line
+  }, [])
 
   const at = useMemo(() => new Vector3(), [])
-  useFrame((_, dt) => {
+  const tmp = useMemo(() => new Vector3(), [])
+  const motion = useRef({ roll: 0, pitch: 0, lean: 0, flow: 0, idle: 0 })
+
+  useFrame(({ clock }, dt) => {
     const g = ref.current
     if (!g) return
-    const { x, z, heading, speed } = sea.boat
-    const pace = Math.min(1, Math.abs(speed) / 6)
-    // The stride keeps time with her speed, and stills when she stops.
-    mixer.timeScale = pace * 1.25
+    dt = Math.min(dt, 0.05)
+    const t = clock.elapsedTime
+    const { x, z, heading, speed, yaw = 0 } = sea.boat
+    const s = Math.abs(speed)
+    const pace = Math.min(1, s / GALLOP_SPEED)
+    const airborne = sea.air.y > 0
+    const m = motion.current
+
+    // The stride keeps time with her speed. Standing, the legs settle square.
+    if (action) {
+      if (airborne) mixer.timeScale = 0.25
+      else if (s < 0.25) {
+        mixer.timeScale = 0
+        const into = action.time % STRIDE
+        const goal = into > STRIDE / 2 ? STRIDE : 0
+        action.time = into + Math.sign(goal - into) * Math.min(Math.abs(goal - into), dt * 0.9)
+      } else mixer.timeScale = Math.sign(speed) * Math.min(2.2, 0.38 + s * 0.17)
+    }
     mixer.update(dt)
-    const turn = (sea.keys.left ? 1 : 0) - (sea.keys.right ? 1 : 0)
-    g.position.set(x, 0, z)
-    g.rotation.set(0, heading, turn * 0.08 * pace, 'YXZ')
-    riderAt.value.set(x, 2, z)
-    if (horn.current) horn.current.position.copy(morphed(body, head, at)).multiplyScalar(HORSE_SCALE)
+
+    // The whole horse leans into a turn, lifts its nose into a jump and on a hard start.
+    m.roll = damp(m.roll, Math.max(-0.2, Math.min(0.2, yaw * s * 0.024)), 6, dt)
+    const lift = airborne ? Math.max(-0.22, Math.min(0.26, sea.air.vy * 0.045)) : 0
+    m.pitch = damp(m.pitch, lift + Math.max(-0.05, Math.min(0.05, sea.accel * 0.012)), airborne ? 10 : 5, dt)
+    const bounce = sea.landed < 0.5 ? -Math.sin(Math.min(1, sea.landed / 0.35) * Math.PI) * 0.12 : 0
+    const breathe = s < 0.25 ? Math.sin(t * 1.6) * 0.012 : 0
+    g.position.set(x, sea.air.y + bounce + breathe, z)
+    g.rotation.set(m.pitch, heading, m.roll, 'YXZ')
+    riderAt.value.set(x, 2.3 + sea.air.y, z)
+
+    if (horn.current) horn.current.position.copy(morphed(body, top, at)).multiplyScalar(HORSE_SCALE)
     if (ana.current) ana.current.position.copy(morphed(body, seat, at)).multiplyScalar(HORSE_SCALE)
+
+    // Ana: leans forward with pace, rises a little out of the saddle in a jump, and sits against the turn.
+    m.lean = damp(m.lean, 0.08 + 0.3 * pace + (airborne ? 0.22 : 0) + Math.max(0, sea.accel) * 0.02, 4, dt)
+    m.flow = damp(m.flow, Math.min(1, s / 8 + (airborne ? 0.3 : 0)), 3, dt)
+    m.idle = s < 0.25 ? m.idle + dt : 0
+    if (torso.current) {
+      torso.current.rotation.x = -m.lean
+      torso.current.rotation.z = -m.roll * 0.6
+      torso.current.position.y = 0.08 + (airborne ? 0.06 : 0)
+    }
+    if (head.current) {
+      // Head up, eyes ahead; standing still she looks about the glade.
+      head.current.rotation.x = m.lean * 0.7
+      head.current.rotation.y = m.idle > 2 ? Math.sin(m.idle * 0.6) * 0.5 : damp(head.current.rotation.y, yaw * 0.25, 4, dt)
+    }
+    const wave = Math.sin(t * (4 + 8 * m.flow))
+    if (hair.current) hair.current.rotation.x = 0.12 + 1.05 * m.flow + wave * 0.06 * m.flow
+    if (scarf.current) {
+      scarf.current.rotation.x = 0.25 + 1.2 * m.flow + wave * 0.1 * (0.3 + m.flow)
+      scarf.current.rotation.z = -m.roll * 1.5 + Math.sin(t * 2.3) * 0.08
+    }
+    if (skirt.current) skirt.current.rotation.x = -0.28 * m.flow + wave * 0.025 * m.flow
+
+    // Reins: hands to muzzle, both measured in the rider's own space.
+    g.updateMatrixWorld(true)
+    const r = reins.geometry.attributes.position as Float32BufferAttribute
+    const muzzle = turned.current ? g.worldToLocal(turned.current.localToWorld(morphed(body, mouth, tmp).multiplyScalar(HORSE_SCALE))) : tmp.set(0, 0, 0)
+    hands.forEach((h, i) => {
+      if (!h.current) return
+      h.current.getWorldPosition(at)
+      g.worldToLocal(at)
+      r.setXYZ(i * 2, at.x, at.y, at.z)
+      r.setXYZ(i * 2 + 1, muzzle.x + (i ? 0.05 : -0.05), muzzle.y - 0.05, muzzle.z)
+    })
+    r.needsUpdate = true
   })
 
-  const gown = <meshToonMaterial gradientMap={ramp} color="#7b4bb3" emissive="#7b4bb3" emissiveIntensity={0.12} />
-  const skin = <meshToonMaterial gradientMap={ramp} color="#c58d68" />
-  const hair = <meshToonMaterial gradientMap={ramp} color="#231629" />
+  const { gown, skin, hair: hairMat, boot, gold } = mats
 
   return (
     <group ref={ref}>
+      <primitive object={reins} />
       {/* Turned so the horse faces the way she is riding (−z). */}
-      <group rotation={[0, facing > 0 ? Math.PI : 0, 0]}>
+      <group ref={turned} rotation={[0, facing > 0 ? Math.PI : 0, 0]}>
         <primitive object={horse} scale={HORSE_SCALE} />
         <group ref={horn}>
           <mesh position={[0, 0.22, facing * 0.2]} rotation={[facing * 0.5, 0, 0]}>
@@ -447,48 +579,205 @@ function Rider() {
             <meshStandardMaterial color="#ffd76a" emissive="#ffb82e" emissiveIntensity={0.7} roughness={0.35} metalness={0.4} />
           </mesh>
         </group>
-        {/* Ana: purple gown, long dark hair, a small tiara and a marigold. */}
+
+        {/* Everything from here is in Ana's own space: origin on the saddle, facing −z. */}
         <group ref={ana} rotation={[0, facing > 0 ? Math.PI : 0, 0]}>
-          <mesh position={[0, 0.02, 0]} scale={[1.45, 1, 1.2]}>
-            <coneGeometry args={[0.5, 0.95, 10]} />
-            {gown}
+          {/* Saddle cloth draped over the back, and the seat on top of it. */}
+          <mesh position={[0, -0.33, 0.02]} rotation={[Math.PI / 2, 0, 0]} material={mats.saddle}>
+            <cylinderGeometry args={[0.37, 0.37, 0.66, 14, 1, true, Math.PI / 2, Math.PI]} />
           </mesh>
-          <mesh position={[0, 0.6, -0.02]}>
-            <cylinderGeometry args={[0.13, 0.19, 0.5, 8]} />
-            {gown}
+          <mesh position={[0, 0.03, 0.04]} material={mats.leather}>
+            <boxGeometry args={[0.34, 0.07, 0.42]} />
           </mesh>
+          <mesh position={[0, 0.07, -0.17]} material={mats.leather}>
+            <boxGeometry args={[0.18, 0.1, 0.06]} />
+          </mesh>
+
+          {/* Legs either side of the horse: thighs forward over the shoulders, shins down to the stirrups. */}
           {[-1, 1].map((side) => (
-            <mesh key={side} position={[side * 0.2, 0.58, -0.24]} rotation={[-1.05, 0, side * 0.22]}>
-              <cylinderGeometry args={[0.045, 0.04, 0.52, 6]} />
-              {skin}
-            </mesh>
+            <group key={side}>
+              <Limb from={[side * 0.13, 0.1, 0.02]} to={[side * 0.37, -0.12, -0.2]} r={0.075} material={gown} />
+              <Limb from={[side * 0.38, -0.13, -0.2]} to={[side * 0.4, -0.56, -0.1]} r={0.055} material={boot} />
+              <mesh position={[side * 0.4, -0.6, -0.15]} material={boot}>
+                <boxGeometry args={[0.08, 0.07, 0.2]} />
+              </mesh>
+              <mesh position={[side * 0.4, -0.62, -0.1]} rotation={[0, Math.PI / 2, 0]} material={gold}>
+                <torusGeometry args={[0.06, 0.012, 5, 12]} />
+              </mesh>
+              <Limb from={[side * 0.3, 0.04, -0.05]} to={[side * 0.4, -0.6, -0.1]} r={0.006} material={mats.leather} />
+            </group>
           ))}
-          <mesh position={[0, 1.02, -0.03]}>
-            <sphereGeometry args={[0.175, 14, 14]} />
-            {skin}
-          </mesh>
-          <mesh position={[0, 1.06, 0.02]} scale={[1.08, 1.05, 1.08]}>
-            <sphereGeometry args={[0.18, 14, 14, 0, Math.PI * 2, 0, Math.PI * 0.62]} />
-            {hair}
-          </mesh>
-          <mesh position={[0, 0.62, 0.17]} rotation={[0.1, 0, 0]}>
-            <boxGeometry args={[0.27, 0.78, 0.1]} />
-            {hair}
-          </mesh>
-          <mesh position={[0, 1.2, -0.02]}>
-            <torusGeometry args={[0.13, 0.018, 6, 20]} />
-            <meshStandardMaterial color="#ffd76a" emissive="#ffb82e" emissiveIntensity={0.5} metalness={0.5} roughness={0.3} />
-          </mesh>
-          <mesh position={[0.16, 1.1, 0.03]}>
-            <dodecahedronGeometry args={[0.06, 0]} />
-            <meshBasicMaterial color="#f7a521" />
-          </mesh>
+
+          {/* The skirt falls over both flanks and streams back at speed. */}
+          <group ref={skirt} position={[0, 0.12, 0]}>
+            <mesh position={[0, -0.28, 0.02]} scale={[1, 1, 0.92]} material={mats.skirt}>
+              <cylinderGeometry args={[0.16, 0.5, 0.56, 16, 1, true]} />
+            </mesh>
+          </group>
+
+          {/* Upper body, pivoting at the hips so she can lean. */}
+          <group ref={torso} position={[0, 0.08, 0]}>
+            <mesh position={[0, 0.22, 0]} material={gown}>
+              <cylinderGeometry args={[0.15, 0.12, 0.42, 9]} />
+            </mesh>
+            <mesh position={[0, 0.06, 0]} material={gown}>
+              <cylinderGeometry args={[0.13, 0.16, 0.14, 9]} />
+            </mesh>
+            {[-1, 1].map((side, i) => (
+              <group key={side}>
+                <mesh position={[side * 0.17, 0.4, 0]} material={gown}>
+                  <sphereGeometry args={[0.075, 8, 8]} />
+                </mesh>
+                <Limb from={[side * 0.18, 0.4, 0]} to={[side * 0.2, 0.2, -0.15]} r={0.042} material={gown} />
+                <Limb from={[side * 0.2, 0.2, -0.15]} to={[side * 0.09, 0.17, -0.37]} r={0.036} material={skin} />
+                <mesh ref={hands[i]} position={[side * 0.085, 0.17, -0.39]} material={skin}>
+                  <sphereGeometry args={[0.042, 8, 8]} />
+                </mesh>
+              </group>
+            ))}
+            <mesh position={[0, 0.48, 0]} material={skin}>
+              <cylinderGeometry args={[0.045, 0.055, 0.1, 7]} />
+            </mesh>
+
+            {/* Her dupatta, from the shoulders, streaming back. */}
+            <group ref={scarf} position={[0, 0.42, 0.1]}>
+              <mesh position={[0, -0.38, 0]} material={mats.scarf}>
+                <planeGeometry args={[0.3, 0.8, 1, 4]} />
+              </mesh>
+            </group>
+
+            <group ref={head} position={[0, 0.62, -0.01]}>
+              <mesh material={skin}>
+                <sphereGeometry args={[0.135, 14, 14]} />
+              </mesh>
+              <mesh position={[0, 0.03, 0.02]} scale={[1.08, 1.05, 1.1]} material={hairMat}>
+                <sphereGeometry args={[0.14, 14, 14, 0, Math.PI * 2, 0, Math.PI * 0.6]} />
+              </mesh>
+              {/* Long hair, hanging from the back of the head and flowing back with the pace. */}
+              <group ref={hair} position={[0, 0.04, 0.1]}>
+                <mesh position={[0, -0.3, 0.02]} material={hairMat}>
+                  <boxGeometry args={[0.24, 0.6, 0.05]} />
+                </mesh>
+              </group>
+              <mesh position={[0, 0.13, 0]} rotation={[Math.PI / 2, 0, 0]} material={gold}>
+                <torusGeometry args={[0.1, 0.015, 6, 20]} />
+              </mesh>
+              <mesh position={[0, 0.17, -0.07]} material={gold}>
+                <octahedronGeometry args={[0.03, 0]} />
+              </mesh>
+              <mesh position={[0.12, 0.06, 0.03]}>
+                <dodecahedronGeometry args={[0.05, 0]} />
+                <meshBasicMaterial color="#f7a521" />
+              </mesh>
+            </group>
+          </group>
         </group>
       </group>
     </group>
   )
 }
 useGLTF.preload(HORSE_URL)
+
+/* ───────────────────────── Hoof dust ───────────────────────── */
+
+const DUST = 96
+const dustVertex = /* glsl */ `
+  attribute float aAge;
+  attribute float aSize;
+  uniform float uScale;
+  varying float vAge;
+  void main() {
+    vAge = aAge;
+    vec4 mv = modelViewMatrix * vec4(position, 1.0);
+    gl_Position = projectionMatrix * mv;
+    gl_PointSize = aAge < 0.0 ? 0.0 : aSize * (0.6 + aAge * 1.6) * uScale / -mv.z;
+  }
+`
+const dustFragment = /* glsl */ `
+  varying float vAge;
+  void main() {
+    if (vAge < 0.0) discard;
+    float d = length(gl_PointCoord - 0.5);
+    float a = smoothstep(0.5, 0.1, d) * (1.0 - vAge) * 0.5;
+    gl_FragColor = vec4(0.82, 0.71, 0.54, a);
+  }
+`
+
+/** Puffs of earth kicked up behind her hooves at speed, and a burst when she lands. */
+function Dust() {
+  const dpr = useThree((s) => s.viewport.dpr)
+  const height = useThree((s) => s.size.height)
+  const { geometry, uniforms, parts } = useMemo(() => {
+    const geometry = new BufferGeometry()
+      .setAttribute('position', new Float32BufferAttribute(new Float32Array(DUST * 3), 3))
+      .setAttribute('aAge', new Float32BufferAttribute(new Float32Array(DUST).fill(-1), 1))
+      .setAttribute('aSize', new Float32BufferAttribute(new Float32Array(DUST).fill(1), 1))
+    const parts = Array.from({ length: DUST }, () => ({ x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, age: -1, life: 1 }))
+    return { geometry, uniforms: { uScale: { value: 100 } }, parts }
+  }, [])
+  const next = useRef(0)
+  const owed = useRef(0)
+  const wasLanded = useRef(9)
+
+  useFrame((_, dt) => {
+    dt = Math.min(dt, 0.05)
+    uniforms.uScale.value = height * dpr * 0.5
+    const b = sea.boat
+    const s = Math.abs(b.speed)
+    const f = forward(b.heading)
+    const emit = (n: number, spread: number, up: number) => {
+      for (let k = 0; k < n; k++) {
+        const p = parts[next.current]
+        next.current = (next.current + 1) % DUST
+        const side = (Math.random() - 0.5) * spread
+        const back = 0.4 + Math.random() * 1.6
+        p.x = b.x - f.x * back - f.z * side
+        p.z = b.z - f.z * back + f.x * side
+        p.y = 0.08
+        p.vx = -f.x * s * 0.12 + (Math.random() - 0.5) * 0.8
+        p.vz = -f.z * s * 0.12 + (Math.random() - 0.5) * 0.8
+        p.vy = up * (0.5 + Math.random())
+        p.age = 0
+        p.life = 0.7 + Math.random() * 0.7
+      }
+    }
+    if (sea.air.y <= 0 && s > 2.5) {
+      owed.current += dt * s * 2.2
+      const n = Math.floor(owed.current)
+      owed.current -= n
+      emit(n, 0.7, 0.5)
+    }
+    if (sea.landed < wasLanded.current) emit(22, 1.4, 1.2)
+    wasLanded.current = sea.landed
+
+    const pos = geometry.attributes.position as Float32BufferAttribute
+    const age = geometry.attributes.aAge as Float32BufferAttribute
+    const size = geometry.attributes.aSize as Float32BufferAttribute
+    parts.forEach((p, i) => {
+      if (p.age < 0) return
+      p.age += dt / p.life
+      if (p.age >= 1) {
+        p.age = -1
+        age.setX(i, -1)
+        return
+      }
+      p.vy -= dt * 0.6
+      p.x += p.vx * dt
+      p.y = Math.max(0.05, p.y + p.vy * dt)
+      p.z += p.vz * dt
+      pos.setXYZ(i, p.x, p.y, p.z)
+      age.setX(i, p.age)
+      size.setX(i, 0.35 + (i % 5) * 0.08)
+    })
+    pos.needsUpdate = age.needsUpdate = size.needsUpdate = true
+  })
+
+  return (
+    <points geometry={geometry} frustumCulled={false}>
+      <shaderMaterial uniforms={uniforms} vertexShader={dustVertex} fragmentShader={dustFragment} transparent depthWrite={false} />
+    </points>
+  )
+}
 
 /** A butterfly that flies ahead of her towards the next glade, showing the way. */
 function Companion() {
@@ -842,8 +1131,9 @@ function IslandMesh({ island, index }: { island: Island; index: number }) {
     }
   })
 
-  const approach = (e: ThreeEvent<PointerEvent>) => {
+  const approach = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation()
+    if (e.delta > 8) return
     if (island.id === 'prologue' || !journey.getState().canDock(island.id)) return
     // Sail to the shore on the side the boat is coming from.
     const dx = sea.boat.x - island.x
@@ -853,7 +1143,7 @@ function IslandMesh({ island, index }: { island: Island; index: number }) {
   }
 
   return (
-    <group position={[island.x, 0, island.z]} onPointerDown={approach}>
+    <group position={[island.x, 0, island.z]} onClick={approach}>
       {/* A mossy rise in the clearing. */}
       <mesh position={[0, 0.06, 0]}>
         <cylinderGeometry args={[island.r * 1.02, island.r * 1.22, 0.36, 11]} />
@@ -909,8 +1199,15 @@ const KEYMAP: Record<string, keyof typeof sea.keys> = {
   ArrowDown: 'down', KeyS: 'down',
   ArrowLeft: 'left', KeyA: 'left',
   ArrowRight: 'right', KeyD: 'right',
+  ShiftLeft: 'sprint', ShiftRight: 'sprint',
 }
 const DOCK_KEYS = new Set(['KeyE', 'Enter', 'Space'])
+
+/** Starts a jump, if she is on the ground. */
+export function jump() {
+  if (sea.air.y > 0 || sea.diving) return
+  sea.air = { y: 0.001, vy: JUMP_SPEED }
+}
 const CANOPY = TREES.map((t) => ({ x: t.x, z: t.z, r: 2.6 * t.h }))
 // Things she cannot ride through: the rise in each glade, and every tree.
 const SOLID = [...ISLANDS.map((i) => ({ x: i.x, z: i.z, r: i.r + 1.1 })), ...TREES.map((t) => ({ x: t.x, z: t.z, r: 0.95 }))]
@@ -936,6 +1233,7 @@ function placeBoat() {
 export function World() {
   const camera = useThree((s) => s.camera)
   const size = useThree((s) => s.size)
+  const gl = useThree((s) => s.gl)
   const look = useRef(new Vector3())
   const first = useRef(true)
 
@@ -945,15 +1243,46 @@ export function World() {
       const k = KEYMAP[e.code]
       if (k) {
         sea.keys[k] = down
-        if (down) sea.target = null
+        if (down && k !== 'sprint') sea.target = null
         e.preventDefault()
       } else if (down && DOCK_KEYS.has(e.code) && !e.repeat) {
         // Let a focused button handle its own Enter/Space.
         if (e.target instanceof HTMLButtonElement && e.code !== 'KeyE') return
         e.preventDefault()
+        // Space enters a glade when she is at one, and jumps everywhere else.
         if (sea.near) goAshore(sea.near)
+        else if (e.code === 'Space') jump()
       }
     }
+
+    // Free look: drag to orbit the camera around her, scroll to come closer or pull back.
+    const el = gl.domElement
+    let drag: { id: number; x: number; y: number } | null = null
+    const press = (e: PointerEvent) => {
+      drag = { id: e.pointerId, x: e.clientX, y: e.clientY }
+    }
+    const move = (e: PointerEvent) => {
+      if (!drag || drag.id !== e.pointerId) return
+      const dx = e.clientX - drag.x
+      const dy = e.clientY - drag.y
+      drag.x = e.clientX
+      drag.y = e.clientY
+      sea.look.yaw -= dx * 0.006
+      sea.look.pitch = Math.max(-0.3, Math.min(0.75, sea.look.pitch + dy * 0.004))
+      sea.look.movedAt = sea.now
+    }
+    const lift = (e: PointerEvent) => {
+      if (drag?.id === e.pointerId) drag = null
+    }
+    const wheel = (e: WheelEvent) => {
+      e.preventDefault()
+      sea.look.zoom = Math.max(0.55, Math.min(1.9, sea.look.zoom * Math.exp(e.deltaY * 0.0012)))
+    }
+    el.addEventListener('pointerdown', press)
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', lift)
+    window.addEventListener('pointercancel', lift)
+    el.addEventListener('wheel', wheel, { passive: false })
     const down = set(true)
     const up = set(false)
     const release = () => Object.keys(sea.keys).forEach((k) => (sea.keys[k as keyof typeof sea.keys] = false))
@@ -964,16 +1293,29 @@ export function World() {
       window.removeEventListener('keydown', down)
       window.removeEventListener('keyup', up)
       window.removeEventListener('blur', release)
+      el.removeEventListener('pointerdown', press)
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', lift)
+      window.removeEventListener('pointercancel', lift)
+      el.removeEventListener('wheel', wheel)
       release()
     }
-  }, [])
+  }, [gl])
 
-  useFrame((_, dt) => {
+  useFrame(({ clock }, dt) => {
     const k = sea.keys
     const diving = sea.diving ? islandOf(sea.diving) : null
     const turn = (diving ? 0 : (k.left ? 1 : 0) - (k.right ? 1 : 0)) as -1 | 0 | 1
     const thrust = (diving ? 0 : (k.up ? 1 : 0) - (k.down ? 1 : 0)) as -1 | 0 | 1
-    sea.boat = pushOut(stepBoat(sea.boat, { turn, thrust, target: diving ? null : sea.target }, dt, SEA_BOUNDS), SOLID)
+    const before = sea.boat.speed
+    const stepped = stepBoat(sea.boat, { turn, thrust, sprint: k.sprint, target: diving ? null : sea.target }, dt, SEA_BOUNDS)
+    sea.boat = pushOut(stepped, SOLID)
+    // Brushing a tree or a glade's edge costs her speed, rather than sliding past at full gallop.
+    if (sea.boat !== stepped) sea.boat = { ...sea.boat, speed: sea.boat.speed * Math.exp(-Math.min(dt, 0.05) * 5) }
+    sea.accel += ((sea.boat.speed - before) / Math.max(dt, 1e-3) - sea.accel) * Math.min(1, dt * 6)
+    const air = stepJump(sea.air, dt)
+    sea.air = { y: air.y, vy: air.vy }
+    sea.landed = air.landed ? 0 : sea.landed + dt
     const b = sea.boat
     if (sea.target && Math.hypot(sea.target.x - b.x, sea.target.z - b.z) < 0.6 && Math.abs(b.speed) < 0.3) sea.target = null
 
@@ -1008,19 +1350,46 @@ export function World() {
       want = new Vector3(diving.x + (dx / d) * 5.5, 3.2, diving.z + (dz / d) * 5.5)
       aim = new Vector3(diving.x, 2, diving.z)
     } else {
-      // Chase camera: behind, above and slightly off the stern, pulled back on tall phone screens.
-      const back = tall ? 14 : 10
-      const up = tall ? 8.5 : 5.4
-      const side = tall ? 1.4 : 2.4
-      const f = forward(b.heading)
+      // Third-person camera: behind and above her, orbiting freely when dragged,
+      // drifting back behind her once she rides on. Pulled back on tall phone screens.
+      const t = clock.elapsedTime
+      const L = sea.look
+      const pace = Math.min(1, Math.abs(b.speed) / GALLOP_SPEED)
+      if (t - L.movedAt > 2.2 && Math.abs(b.speed) > 0.6) {
+        L.yaw *= Math.exp(-dt * 1.3)
+        L.pitch *= Math.exp(-dt * 1.3)
+      }
+      const back = (tall ? 12.5 : 8.6) * L.zoom * (1 + 0.1 * pace)
+      const rise = (tall ? 7.2 : 4.4) * L.zoom
+      const elev = Math.atan2(rise, back) + L.pitch
+      const dist = Math.hypot(back, rise)
+      const around = b.heading + L.yaw
+      const f = forward(around)
+      const side = (tall ? 0.6 : 1.1) * (1 - Math.min(1, Math.abs(L.yaw)))
       // Keep the camera out of the trees, so a trunk never fills the screen.
-      const clear = pushOut({ x: b.x - f.x * back - f.z * side, z: b.z - f.z * back + f.x * side }, CANOPY)
-      want = new Vector3(clear.x, up, clear.z)
-      aim = new Vector3(b.x + f.x * 5, 2.1, b.z + f.z * 5)
+      const clear = pushOut(
+        { x: b.x - f.x * dist * Math.cos(elev) - f.z * side, z: b.z - f.z * dist * Math.cos(elev) + f.x * side },
+        CANOPY,
+      )
+      // A little shake at a full gallop, and a dip when she lands.
+      const shake = pace * pace * 0.05 * Math.sin(t * 19)
+      const dip = sea.landed < 0.4 ? -Math.sin((sea.landed / 0.4) * Math.PI) * 0.25 : 0
+      want = new Vector3(clear.x, Math.max(1.2, 1.6 + dist * Math.sin(elev)) + shake + dip + sea.air.y * 0.5, clear.z)
+      // Look a little ahead of her, more so when the camera sits behind.
+      const ahead = forward(b.heading)
+      const lead = 3.2 * Math.max(0, Math.cos(L.yaw)) * (0.5 + pace)
+      aim = new Vector3(b.x + ahead.x * lead, 2.1 + sea.air.y * 0.7, b.z + ahead.z * lead)
+      // The view widens as she picks up speed.
+      const cam = camera as PerspectiveCamera
+      const fov = 50 + 13 * pace * pace + (sea.air.y > 0 ? 3 : 0)
+      if (Math.abs(cam.fov - fov) > 0.05) {
+        cam.fov += (fov - cam.fov) * Math.min(1, dt * 3)
+        cam.updateProjectionMatrix()
+      }
     }
     const snap = first.current
-    camera.position.lerp(want, snap ? 1 : 1 - Math.exp(-dt * (diving ? 2.2 : 2.6)))
-    look.current.lerp(aim, snap ? 1 : 1 - Math.exp(-dt * 4))
+    camera.position.lerp(want, snap ? 1 : 1 - Math.exp(-dt * (diving ? 2.2 : 4.6)))
+    look.current.lerp(aim, snap ? 1 : 1 - Math.exp(-dt * 5))
     camera.lookAt(look.current)
     first.current = false
   })
@@ -1045,6 +1414,7 @@ export function World() {
       <Suspense fallback={null}>
         <Rider />
       </Suspense>
+      <Dust />
       <Companion />
     </>
   )
@@ -1053,4 +1423,6 @@ export function World() {
 /** Called when the journey is reset, so the next voyage starts from A. */
 export const resetVoyage = () => {
   sea.placed = false
+  sea.air = { y: 0, vy: 0 }
+  sea.look = { yaw: 0, pitch: 0, zoom: 1, movedAt: -99 }
 }
