@@ -96,6 +96,27 @@ Because the ciphertext is downloadable, its security is exactly the strength of
 the passphrase plus the PBKDF2 work factor (`ITERATIONS` in the script). Prefer a
 long passphrase over a short complex one.
 
+### The private `/dojo` page
+
+`/dojo` is the DSA + CKA/CKS rule book and progress tracker. It uses the same
+scheme as `/plan`: `public/dojo/index.html` ships as AES-256-GCM ciphertext and
+the plaintext lives in `dojo-source/` (gitignored).
+
+```bash
+# edit dojo-source/content.html (markup + CSS) or dojo-source/behaviour.js
+DOJO_USER='...' DOJO_PASS='...' node scripts/encrypt-dojo.mjs
+```
+
+That regenerates `public/dojo/index.html` from `scripts/dojo-gate.template.html`
+and `netlify/functions/dojo-progress/token-hash.mjs`. Commit both.
+
+Progress is stored in Netlify Blobs by the `dojo-progress` function
+(`/.netlify/functions/dojo-progress`, needs `@netlify/blobs`). The browser
+derives an API token from the decryption key and the function checks it against
+the committed hash, so there are no environment variables to set. Re-running the
+script rotates the token and keeps the saved progress. This part is
+Netlify-only; on Vercel the page works but saves to the browser alone.
+
 ## 📄 License
 
 This project is open source and available under the [MIT License](LICENSE).
