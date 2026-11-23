@@ -10,7 +10,15 @@ export const sea = {
   boat: { x: 0, z: 6, heading: 0, speed: 0 } as Boat,
   placed: false,
   target: null as { x: number; z: number } | null,
-  keys: { up: false, down: false, left: false, right: false },
+  keys: { up: false, down: false, left: false, right: false, sprint: false },
+  /** Height and upward speed of a jump in progress. */
+  air: { y: 0, vy: 0 },
+  /** Seconds since she last landed, for the landing bounce. */
+  landed: 9,
+  /** Speed change per second, for her lean. */
+  accel: 0,
+  /** Free look: orbit around her (radians), tilt, zoom, and when the view was last moved. */
+  look: { yaw: 0, pitch: 0, zoom: 1, movedAt: -99 },
   /** Island the boat is close enough to dock at. */
   near: null as ChapterId | null,
   /** Bearing and distance to the next unvisited island. */

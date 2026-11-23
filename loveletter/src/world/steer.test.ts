@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MAX_SPEED, pushOut, stepBoat, type Boat } from './steer'
+import { GALLOP_SPEED, JUMP_SPEED, MAX_SPEED, gaitOf, pushOut, stepBoat, stepJump, type Boat } from './steer'
 
 const bounds = { minX: -40, maxX: 40, minZ: -150, maxZ: 20 }
 const still: Boat = { x: 0, z: 0, heading: 0, speed: 0 }
@@ -59,6 +59,52 @@ describe('stepBoat', () => {
     const b = stepBoat({ ...still, speed: MAX_SPEED }, { turn: 1, thrust: 1 }, 5, bounds)
     expect(Number.isFinite(b.x) && Number.isFinite(b.z) && Number.isFinite(b.heading)).toBe(true)
     expect(Math.hypot(b.x, b.z)).toBeLessThan(2)
+  })
+})
+
+describe('riding', () => {
+  it('gallops faster than she canters, and settles back when Shift is released', () => {
+    const canter = run(still, { turn: 0, thrust: 1 }, 6)
+    const gallop = run(still, { turn: 0, thrust: 1, sprint: true }, 6)
+    expect(gallop.speed).toBeGreaterThan(canter.speed + 3)
+    expect(gallop.speed).toBeLessThanOrEqual(GALLOP_SPEED)
+    const eased = run(gallop, { turn: 0, thrust: 1 }, 4)
+    expect(eased.speed).toBeCloseTo(MAX_SPEED, 0)
+  })
+
+  it('turns wider at a gallop than at a walk', () => {
+    const slow = run({ ...still, speed: 1.5 }, { turn: 1, thrust: 0 }, 0.5)
+    const fast = run({ ...still, speed: GALLOP_SPEED }, { turn: 1, thrust: 1, sprint: true }, 0.5)
+    expect(slow.heading).toBeGreaterThan(fast.heading)
+  })
+
+  it('carries turn momentum for a moment after the reins are released', () => {
+    const turning = run({ ...still, speed: 4 }, { turn: 1, thrust: 1 }, 1)
+    const after = stepBoat(turning, { turn: 0, thrust: 1 }, 1 / 60, bounds)
+    expect(after.heading).toBeGreaterThan(turning.heading)
+  })
+
+  it('names the gait from the speed', () => {
+    expect(gaitOf(0)).toBe('stand')
+    expect(gaitOf(1)).toBe('walk')
+    expect(gaitOf(3)).toBe('trot')
+    expect(gaitOf(MAX_SPEED)).toBe('canter')
+    expect(gaitOf(GALLOP_SPEED)).toBe('gallop')
+  })
+
+  it('jumps up and lands again', () => {
+    let j = { y: 0.001, vy: JUMP_SPEED }
+    let peak = 0
+    let landed = false
+    for (let t = 0; t < 2 && !landed; t += 1 / 60) {
+      const n = stepJump(j, 1 / 60)
+      peak = Math.max(peak, n.y)
+      landed = n.landed
+      j = n
+    }
+    expect(peak).toBeGreaterThan(0.7)
+    expect(landed).toBe(true)
+    expect(j.y).toBe(0)
   })
 })
 

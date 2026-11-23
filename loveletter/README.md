@@ -1,6 +1,6 @@
 # A to B
 
-A private anniversary site: seven chapters of photos and words, joined by a small sea you sail between islands.
+A private anniversary site: seven chapters of photos and words, joined by a sunlit morning forest you ride through, glade to glade, on a unicorn.
 
 ## Why the content is encrypted
 
@@ -38,3 +38,7 @@ npm install
 npm run dev      # http://localhost:5173/loveletter/
 npm test
 ```
+
+## Credits
+
+- `public/models/horse.glb`: the galloping horse from the three.js examples (`examples/models/gltf/Horse.glb` in github.com/mrdoob/three.js). Check its terms before reusing it elsewhere.
