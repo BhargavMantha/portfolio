@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { CHAPTERS, chapterById } from '../content/chapters'
 import { CHAPTER_IDS, useJourney, type ChapterId } from '../state/journey'
+import { goAshore } from './ashore'
+import { MARIGOLDS } from './collect'
 import { sea } from './sea'
 
 /** Everything drawn over the sea: the course, the compass, the key hints and the dock prompt. */
 export function Hud({ touch }: { touch: boolean }) {
   const completed = useJourney((s) => s.completed)
-  const dock = useJourney((s) => s.dock)
+  const marigolds = useJourney((s) => s.marigolds)
   const [near, setNear] = useState<ChapterId | null>(null)
   const needle = useRef<HTMLSpanElement>(null)
   const range = useRef<HTMLSpanElement>(null)
@@ -43,6 +45,11 @@ export function Hud({ touch }: { touch: boolean }) {
         <b>B</b>
       </nav>
 
+      <p className={`hud__flowers${marigolds.length ? ' is-on' : ''}`} key={marigolds.length} aria-live="polite">
+        <i aria-hidden="true" />
+        {marigolds.length === MARIGOLDS.length ? 'Sept soucis. One for every ceremony.' : `${marigolds.length} / ${MARIGOLDS.length}`}
+      </p>
+
       {nextId && (
         <p className="hud__compass">
           <span className="hud__needle" ref={needle} aria-hidden="true" />
@@ -54,7 +61,7 @@ export function Hud({ touch }: { touch: boolean }) {
       )}
 
       {nearChapter ? (
-        <button type="button" className="btn btn--oui hud__dock" style={{ ['--tint' as string]: nearChapter.colour }} onClick={() => dock(nearChapter.id)}>
+        <button type="button" className="btn btn--oui hud__dock" style={{ ['--tint' as string]: nearChapter.colour }} onClick={() => goAshore(nearChapter.id)}>
           {completed.includes(nearChapter.id) ? 'Revisit' : 'Go ashore'} · {nearChapter.title}
           {!touch && <kbd>E</kbd>}
         </button>

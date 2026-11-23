@@ -20,8 +20,7 @@
 }
 .screen h1 {
   font-size: clamp(3.2rem, 13vw, 8.5rem);
-  font-weight: 300;
-  font-variation-settings: 'opsz' 144;
+  font-weight: 400;
 }
 .screen h1 span {
   font-style: italic;
@@ -294,7 +293,7 @@ kbd {
 }
 .isle-tag b {
   font-size: 2.4rem;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--gold);
   line-height: 1;
 }
@@ -335,7 +334,7 @@ kbd {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(1.45rem, 3.6vw, 2.5rem);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.22;
   text-wrap: balance;
   text-shadow: 0 1px 24px rgba(5, 8, 24, 0.75);
@@ -360,8 +359,7 @@ kbd {
 }
 .beat--title h2 {
   font-size: clamp(2.8rem, 11vw, 7.5rem);
-  font-weight: 300;
-  font-variation-settings: 'opsz' 144;
+  font-weight: 400;
 }
 .beat--title .beat__text {
   font-family: var(--font-body);
@@ -468,8 +466,7 @@ kbd {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(4.5rem, 21vw, 14rem);
-  font-weight: 300;
-  font-variation-settings: 'opsz' 144;
+  font-weight: 400;
   line-height: 0.95;
   color: var(--gold);
   font-variant-numeric: tabular-nums;
@@ -507,69 +504,137 @@ kbd {
 }
 
 /* ───────── Finale ───────── */
+.finale {
+  touch-action: none;
+  overflow: hidden;
+}
 .unicorn {
-  width: min(46vw, 15rem);
+  width: min(78vw, 46svh, 24rem);
   overflow: visible;
+  touch-action: none;
+  cursor: crosshair;
+  outline: none;
 }
-.unicorn path {
+.unicorn:focus-visible {
+  outline: 1px dashed color-mix(in srgb, var(--cream) 50%, transparent);
+  outline-offset: 12px;
+}
+.unicorn__line {
   fill: none;
-  stroke: color-mix(in srgb, var(--cream) 70%, transparent);
-  stroke-width: 0.8;
+  stroke: color-mix(in srgb, var(--cream) 80%, transparent);
+  stroke-width: 1.1;
   stroke-linejoin: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 4.2s var(--ease) 0.5s;
+  stroke-linecap: round;
+  transition: stroke 1.2s, filter 1.2s;
 }
-.finale.is-on .unicorn path {
-  stroke-dashoffset: 0;
+.star__halo {
+  fill: transparent;
 }
-.unicorn circle {
+.star__core {
+  fill: color-mix(in srgb, var(--cream) 55%, transparent);
+  transition: fill 0.4s, r 0.4s;
+}
+.star.is-joined .star__core {
   fill: #fff6dc;
-  filter: drop-shadow(0 0 4px rgba(242, 182, 49, 0.9));
-  opacity: 0;
-  animation: star 0.9s var(--ease) forwards;
+  filter: drop-shadow(0 0 3px rgba(242, 182, 49, 0.9));
 }
-@keyframes star {
+.star.is-next .star__core {
+  fill: var(--gold);
+}
+.star.is-next .star__halo {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 0.8;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: beckon 1.6s ease-out infinite;
+}
+@keyframes beckon {
   from {
-    opacity: 0;
-    r: 0;
-  }
-  to {
+    transform: scale(0.35);
     opacity: 1;
   }
+  to {
+    transform: scale(1.5);
+    opacity: 0;
+  }
 }
-.finale > :not(svg) {
+.unicorn__eye {
+  fill: #fff6dc;
+  opacity: 0;
+  transition: opacity 1s 0.6s;
+}
+.finale.is-on .unicorn__eye {
+  opacity: 1;
+}
+.finale.is-on .unicorn__line {
+  stroke: var(--gold);
+  filter: drop-shadow(0 0 6px rgba(242, 182, 49, 0.9)) drop-shadow(0 0 22px rgba(242, 182, 49, 0.5));
+}
+.finale.is-on .unicorn {
+  animation: gallop 2.4s var(--ease);
+  cursor: default;
+}
+@keyframes gallop {
+  30% {
+    transform: translateY(-14px) rotate(-3deg) scale(1.06);
+  }
+  60% {
+    transform: translateY(4px) rotate(1.5deg);
+  }
+}
+.finale__prompt {
+  margin: 0;
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--cream) 62%, transparent);
+}
+.finale__prompt .fr {
+  letter-spacing: 0;
+  text-transform: none;
+}
+.finale__reveal {
   opacity: 0;
   transform: translateY(12px);
   transition:
     opacity 1.4s var(--ease),
     transform 1.4s var(--ease);
+  pointer-events: none;
 }
-.finale.is-on > :not(svg) {
+.finale:not(.is-on) .finale__reveal {
+  position: absolute;
+}
+.finale.is-on .finale__reveal {
   opacity: 1;
   transform: none;
+  pointer-events: auto;
 }
-.finale.is-on > :nth-child(2) {
-  transition-delay: 2.6s;
+.finale.is-on .fr.finale__reveal {
+  transition-delay: 1.6s;
 }
-.finale.is-on > :nth-child(3) {
-  transition-delay: 3.1s;
+.finale.is-on h1.finale__reveal {
+  transition-delay: 2s;
 }
-.finale.is-on > :nth-child(4) {
-  transition-delay: 3.9s;
+.finale.is-on .finale__line {
+  transition-delay: 2.7s;
 }
-.finale.is-on > :nth-child(5) {
-  transition-delay: 4.6s;
+.finale.is-on .finale__sign {
+  transition-delay: 3.4s;
 }
-.finale.is-on > :nth-child(6) {
-  transition-delay: 6s;
+.finale.is-on .finale__again {
+  transition-delay: 5s;
+}
+.finale h1 {
+  font-size: clamp(3rem, 12vw, 6.5rem);
 }
 .finale__line {
   max-width: 26rem;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.2rem, 3vw, 1.6rem);
-  font-weight: 300;
+  font-size: clamp(1.25rem, 3.2vw, 1.7rem);
 }
 .finale__sign {
   margin: 0;
@@ -579,7 +644,7 @@ kbd {
   appearance: none;
   border: 0;
   background: none;
-  margin-top: 2rem;
+  margin-top: 1.2rem;
   padding: 0.8rem 1rem;
   font-size: 0.72rem;
   letter-spacing: 0.3em;
@@ -587,8 +652,124 @@ kbd {
   color: color-mix(in srgb, var(--cream) 50%, transparent);
   cursor: pointer;
 }
+.finale--plain .finale__reveal,
 .finale--plain > * {
   transition-delay: 0s !important;
+}
+.petals {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.petals i {
+  position: absolute;
+  top: -5vh;
+  width: 0.7rem;
+  height: 1rem;
+  border-radius: 80% 0 80% 0;
+  opacity: 0;
+  animation: fall linear forwards;
+}
+@keyframes fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  8% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift), 112vh, 0) rotate(540deg);
+  }
+}
+
+/* ───────── Veil and sound ───────── */
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 55%, color-mix(in srgb, var(--veil) 78%, #fff 22%), var(--veil) 55%, color-mix(in srgb, var(--veil) 60%, #05081c));
+  clip-path: circle(0% at 50% 58%);
+  opacity: 1;
+}
+.veil--cover {
+  clip-path: circle(150% at 50% 58%);
+  transition: clip-path 0.75s cubic-bezier(0.7, 0, 0.3, 1);
+  pointer-events: auto;
+}
+.veil--reveal {
+  clip-path: circle(150% at 50% 58%);
+  opacity: 0;
+  transition: opacity 0.9s var(--ease);
+}
+.sound {
+  position: fixed;
+  top: clamp(2.6rem, 6vw, 3.6rem);
+  left: clamp(0.45rem, 2vw, 1.4rem);
+  z-index: 6;
+  appearance: none;
+  border: 0;
+  background: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+}
+.sound i {
+  width: 2px;
+  height: 0.9rem;
+  background: var(--cream);
+  opacity: 0.75;
+  transform-origin: center;
+  animation: bars 1.1s ease-in-out infinite;
+}
+.sound i:nth-child(2) {
+  animation-delay: -0.35s;
+}
+.sound i:nth-child(3) {
+  animation-delay: -0.7s;
+}
+.sound i:nth-child(4) {
+  animation-delay: -0.2s;
+}
+.sound.is-off i {
+  animation: none;
+  transform: scaleY(0.18);
+  opacity: 0.45;
+}
+@keyframes bars {
+  50% {
+    transform: scaleY(0.3);
+  }
+}
+.hud__flowers {
+  grid-area: 2 / 1;
+  align-self: start;
+  margin: 0.95rem 0 0 3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--cream);
+  opacity: 0;
+}
+.hud__flowers.is-on {
+  opacity: 1;
+  animation: rise 0.6s var(--ease);
+}
+.hud__flowers i {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffd24a 30%, #f08a1c 70%);
+  box-shadow: 0 0 10px 2px rgba(240, 138, 28, 0.6);
 }
 
 /* ───────── Plain scrolling film (no WebGL / reduced motion) ───────── */
@@ -607,7 +788,7 @@ kbd {
 }
 .fallback__chapter h2 {
   font-size: clamp(2.6rem, 10vw, 6rem);
-  font-weight: 300;
+  font-weight: 400;
 }
 .fallback__beat {
   margin: 0 0 4.5rem;
@@ -633,7 +814,7 @@ kbd {
   max-width: 34rem;
   font-family: var(--font-display);
   font-size: clamp(1.25rem, 3vw, 1.7rem);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.3;
 }
 .fallback .question {
