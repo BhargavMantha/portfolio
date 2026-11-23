@@ -57,3 +57,6 @@ coverage
 plan-source/
 syllabus-source/
 The Gentle Plan.html
+
+# Plaintext source for the encrypted /dojo page — never commit this.
+dojo-source/
