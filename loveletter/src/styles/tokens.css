@@ -5,9 +5,9 @@
   --gold: #f2b631;
   --cream: #f7f1e5;
 
-  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
   --font-body: 'Inter', system-ui, sans-serif;
-  --font-script: 'Italianno', 'Snell Roundhand', cursive;
+  --font-script: 'Pinyon Script', 'Snell Roundhand', cursive;
 
   --radius: 2px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -41,16 +41,17 @@ h2,
 h3 {
   font-family: var(--font-display);
   font-weight: 400;
-  letter-spacing: -0.01em;
-  line-height: 1.08;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
   margin: 0;
 }
 
 .fr {
   font-family: var(--font-script);
-  font-size: 1.7em;
-  line-height: 1.1;
+  font-size: 1.75em;
+  line-height: 1.15;
   color: var(--gold);
+  margin: 0;
 }
 
 button {

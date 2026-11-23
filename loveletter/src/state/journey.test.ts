@@ -115,4 +115,25 @@ describe('journey', () => {
     expect(s.getState().completed).toEqual([])
     expect(createJourney(storage).getState().completed).toEqual([])
   })
+
+  it('remembers each marigold she collects, once', () => {
+    const s = createJourney(storage)
+    s.getState().pick(3)
+    s.getState().pick(3)
+    s.getState().pick(0)
+    expect(s.getState().marigolds).toEqual([3, 0])
+    expect(createJourney(storage).getState().marigolds).toEqual([3, 0])
+  })
+
+  it('reset also returns the marigolds to the sea', () => {
+    const s = createJourney(storage)
+    s.getState().pick(1)
+    s.getState().reset()
+    expect(s.getState().marigolds).toEqual([])
+  })
+
+  it('loads progress saved before marigolds existed', () => {
+    storage.setItem('a-to-b:journey', JSON.stringify({ mode: 'sail', current: null, completed: ['prologue'] }))
+    expect(createJourney(storage).getState().marigolds).toEqual([])
+  })
 })

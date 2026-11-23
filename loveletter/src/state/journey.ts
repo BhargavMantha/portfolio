@@ -9,16 +9,19 @@ export type Journey = {
   mode: Mode
   current: ChapterId | null
   completed: ChapterId[]
+  /** Indexes of the marigolds collected along the way. */
+  marigolds: number[]
   canDock(id: ChapterId): boolean
   dock(id: ChapterId): void
   complete(id: ChapterId): void
   sayOui(): void
+  pick(i: number): void
   reset(): void
 }
 
 const KEY = 'a-to-b:journey'
-type Saved = Pick<Journey, 'mode' | 'current' | 'completed'>
-const FRESH: Saved = { mode: 'sail', current: null, completed: [] }
+type Saved = Pick<Journey, 'mode' | 'current' | 'completed' | 'marigolds'>
+const FRESH: Saved = { mode: 'sail', current: null, completed: [], marigolds: [] }
 
 function isChapter(x: unknown): x is ChapterId {
   return typeof x === 'string' && (CHAPTER_IDS as readonly string[]).includes(x)
@@ -32,7 +35,8 @@ function load(storage: Storage | undefined): Saved {
     const completed = Array.isArray(s.completed) ? s.completed.filter(isChapter) : []
     const current = isChapter(s.current) ? s.current : null
     const mode: Mode = s.mode === 'finale' ? 'finale' : current ? 'film' : 'sail'
-    return { mode, current, completed }
+    const marigolds = Array.isArray(s.marigolds) ? s.marigolds.filter((n): n is number => Number.isInteger(n)) : []
+    return { mode, current, completed, marigolds }
   } catch {
     return FRESH
   }
@@ -40,7 +44,7 @@ function load(storage: Storage | undefined): Saved {
 
 function save(storage: Storage | undefined, s: Saved) {
   try {
-    storage?.setItem(KEY, JSON.stringify({ mode: s.mode, current: s.current, completed: s.completed }))
+    storage?.setItem(KEY, JSON.stringify({ mode: s.mode, current: s.current, completed: s.completed, marigolds: s.marigolds }))
   } catch {
     // Private mode or full storage: progress just won't survive a reload.
   }
@@ -72,6 +76,10 @@ export function createJourney(storage?: Storage): StoreApi<Journey> {
         current: null,
         completed: completed.includes('epilogue') ? completed : [...completed, 'epilogue'],
       })
+    },
+    pick(i) {
+      const { marigolds } = get()
+      if (!marigolds.includes(i)) set({ marigolds: [...marigolds, i] })
     },
     reset() {
       set(FRESH)

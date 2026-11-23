@@ -1,5 +1,6 @@
 import type { ChapterId } from '../state/journey'
 import type { Boat } from './steer'
+import { createTrail } from './trail'
 
 /**
  * Live state of the voyage. The render loop writes it every frame; the HUD
@@ -15,6 +16,13 @@ export const sea = {
   /** Bearing and distance to the next unvisited island. */
   bearing: 0,
   distance: 0,
+  /** Island the camera is diving towards while docking. */
+  diving: null as ChapterId | null,
+  trail: createTrail(),
+  /** The render clock, so taps can be timed against the shader. */
+  now: 0,
+  /** Recent taps on the water: x, z, time. */
+  ripples: [] as { x: number; z: number; t: number }[],
 }
 
 /** Height of the water at a point. Mirrored exactly in the sea's vertex shader. */

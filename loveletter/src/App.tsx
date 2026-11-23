@@ -7,7 +7,11 @@ import { FallbackFilm } from './film/FallbackFilm'
 import { Stage } from './film/Stage'
 import { detectEnv, qualityTier, type QualityTier } from './lib/quality'
 import { deriveKey, exportKey, importKey } from './lib/vault'
+import { sound, unlock as unlockSound } from './audio/sound'
 import { Login } from './ui/Login'
+import { SoundToggle } from './ui/SoundToggle'
+import { Veil } from './ui/Veil'
+import { sailOn } from './world/ashore'
 import { journey, useJourney } from './state/journey'
 import { Finale, Prologue } from './ui/screens'
 import { Hud } from './world/Hud'
@@ -55,7 +59,17 @@ export function App() {
   }, [])
 
   if (door === 'checking') return null
-  if (door === 'closed') return <Login attempt={attempt} onOpen={() => setDoor('open')} />
+  if (door === 'closed')
+    return (
+      <Login
+        attempt={attempt}
+        onOpen={() => {
+          // Opening the door is a tap, which is what lets the browser play sound.
+          unlockSound()
+          setDoor('open')
+        }}
+      />
+    )
   return <Story />
 }
 
@@ -108,15 +122,22 @@ function Story() {
       ) : !begun ? (
         <Prologue
           onBegin={() => {
+            unlockSound()
+            sound.dock()
             dock('prologue')
             complete('prologue')
           }}
         />
       ) : mode === 'film' && current ? (
-        <ChapterFilm key={current} chapter={chapterById(current)} onDone={() => complete(current)} onOui={sayOui} />
+        <ChapterFilm key={current} chapter={chapterById(current)} onDone={() => sailOn(current)} onOui={() => {
+          sound.oui()
+          sayOui()
+        }} />
       ) : (
         <Hud touch={touch} />
       )}
+      <SoundToggle />
+      <Veil />
     </>
   )
 }
