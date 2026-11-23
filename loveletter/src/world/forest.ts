@@ -73,3 +73,22 @@ export const TREES = plant()
 const groups = ISLANDS.map((_, i) => TREES.filter((t) => t.glade === i))
 /** The trees that belong to one glade. They take its colour when it is visited. */
 export const groupOf = (glade: number) => groups[glade]
+
+export type Rock = { x: number; z: number; s: number; turn: number }
+
+/** Mossy boulders, mostly along the edges of the trail. Too small to block her. */
+export const ROCKS: Rock[] = (() => {
+  let s = 4242
+  const rnd = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646
+  const rocks: Rock[] = []
+  for (let tries = 0; tries < 900 && rocks.length < 70; tries++) {
+    const x = SEA_BOUNDS.minX + rnd() * (SEA_BOUNDS.maxX - SEA_BOUNDS.minX)
+    const z = SEA_BOUNDS.minZ + rnd() * (SEA_BOUNDS.maxZ - SEA_BOUNDS.minZ)
+    const d = distanceToPath(x, z)
+    if (d < 2.6 || d > 16 || rnd() > 1.1 - d / 14) continue
+    if (ISLANDS.some((g) => Math.hypot(x - g.x, z - g.z) < g.r + 3)) continue
+    if (TREES.some((t) => Math.hypot(x - t.x, z - t.z) < 1.4)) continue
+    rocks.push({ x, z, s: 0.3 + rnd() * 0.55, turn: rnd() * Math.PI * 2 })
+  }
+  return rocks
+})()

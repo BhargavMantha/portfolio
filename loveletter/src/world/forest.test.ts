@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { TREES, distanceToPath, groupOf } from './forest'
+import { ROCKS, TREES, distanceToPath, groupOf } from './forest'
 import { ISLANDS, SEA_BOUNDS } from './islands'
 
 describe('distanceToPath', () => {
@@ -58,5 +58,13 @@ describe('the forest', () => {
     }
     expect(groupOf(0).length + groupOf(6).length).toBeGreaterThan(0)
     expect(ISLANDS.map((_, i) => groupOf(i).length).reduce((a, b) => a + b)).toBe(TREES.length)
+  })
+
+  it('scatters boulders beside the trail, never on it or in a glade', () => {
+    expect(ROCKS.length).toBeGreaterThan(40)
+    for (const r of ROCKS) {
+      expect(distanceToPath(r.x, r.z)).toBeGreaterThan(2.2)
+      for (const g of ISLANDS) expect(Math.hypot(r.x - g.x, r.z - g.z)).toBeGreaterThan(g.r + 2.5)
+    }
   })
 })

@@ -15,11 +15,12 @@ const NOISE = /* glsl */ `
 `
 
 /* ───────────────────────── Forest floor ─────────────────────────
- * Cel-shaded night grass. A dirt trail joins the glades, each glade is ringed
- * with flowers, hoofprints of light fade behind the unicorn, taps send out a
- * ring of light, and every visited glade pours its colour into the ground
- * around it. Everything is computed from known positions, with no extra
- * render passes, which keeps phones happy.
+ * Sunlit grass in flat, painted patches. A dirt trail joins the glades, each
+ * glade is ringed with flowers, tree shadows lie across the ground, flowers
+ * spring up where the unicorn has stepped, and every visited glade fills the
+ * meadow around it with flowers of its own colour. Everything is computed
+ * from known positions plus one small baked shadow map: no extra render
+ * passes, which keeps phones happy.
  */
 export const groundVertex = /* glsl */ `
   varying vec3 vWorld;
@@ -35,10 +36,13 @@ export const groundFragment = /* glsl */ `
   uniform float uTime;
   uniform vec4 uIsle[7];              // x, z, lit (0–1), radius
   uniform vec3 uIsleCol[7];
-  uniform vec3 uBoat;                 // x, z, horn-light strength
+  uniform vec3 uBoat;                 // x, z, unused
   uniform vec3 uTrail[${TRAIL_LENGTH}];  // x, z, age in seconds (<0 unused)
   uniform vec3 uRipple[4];            // x, z, start time (<0 unused)
   uniform vec3 uHorizon;
+  uniform sampler2D uShade;           // baked tree shadows
+  uniform vec4 uShadeBox;             // min x, min z, width, depth of the shadow map
+  uniform vec2 uSun;                  // direction shadows fall in, on the ground
   varying vec3 vWorld;
   ${NOISE}
 
@@ -53,18 +57,22 @@ export const groundFragment = /* glsl */ `
     float broad = fbm(p * 0.16);
     float fine = fbm(p * 1.3 + 7.0);
 
-    // Three flat bands of moss.
+    // Painted grass: three flat greens, with sun-bleached patches and darker tufts.
     float band = clamp(floor(broad * 4.2) / 2.0, 0.0, 1.0);
-    vec3 col = mix(vec3(0.016, 0.050, 0.058), vec3(0.040, 0.105, 0.085), band);
+    vec3 col = mix(vec3(0.165, 0.455, 0.130), vec3(0.330, 0.640, 0.170), band);
+    col = mix(col, vec3(0.560, 0.780, 0.230), step(0.60, fbm(p * 0.42 + 21.0)) * 0.55);
+    col *= 1.0 - 0.16 * step(0.74, noise(p * 3.7));
 
-    // The trail from A to B: packed earth with a ragged edge.
+    // The trail from A to B: warm earth with a ragged edge and a few pale stones.
     float trail = 1e9;
     for (int i = 0; i < 6; i++) trail = min(trail, toSegment(p, uIsle[i].xy, uIsle[i + 1].xy));
     float onTrail = 1.0 - step(1.55, trail + (fine - 0.5) * 1.7);
-    vec3 earth = mix(vec3(0.085, 0.070, 0.095), vec3(0.135, 0.105, 0.125), step(0.5, fine));
+    vec3 earth = mix(vec3(0.470, 0.345, 0.225), vec3(0.610, 0.470, 0.315), step(0.5, fine));
+    earth = mix(earth, vec3(0.760, 0.720, 0.640), step(0.90, noise(p * 2.6 + 3.0)));
     col = mix(col, earth, onTrail);
 
-    vec3 light = vec3(0.0);
+    float meadow = 0.0;
+    vec3 tint = vec3(0.0);
     for (int i = 0; i < 7; i++) {
       vec2 c = uIsle[i].xy;
       float d = distance(p, c);
@@ -72,45 +80,57 @@ export const groundFragment = /* glsl */ `
       float lit = uIsle[i].z;
       float fi = float(i);
 
-      // Each glade is a clearing of brighter grass.
+      // Each glade is a clearing of fresh, brighter grass.
       float clearing = 1.0 - step(r + 2.4, d + (fine - 0.5) * 1.6);
-      col = mix(col, mix(vec3(0.045, 0.120, 0.095), vec3(0.075, 0.175, 0.115), band), clearing);
+      col = mix(col, mix(vec3(0.400, 0.710, 0.210), vec3(0.540, 0.820, 0.270), band), clearing);
 
-      // A ring of flowers round it: pale by moonlight, the glade's own colour once visited.
+      // A ring of flowers round it: white at first, the glade's own colour once visited.
       float ang = atan(p.y - c.y, p.x - c.x);
       float n = 22.0;
       float cell = floor((ang + 3.14159) / 6.28318 * n);
       float a = (cell + 0.5) / n * 6.28318 - 3.14159;
       float rr = r + 2.9 + 0.7 * hash(vec2(cell, fi));
       float flower = step(distance(p, c + vec2(cos(a), sin(a)) * rr), 0.17 + 0.08 * hash(vec2(fi, cell)));
-      vec3 petal = mix(vec3(0.42, 0.47, 0.62), uIsleCol[i] * 1.5 + 0.15, lit);
+      vec3 petal = mix(vec3(0.980, 0.960, 0.900), uIsleCol[i] * 1.15 + 0.12, lit);
       col = mix(col, petal, flower);
 
-      // The colour a visited glade pours into the forest, in soft steps.
-      float pool = exp(-d * d / 210.0);
-      pool = floor(pool * 5.0 + 0.5) / 5.0;
-      light += uIsleCol[i] * lit * (pool * 0.36 + exp(-d * d / 30.0) * 0.3);
+      // How strongly this glade's flowers have spread to here.
+      float reach = exp(-d * d / 260.0) * lit;
+      meadow = max(meadow, reach);
+      tint += uIsleCol[i] * reach;
     }
-    col += light * (0.85 + 0.15 * sin(length(p) * 1.3 - uTime * 0.9));
 
-    // Small flowers everywhere; they only show where there is light to catch.
-    float bloom = step(0.90, noise(p * 3.1 + 11.0)) * step(0.5, noise(p * 9.0));
-    col += (light * 2.2 + vec3(0.05, 0.07, 0.11)) * bloom * (1.0 - onTrail);
+    // Wild flowers: sparse and white everywhere, thick and coloured round visited glades.
+    float seed = noise(p * 3.1 + 11.0);
+    float dot2 = step(0.5, noise(p * 9.0));
+    float wild = step(0.93 - 0.20 * meadow, seed) * dot2 * (1.0 - onTrail);
+    vec3 wildCol = mix(vec3(0.980, 0.960, 0.880), normalize(tint + 1e-4) * 1.25 + 0.10, smoothstep(0.05, 0.3, meadow));
+    col = mix(col, wildCol, wild);
 
-    // Hoofprints of light where the unicorn has just stepped.
+    // Tree shadows, cool and soft, the way they are painted.
+    vec2 suv = (p - uShadeBox.xy) / uShadeBox.zw;
+    float shade = texture2D(uShade, suv).r * step(0.0, suv.x) * step(suv.x, 1.0) * step(0.0, suv.y) * step(suv.y, 1.0);
+    // Her own shadow.
+    vec2 rel = p - (uBoat.xy + uSun * 1.6);
+    float along = dot(rel, uSun);
+    float across = dot(rel, vec2(-uSun.y, uSun.x));
+    shade = max(shade, (1.0 - smoothstep(0.75, 1.15, length(vec2(along / 2.1, across / 0.75)))) * 0.85);
+    col = mix(col, col * vec3(0.42, 0.56, 0.66), shade * 0.78);
+
+    // Flowers spring up where the unicorn has just stepped.
     float glow = 0.0;
     float spark = 0.0;
     for (int k = 0; k < ${TRAIL_LENGTH}; k++) {
       float age = uTrail[k].z;
       if (age < 0.0) continue;
       float d = distance(p, uTrail[k].xy);
-      float fade = exp(-age * 0.9);
-      glow = max(glow, smoothstep(1.5 + age * 0.35, 0.0, d) * fade);
-      spark = max(spark, step(d, 0.26) * fade);
+      float fade = exp(-age * 0.8);
+      glow = max(glow, smoothstep(1.6 + age * 0.4, 0.0, d) * fade);
+      spark = max(spark, step(d, 0.24) * fade);
     }
-    float glitter = step(0.62, noise(p * 11.0 + uTime * 1.5));
-    col += vec3(1.0, 0.78, 0.50) * glow * 0.20 + vec3(1.0, 0.62, 0.85) * glow * glitter * 0.55;
-    col = mix(col, vec3(1.0, 0.93, 0.74), spark * 0.85);
+    float glitter = step(0.66, noise(p * 11.0 + uTime * 1.5));
+    col = mix(col, vec3(1.0, 0.72, 0.86), glow * glitter * 0.85);
+    col = mix(col, vec3(1.0, 0.97, 0.86), spark * 0.9);
 
     // A ring of light from a tap.
     for (int k = 0; k < 4; k++) {
@@ -119,25 +139,20 @@ export const groundFragment = /* glsl */ `
       float age = uTime - t0;
       float d = distance(p, uRipple[k].xy);
       float fade = exp(-age * 1.2) * step(age, 4.0);
-      float ring = step(abs(d - age * 3.0), 0.09) + step(abs(d - age * 3.0 + 0.8), 0.05) * step(0.3, age);
-      col += vec3(1.0, 0.90, 0.62) * ring * fade * 0.8 + vec3(1.0, 0.75, 0.45) * exp(-d * d / (1.0 + age * 5.0)) * fade * 0.2;
+      float ring = step(abs(d - age * 3.0), 0.10) + step(abs(d - age * 3.0 + 0.8), 0.05) * step(0.3, age);
+      col = mix(col, vec3(1.0, 0.98, 0.88), clamp(ring * fade, 0.0, 1.0));
     }
 
-    // The horn's pool of gold.
-    float bd = distance(p, uBoat.xy);
-    float horn = exp(-bd * bd / 11.0);
-    horn = floor(horn * 3.0 + 0.5) / 3.0;
-    col += vec3(1.0, 0.78, 0.40) * uBoat.z * (horn * 0.16 + exp(-bd * bd / 80.0) * 0.10);
-
     float dist = distance(cameraPosition.xz, p);
-    col = mix(col, uHorizon, smoothstep(42.0, 135.0, dist));
+    col = mix(col, uHorizon, smoothstep(40.0, 130.0, dist));
     gl_FragColor = vec4(col, 1.0);
   }
 `
 
 /* ───────────────────────── Sky ─────────────────────────
- * One dome: a night gradient that warms as islands are lit, stars that
- * twinkle, an aurora to the north (towards B), a moon, and shooting stars.
+ * A morning sky: blue overhead, pale and misty at the horizon, a low sun
+ * with a wide glow, and thin drifting cloud. It turns warmer and clearer as
+ * glades are visited.
  */
 export const skyVertex = /* glsl */ `
   varying vec3 vDir;
@@ -151,62 +166,30 @@ export const skyVertex = /* glsl */ `
 export const skyFragment = /* glsl */ `
   precision highp float;
   uniform float uTime;
-  uniform float uDawn;        // 0 at the start, 1 when every island is lit
-  uniform vec3 uShootFrom;
-  uniform vec3 uShootDir;
-  uniform float uShootT;      // 0–1 while a shooting star is crossing, else <0
+  uniform float uDawn;        // 0 at the start, 1 when every glade is visited
+  uniform vec3 uSunDir;
   varying vec3 vDir;
   ${NOISE}
-
-  float starLayer(vec2 sp, float n, float density) {
-    vec2 g = sp * n;
-    vec2 id = floor(g);
-    float r = hash(id);
-    vec2 f = fract(g) - 0.5 - (vec2(hash(id + 3.1), hash(id + 7.7)) - 0.5) * 0.6;
-    float twinkle = 0.55 + 0.45 * sin(uTime * (0.8 + r * 3.0) + r * 60.0);
-    return step(density, r) * smoothstep(0.09 + 0.07 * hash(id + 1.3), 0.0, length(f)) * twinkle;
-  }
 
   void main() {
     vec3 d = normalize(vDir);
     float h = max(d.y, 0.0);
-    vec2 sp = vec2(atan(d.z, d.x), asin(clamp(d.y, -1.0, 1.0)));
 
-    vec3 zenith = vec3(0.010, 0.016, 0.060);
-    vec3 middle = mix(vec3(0.040, 0.050, 0.170), vec3(0.090, 0.060, 0.230), uDawn);
-    vec3 horizon = mix(vec3(0.075, 0.075, 0.200), vec3(0.340, 0.170, 0.420), uDawn);
-    vec3 col = mix(horizon, middle, smoothstep(0.0, 0.22, h));
-    col = mix(col, zenith, smoothstep(0.18, 0.85, h));
+    vec3 zenith = mix(vec3(0.330, 0.600, 0.860), vec3(0.230, 0.540, 0.920), uDawn);
+    vec3 horizon = mix(vec3(0.780, 0.900, 0.880), vec3(1.000, 0.930, 0.760), uDawn);
+    vec3 col = mix(horizon, zenith, smoothstep(0.0, 0.55, h));
 
-    // Warmth on the northern horizon, where the voyage is heading.
-    float north = pow(max(dot(normalize(d.xz + 1e-5), vec2(0.0, -1.0)), 0.0), 2.5);
-    float low = 1.0 - smoothstep(0.0, 0.30, h);
-    col += mix(vec3(0.20, 0.10, 0.36), vec3(0.95, 0.56, 0.22), uDawn) * north * low * (0.22 + 0.55 * uDawn);
+    float s = max(dot(d, normalize(uSunDir)), 0.0);
+    col += vec3(1.0, 0.86, 0.60) * pow(s, 9.0) * 0.38;
+    col += vec3(1.0, 0.95, 0.80) * pow(s, 120.0) * 0.8;
+    col = mix(col, vec3(1.0, 0.99, 0.93), smoothstep(0.9990, 0.9994, s));
 
-    float stars = starLayer(sp, 46.0, 0.86) + starLayer(sp + 4.0, 90.0, 0.90) * 0.7;
-    col += vec3(0.95, 0.96, 1.0) * stars * smoothstep(0.02, 0.25, h);
+    // Thin cloud, stretched towards the horizon.
+    vec2 cp = d.xz / (d.y + 0.22) * 1.3 + vec2(uTime * 0.006, uTime * 0.002);
+    float cloud = fbm(cp) * fbm(cp * 2.3 + 5.0);
+    cloud = smoothstep(0.20, 0.42, cloud) * smoothstep(0.02, 0.25, h);
+    col = mix(col, vec3(1.0, 0.985, 0.960), cloud * 0.75);
 
-    // Aurora: slow curtains in the northern sky, teal below, violet above.
-    float curtain = fbm(vec2(sp.x * 2.6 + uTime * 0.025, h * 1.5 - uTime * 0.01));
-    float rays = 0.6 + 0.4 * sin(sp.x * 34.0 + curtain * 9.0 + uTime * 0.2);
-    float ribbon = smoothstep(0.07, 0.22, h) * smoothstep(0.62, 0.26, h) * pow(curtain, 2.2) * rays;
-    col += mix(vec3(0.10, 0.85, 0.72), vec3(0.62, 0.30, 0.95), smoothstep(0.1, 0.5, h)) * ribbon * (0.25 + 0.75 * north) * (0.35 + 0.5 * uDawn);
-
-    vec3 moon = normalize(vec3(-0.35, 0.5, -0.78));
-    float m = dot(d, moon);
-    col += vec3(1.0, 0.96, 0.84) * smoothstep(0.9982, 0.9987, m);
-    col += vec3(0.55, 0.60, 0.95) * pow(max(m, 0.0), 220.0) * 0.5;
-
-    if (uShootT >= 0.0) {
-      float streak = 0.0;
-      for (int j = 0; j < 9; j++) {
-        float s = uShootT - float(j) * 0.022;
-        if (s < 0.0) continue;
-        vec3 q = normalize(uShootFrom + uShootDir * s);
-        streak += exp(-(1.0 - dot(d, q)) * 90000.0) * (1.0 - float(j) / 9.0);
-      }
-      col += vec3(1.0, 0.95, 0.85) * streak * sin(uShootT * 3.14159);
-    }
     gl_FragColor = vec4(col, 1.0);
   }
 `
@@ -241,6 +224,6 @@ export const fireflyFragment = /* glsl */ `
   void main() {
     float d = length(gl_PointCoord - 0.5);
     float a = smoothstep(0.5, 0.0, d);
-    gl_FragColor = vec4(uColor, a * a * max(vAlpha, 0.0));
+    gl_FragColor = vec4(uColor, a * max(vAlpha, 0.0));
   }
 `

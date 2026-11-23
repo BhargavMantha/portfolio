@@ -1,8 +1,10 @@
-import { Html } from '@react-three/drei'
+import { Html, useGLTF } from '@react-three/drei'
 import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
-import { useEffect, useMemo, useRef, type MutableRefObject } from 'react'
+import { Suspense, useEffect, useMemo, useRef, type MutableRefObject } from 'react'
 import {
   AdditiveBlending,
+  AnimationMixer,
+  CanvasTexture,
   BackSide,
   BufferGeometry,
   Color,
@@ -12,6 +14,9 @@ import {
   Group,
   IcosahedronGeometry,
   InstancedMesh,
+  LinearFilter,
+  type Mesh,
+  MeshStandardMaterial,
   Matrix4,
   Quaternion,
   MeshToonMaterial,
@@ -28,7 +33,7 @@ import { CEREMONY_ORDER } from '../content/manifest'
 import { CHAPTER_IDS, journey, useJourney, type ChapterId } from '../state/journey'
 import { goAshore } from './ashore'
 import { MARIGOLDS, collectNear } from './collect'
-import { TREES, groupOf } from './forest'
+import { ROCKS, TREES, groupOf } from './forest'
 import { ISLANDS, SEA_BOUNDS, bearingTo, islandOf, nearestDockable, type Island } from './islands'
 import { sea } from './sea'
 import { fireflyFragment, fireflyVertex, groundFragment, groundVertex, skyFragment, skyVertex } from './shaders'
@@ -51,15 +56,15 @@ const ramp = (() => {
 
 type Reveal = MutableRefObject<number>
 
-const grey = (c: Color) => {
+/** How a colour looks before its glade is visited: washed out to pale stone. */
+const washed = (c: Color) => {
   const l = 0.3 * c.r + 0.59 * c.g + 0.11 * c.b
-  // Cool moonlit grey rather than neutral, so unvisited islands still belong to the night.
-  return new Color(l * 0.62, l * 0.68, l * 0.9)
+  return new Color(l, l, l).lerp(new Color('#d9dccb'), 0.55)
 }
 
 /**
- * A toon material that is grey until its island is revealed, then takes its
- * true colour. `glow` makes it shine with that colour once revealed.
+ * A toon material that shows its resting colour until its glade is visited,
+ * then takes its true colour. `glow` makes it shine with that colour once revealed.
  */
 /** Where Ana is, for the trees' see-through effect. */
 const riderAt = { value: new Vector3() }
@@ -99,10 +104,10 @@ function seeThrough(m: MeshToonMaterial) {
   m.customProgramCacheKey = () => 'see-through'
 }
 
-function Tone({ color, reveal, glow = 0, always = 0, veil = false }: { color: string; reveal: Reveal; glow?: number; always?: number; veil?: boolean }) {
+function Tone({ color, rest, reveal, glow = 0, always = 0, veil = false }: { color: string; rest?: string; reveal: Reveal; glow?: number; always?: number; veil?: boolean }) {
   const ref = useRef<MeshToonMaterial>(null)
   const full = useMemo(() => new Color(color), [color])
-  const dull = useMemo(() => grey(new Color(color)), [color])
+  const dull = useMemo(() => (rest ? new Color(rest) : washed(new Color(color))), [color, rest])
   const last = useRef(-1)
   useEffect(() => {
     if (veil && ref.current) {
@@ -126,8 +131,55 @@ function Tone({ color, reveal, glow = 0, always = 0, veil = false }: { color: st
 /** How far each glade has come into colour, 0 to 1. Shared by its landmark, its trees and the ground. */
 const REVEAL: Reveal[] = ISLANDS.map(() => ({ current: 0 }))
 
-const NIGHT = new Color('#081420')
-const DUSK = new Color('#351d4a')
+const MIST = new Color('#a8d4cc')
+const CLEAR = new Color('#cfe7c4')
+
+/** Where the sun is, and so which way shadows fall on the ground. */
+const SUN = new Vector3(40, 46, 34)
+const SHADOW_DIR = { x: -SUN.x / Math.hypot(SUN.x, SUN.z), z: -SUN.z / Math.hypot(SUN.x, SUN.z) }
+const SHADE_BOX = { x: -72, z: -178, w: 144, d: 230 }
+
+/**
+ * Tree shadows, painted once into a small texture: a soft dark streak on the
+ * ground beside every tree and landmark. Far cheaper than real shadows.
+ */
+function bakeShadows() {
+  const W = 512
+  const H = 816
+  const canvas = document.createElement('canvas')
+  canvas.width = W
+  canvas.height = H
+  const g = canvas.getContext('2d')!
+  g.fillStyle = '#000'
+  g.fillRect(0, 0, W, H)
+  const px = W / SHADE_BOX.w
+  const angle = Math.atan2(SHADOW_DIR.z, SHADOW_DIR.x)
+  const blot = (x: number, z: number, long: number, wide: number, strength: number) => {
+    const cx = (x + SHADOW_DIR.x * long * 0.85 - SHADE_BOX.x) * px
+    const cy = (z + SHADOW_DIR.z * long * 0.85 - SHADE_BOX.z) * px
+    g.save()
+    g.translate(cx, cy)
+    g.rotate(angle)
+    g.scale(long * px, wide * px)
+    const grad = g.createRadialGradient(0, 0, 0.25, 0, 0, 1)
+    grad.addColorStop(0, `rgba(255,255,255,${strength})`)
+    grad.addColorStop(1, 'rgba(255,255,255,0)')
+    g.fillStyle = grad
+    g.beginPath()
+    g.arc(0, 0, 1, 0, Math.PI * 2)
+    g.fill()
+    g.restore()
+  }
+  g.globalCompositeOperation = 'lighten'
+  for (const t of TREES) blot(t.x, t.z, 3.4 * t.h, 1.5 * t.h, 0.95)
+  for (const r of ROCKS) blot(r.x, r.z, 1.1 * r.s, 0.8 * r.s, 0.7)
+  for (const i of ISLANDS) blot(i.x, i.z, i.r * 1.5, i.r * 1.0, 0.8)
+  const texture = new CanvasTexture(canvas)
+  texture.flipY = false
+  texture.minFilter = texture.magFilter = LinearFilter
+  texture.generateMipmaps = false
+  return texture
+}
 
 function Ground() {
   const geometry = useMemo(() => new PlaneGeometry(440, 440, 1, 1).rotateX(-Math.PI / 2), [])
@@ -140,7 +192,10 @@ function Ground() {
       uBoat: { value: new Vector3(0, 0, 1) },
       uTrail: { value: new Float32Array(TRAIL_LENGTH * 3).fill(-1) },
       uRipple: { value: [0, 1, 2, 3].map(() => new Vector3(0, 0, -1)) },
-      uHorizon: { value: NIGHT.clone() },
+      uHorizon: { value: MIST.clone() },
+      uShade: { value: bakeShadows() },
+      uShadeBox: { value: new Vector4(SHADE_BOX.x, SHADE_BOX.z, SHADE_BOX.w, SHADE_BOX.d) },
+      uSun: { value: [SHADOW_DIR.x, SHADOW_DIR.z] },
     }),
     [],
   )
@@ -163,8 +218,8 @@ function Ground() {
       if (r) u.set(r.x, r.z, r.t)
       else u.z = -1
     })
-    // The mist the far trees fade into warms from night to dusk as glades are lit.
-    uniforms.uHorizon.value.lerpColors(NIGHT, DUSK, completed.length / CHAPTER_IDS.length)
+    // The morning mist the far trees fade into lifts as glades are visited.
+    uniforms.uHorizon.value.lerpColors(MIST, CLEAR, completed.length / CHAPTER_IDS.length)
     ;(scene.fog as Fog | null)?.color.copy(uniforms.uHorizon.value)
   })
 
@@ -210,19 +265,41 @@ function Grove({ glade }: { glade: number }) {
     <>
       <instancedMesh ref={place(trees, 0.8, (h) => [h, h, h])} args={[undefined, undefined, trees.length]}>
         <cylinderGeometry args={[0.13, 0.2, 1.6, 5]} />
-        <Tone color="#6b4a3a" reveal={reveal} veil />
+        <Tone color="#6b4a3a" rest="#6b4a3a" reveal={reveal} veil />
       </instancedMesh>
       {[0, 1, 2].map((k) => (
         <instancedMesh key={k} ref={place(pines, 1.9 + k * 0.95, (h) => [h * (1 - k * 0.22), h, h * (1 - k * 0.22)])} args={[undefined, undefined, pines.length]}>
           <coneGeometry args={[1.25, 1.7, 6]} />
-          <Tone color={palette.tree} reveal={reveal} glow={0.14} veil />
+          <Tone color={palette.tree} rest={k === 1 ? "#3a8a3c" : "#2f7a3a"} reveal={reveal} glow={0.1} veil />
         </instancedMesh>
       ))}
       <instancedMesh ref={place(rounds, 2.6, (h) => [h, h * 1.15, h])} args={[undefined, undefined, rounds.length]}>
         <icosahedronGeometry args={[1.1, 1]} />
-        <Tone color={palette.land} reveal={reveal} glow={0.14} veil />
+        <Tone color={palette.land} rest="#5fa83a" reveal={reveal} glow={0.1} veil />
       </instancedMesh>
     </>
+  )
+}
+
+/** Mossy boulders along the trail. */
+function Rocks() {
+  const place = (mesh: InstancedMesh | null) => {
+    if (!mesh) return
+    const m = new Matrix4()
+    const q = new Quaternion()
+    ROCKS.forEach((r, i) => {
+      q.setFromAxisAngle(new Vector3(0.3, 1, 0.2).normalize(), r.turn)
+      m.compose(new Vector3(r.x, r.s * 0.32, r.z), q, new Vector3(r.s, r.s * 0.72, r.s * 0.9))
+      mesh.setMatrixAt(i, m)
+    })
+    mesh.instanceMatrix.needsUpdate = true
+    mesh.computeBoundingSphere()
+  }
+  return (
+    <instancedMesh ref={place} args={[undefined, undefined, ROCKS.length]}>
+      <dodecahedronGeometry args={[1, 0]} />
+      <meshToonMaterial gradientMap={ramp} color="#8d7c66" />
+    </instancedMesh>
   )
 }
 
@@ -230,37 +307,13 @@ function Grove({ glade }: { glade: number }) {
 
 function Sky() {
   const ref = useRef<Group>(null)
-  const uniforms = useMemo(
-    () => ({
-      uTime: { value: 0 },
-      uDawn: { value: 0 },
-      uShootFrom: { value: new Vector3(0, 1, 0) },
-      uShootDir: { value: new Vector3(1, 0, 0) },
-      uShootT: { value: -1 },
-    }),
-    [],
-  )
-  const next = useRef(4)
+  const uniforms = useMemo(() => ({ uTime: { value: 0 }, uDawn: { value: 0 }, uSunDir: { value: SUN.clone().normalize() } }), [])
 
   useFrame(({ clock, camera }, dt) => {
-    const t = clock.elapsedTime
     ref.current?.position.copy(camera.position)
-    uniforms.uTime.value = t
+    uniforms.uTime.value = clock.elapsedTime
     const dawn = journey.getState().completed.length / CHAPTER_IDS.length
     uniforms.uDawn.value += (dawn - uniforms.uDawn.value) * Math.min(1, dt * 0.5)
-
-    // A shooting star every so often, always in the half of the sky she is facing.
-    if (uniforms.uShootT.value >= 0) {
-      uniforms.uShootT.value += dt / 0.9
-      if (uniforms.uShootT.value > 1) uniforms.uShootT.value = -1
-    } else if (t > next.current) {
-      next.current = t + 7 + Math.random() * 9
-      const f = forward(sea.boat.heading)
-      const side = (Math.random() - 0.5) * 1.6
-      uniforms.uShootFrom.value.set(f.x + -f.z * side, 0.55 + Math.random() * 0.35, f.z + f.x * side).normalize()
-      uniforms.uShootDir.value.set((Math.random() - 0.5) * 0.9, -0.35 - Math.random() * 0.2, (Math.random() - 0.5) * 0.9)
-      uniforms.uShootT.value = 0
-    }
   })
 
   return (
@@ -273,163 +326,175 @@ function Sky() {
   )
 }
 
-/* ───────────────────────── Boat and firefly ───────────────────────── */
+/* ───────────────────────── Ana and her unicorn ───────────────────────── */
 
-const COAT = '#fbf6ff'
-const MANE = ['#f7a8d0', '#c9a8f5', '#ffd27a', '#f7a8d0', '#c9a8f5']
+const HORSE_URL = `${import.meta.env.BASE_URL}models/horse.glb`
+/** The model is in its own large units; this brings it to about 2.3 high. */
+const HORSE_SCALE = 0.0125
 
-/** A leg that swings from the hip. */
-function Leg({ x, z, phase, gait }: { x: number; z: number; phase: number; gait: MutableRefObject<{ t: number; amp: number }> }) {
-  const ref = useRef<Group>(null)
-  useFrame(() => {
-    if (ref.current) ref.current.rotation.x = Math.sin(gait.current.t + phase) * 0.75 * gait.current.amp
-  })
-  return (
-    <group ref={ref} position={[x, 1.02, z]}>
-      <mesh position={[0, -0.46, 0]}>
-        <cylinderGeometry args={[0.085, 0.07, 0.92, 6]} />
-        <meshToonMaterial gradientMap={ramp} color={COAT} emissive={COAT} emissiveIntensity={0.1} />
-      </mesh>
-      <mesh position={[0, -0.95, 0]}>
-        <cylinderGeometry args={[0.09, 0.1, 0.12, 6]} />
-        <meshToonMaterial gradientMap={ramp} color={GOLD} emissive={GOLD} emissiveIntensity={0.5} />
-      </mesh>
-    </group>
-  )
+/** Position of one vertex of a morph-animated mesh, in the mesh's own space, at this instant. */
+function morphed(mesh: Mesh, index: number, out: Vector3) {
+  const base = mesh.geometry.attributes.position
+  out.fromBufferAttribute(base, index)
+  const targets = mesh.geometry.morphAttributes.position
+  const weights = mesh.morphTargetInfluences
+  if (!targets || !weights) return out
+  const relative = mesh.geometry.morphTargetsRelative
+  const v = new Vector3()
+  let sum = 0
+  const origin = out.clone()
+  for (let i = 0; i < targets.length; i++) {
+    const w = weights[i]
+    if (!w) continue
+    v.fromBufferAttribute(targets[i], index)
+    if (relative) out.addScaledVector(v, w)
+    else {
+      out.addScaledVector(v.sub(origin), w)
+      sum += w
+    }
+  }
+  return out
 }
 
 /**
- * Ana on her unicorn. The light she touched in the prologue is the glow of
- * its horn, and that glow is what colours the forest as she nears.
+ * Ana on her unicorn. The unicorn is a modelled horse with a real galloping
+ * stride; the horn and Ana are attached to points on its head and back, so
+ * they move with every stride.
  */
 function Rider() {
   const ref = useRef<Group>(null)
-  const body = useRef<Group>(null)
-  const tail = useRef<Group>(null)
-  const gait = useRef({ t: 0, amp: 0 })
-  const coat = <meshToonMaterial gradientMap={ramp} color={COAT} emissive={COAT} emissiveIntensity={0.1} />
-  const gown = <meshToonMaterial gradientMap={ramp} color="#7b4bb3" emissive="#7b4bb3" emissiveIntensity={0.2} />
+  const horn = useRef<Group>(null)
+  const ana = useRef<Group>(null)
+  const gltf = useGLTF(HORSE_URL)
 
-  useFrame(({ clock }, dt) => {
+  const { horse, mixer, head, seat, facing } = useMemo(() => {
+    const horse = gltf.scene.clone(true)
+    let mesh: Mesh | null = null
+    horse.traverse((o) => {
+      if ((o as Mesh).isMesh) mesh = o as Mesh
+    })
+    const m = mesh as unknown as Mesh
+    // A white coat, shaded in flat facets like the rest of the world.
+    m.material = new MeshStandardMaterial({ color: '#fdfaf6', roughness: 0.85, metalness: 0, flatShading: true })
+    const pos = m.geometry.attributes.position
+    m.geometry.computeBoundingBox()
+    const box = m.geometry.boundingBox!
+    // Which end is the head? The neck holds it high, so the highest points sit at that end.
+    let high = 0
+    let count = 0
+    let top = 0
+    for (let i = 0; i < pos.count; i++) {
+      if (pos.getY(i) > box.max.y * 0.86) {
+        high += pos.getZ(i)
+        count++
+      }
+      if (pos.getY(i) > pos.getY(top)) top = i
+    }
+    const midZ = (box.min.z + box.max.z) / 2
+    const facing = high / Math.max(1, count) > midZ ? 1 : -1
+    // The seat: the highest point on the back, a little behind the middle.
+    const seatZ = midZ - facing * (box.max.z - box.min.z) * 0.06
+    let seat = 0
+    let best = -Infinity
+    for (let i = 0; i < pos.count; i++) {
+      if (Math.abs(pos.getZ(i) - seatZ) < 12 && Math.abs(pos.getX(i)) < 9 && pos.getY(i) > best) {
+        best = pos.getY(i)
+        seat = i
+      }
+    }
+    const mixer = new AnimationMixer(horse)
+    if (gltf.animations[0]) mixer.clipAction(gltf.animations[0]).play()
+    return { horse, mixer, mesh: m, head: top, seat, facing }
+  }, [gltf])
+
+  const body = useMemo(() => {
+    let mesh: Mesh | null = null
+    horse.traverse((o) => {
+      if ((o as Mesh).isMesh) mesh = o as Mesh
+    })
+    return mesh as unknown as Mesh
+  }, [horse])
+
+  const at = useMemo(() => new Vector3(), [])
+  useFrame((_, dt) => {
     const g = ref.current
     if (!g) return
     const { x, z, heading, speed } = sea.boat
-    const pace = Math.min(1, Math.abs(speed) / 4)
-    gait.current.t += Math.abs(speed) * dt * 2.1
-    gait.current.amp += (pace - gait.current.amp) * Math.min(1, dt * 6)
+    const pace = Math.min(1, Math.abs(speed) / 6)
+    // The stride keeps time with her speed, and stills when she stops.
+    mixer.timeScale = pace * 1.25
+    mixer.update(dt)
     const turn = (sea.keys.left ? 1 : 0) - (sea.keys.right ? 1 : 0)
     g.position.set(x, 0, z)
-    g.rotation.set(0, heading, turn * 0.1 * pace, 'YXZ')
+    g.rotation.set(0, heading, turn * 0.08 * pace, 'YXZ')
     riderAt.value.set(x, 2, z)
-    if (body.current) {
-      // A trot: the body rises twice per stride and rocks a little.
-      body.current.position.y = Math.abs(Math.sin(gait.current.t)) * 0.11 * gait.current.amp
-      body.current.rotation.x = Math.sin(gait.current.t * 2) * 0.035 * gait.current.amp
-    }
-    if (tail.current) tail.current.rotation.set(0.5 + 0.25 * gait.current.amp, Math.sin(clock.elapsedTime * 2.2) * 0.3, 0)
+    if (horn.current) horn.current.position.copy(morphed(body, head, at)).multiplyScalar(HORSE_SCALE)
+    if (ana.current) ana.current.position.copy(morphed(body, seat, at)).multiplyScalar(HORSE_SCALE)
   })
 
+  const gown = <meshToonMaterial gradientMap={ramp} color="#7b4bb3" emissive="#7b4bb3" emissiveIntensity={0.12} />
+  const skin = <meshToonMaterial gradientMap={ramp} color="#c58d68" />
+  const hair = <meshToonMaterial gradientMap={ramp} color="#231629" />
+
   return (
-    <group ref={ref} scale={0.92}>
-      <group ref={body}>
-        {/* Unicorn */}
-        <mesh position={[0, 1.28, 0.05]} rotation={[Math.PI / 2, 0, 0]}>
-          <capsuleGeometry args={[0.42, 0.95, 4, 10]} />
-          {coat}
-        </mesh>
-        <mesh position={[0, 1.82, -0.86]} rotation={[-0.62, 0, 0]}>
-          <cylinderGeometry args={[0.2, 0.3, 0.95, 8]} />
-          {coat}
-        </mesh>
-        <mesh position={[0, 2.26, -1.24]} rotation={[0.42, 0, 0]}>
-          <boxGeometry args={[0.32, 0.36, 0.66]} />
-          {coat}
-        </mesh>
-        <mesh position={[0, 2.16, -1.56]} rotation={[0.42, 0, 0]}>
-          <boxGeometry args={[0.26, 0.24, 0.26]} />
-          <meshToonMaterial gradientMap={ramp} color="#f3dfe8" />
-        </mesh>
-        {[-0.11, 0.11].map((x) => (
-          <mesh key={x} position={[x, 2.52, -1.02]} rotation={[-0.2, 0, x * 2]}>
-            <coneGeometry args={[0.06, 0.2, 5]} />
-            {coat}
+    <group ref={ref}>
+      {/* Turned so the horse faces the way she is riding (−z). */}
+      <group rotation={[0, facing > 0 ? Math.PI : 0, 0]}>
+        <primitive object={horse} scale={HORSE_SCALE} />
+        <group ref={horn}>
+          <mesh position={[0, 0.22, facing * 0.2]} rotation={[facing * 0.5, 0, 0]}>
+            <coneGeometry args={[0.06, 0.62, 8]} />
+            <meshStandardMaterial color="#ffd76a" emissive="#ffb82e" emissiveIntensity={0.7} roughness={0.35} metalness={0.4} />
           </mesh>
-        ))}
-        {[-0.165, 0.165].map((x) => (
-          <mesh key={x} position={[x, 2.3, -1.38]}>
-            <sphereGeometry args={[0.035, 8, 8]} />
-            <meshBasicMaterial color="#1b1430" />
+        </group>
+        {/* Ana: purple gown, long dark hair, a small tiara and a marigold. */}
+        <group ref={ana} rotation={[0, facing > 0 ? Math.PI : 0, 0]}>
+          <mesh position={[0, 0.02, 0]} scale={[1.45, 1, 1.2]}>
+            <coneGeometry args={[0.5, 0.95, 10]} />
+            {gown}
           </mesh>
-        ))}
-        {/* The horn, and its light. */}
-        <mesh position={[0, 2.66, -1.36]} rotation={[-0.5, 0, 0]}>
-          <coneGeometry args={[0.065, 0.6, 7]} />
-          <meshBasicMaterial color="#ffe7a3" />
-        </mesh>
-        <mesh position={[0, 2.9, -1.5]}>
-          <sphereGeometry args={[0.36, 12, 12]} />
-          <meshBasicMaterial color={GOLD} transparent opacity={0.2} blending={AdditiveBlending} depthWrite={false} />
-        </mesh>
-        <pointLight position={[0, 3.0, -1.4]} color="#ffd98a" intensity={26} distance={24} decay={1.5} />
-        {MANE.map((c, i) => (
-          <mesh key={i} position={[0, 2.42 - i * 0.2, -0.98 + i * 0.16]} rotation={[-0.62, 0, 0]}>
-            <boxGeometry args={[0.13, 0.26, 0.3]} />
-            <meshToonMaterial gradientMap={ramp} color={c} emissive={c} emissiveIntensity={0.3} />
+          <mesh position={[0, 0.6, -0.02]}>
+            <cylinderGeometry args={[0.13, 0.19, 0.5, 8]} />
+            {gown}
           </mesh>
-        ))}
-        <group ref={tail} position={[0, 1.5, 0.92]}>
-          {MANE.slice(0, 3).map((c, i) => (
-            <mesh key={i} position={[(i - 1) * 0.07, -0.42, 0.14]}>
-              <coneGeometry args={[0.11, 0.95, 5]} />
-              <meshToonMaterial gradientMap={ramp} color={c} emissive={c} emissiveIntensity={0.3} />
+          {[-1, 1].map((side) => (
+            <mesh key={side} position={[side * 0.2, 0.58, -0.24]} rotation={[-1.05, 0, side * 0.22]}>
+              <cylinderGeometry args={[0.045, 0.04, 0.52, 6]} />
+              {skin}
             </mesh>
           ))}
-        </group>
-
-        {/* Ana, in the purple gown. */}
-        <mesh position={[0, 1.78, 0.12]} scale={[1.3, 1, 1.05]}>
-          <coneGeometry args={[0.5, 0.95, 9]} />
-          {gown}
-        </mesh>
-        <mesh position={[0, 2.32, 0.08]}>
-          <cylinderGeometry args={[0.13, 0.18, 0.46, 8]} />
-          {gown}
-        </mesh>
-        {[-1, 1].map((side) => (
-          <mesh key={side} position={[side * 0.2, 2.26, -0.16]} rotation={[-1.1, 0, side * 0.25]}>
-            <cylinderGeometry args={[0.045, 0.045, 0.5, 6]} />
-            <meshToonMaterial gradientMap={ramp} color="#c58d68" />
+          <mesh position={[0, 1.02, -0.03]}>
+            <sphereGeometry args={[0.175, 14, 14]} />
+            {skin}
           </mesh>
-        ))}
-        <mesh position={[0, 2.72, 0.06]}>
-          <sphereGeometry args={[0.175, 12, 12]} />
-          <meshToonMaterial gradientMap={ramp} color="#c58d68" />
-        </mesh>
-        <mesh position={[0, 2.76, 0.11]} scale={[1.08, 1.05, 1.08]}>
-          <sphereGeometry args={[0.18, 12, 12, 0, Math.PI * 2, 0, Math.PI * 0.62]} />
-          <meshToonMaterial gradientMap={ramp} color="#231629" />
-        </mesh>
-        <mesh position={[0, 2.38, 0.24]} rotation={[0.12, 0, 0]}>
-          <boxGeometry args={[0.26, 0.62, 0.1]} />
-          <meshToonMaterial gradientMap={ramp} color="#231629" />
-        </mesh>
-        {/* A marigold tucked in her hair. */}
-        <mesh position={[0.15, 2.82, 0.1]}>
-          <dodecahedronGeometry args={[0.055, 0]} />
-          <meshBasicMaterial color="#f7a521" />
-        </mesh>
+          <mesh position={[0, 1.06, 0.02]} scale={[1.08, 1.05, 1.08]}>
+            <sphereGeometry args={[0.18, 14, 14, 0, Math.PI * 2, 0, Math.PI * 0.62]} />
+            {hair}
+          </mesh>
+          <mesh position={[0, 0.62, 0.17]} rotation={[0.1, 0, 0]}>
+            <boxGeometry args={[0.27, 0.78, 0.1]} />
+            {hair}
+          </mesh>
+          <mesh position={[0, 1.2, -0.02]}>
+            <torusGeometry args={[0.13, 0.018, 6, 20]} />
+            <meshStandardMaterial color="#ffd76a" emissive="#ffb82e" emissiveIntensity={0.5} metalness={0.5} roughness={0.3} />
+          </mesh>
+          <mesh position={[0.16, 1.1, 0.03]}>
+            <dodecahedronGeometry args={[0.06, 0]} />
+            <meshBasicMaterial color="#f7a521" />
+          </mesh>
+        </group>
       </group>
-      <Leg x={-0.24} z={-0.52} phase={0} gait={gait} />
-      <Leg x={0.24} z={-0.52} phase={Math.PI} gait={gait} />
-      <Leg x={-0.24} z={0.6} phase={Math.PI} gait={gait} />
-      <Leg x={0.24} z={0.6} phase={0} gait={gait} />
     </group>
   )
 }
+useGLTF.preload(HORSE_URL)
 
-/** A small light that flies ahead of the boat towards the next island, showing the way. */
+/** A butterfly that flies ahead of her towards the next glade, showing the way. */
 function Companion() {
   const ref = useRef<Group>(null)
+  const left = useRef<Group>(null)
+  const right = useRef<Group>(null)
   const pos = useRef(new Vector3(0, 2, 0))
   useFrame(({ clock }, dt) => {
     const g = ref.current
@@ -439,29 +504,41 @@ function Companion() {
     const lead = b.heading + sea.bearing * 0.85
     const f = forward(lead)
     const want = new Vector3(
-      b.x + f.x * 4.2 + Math.sin(t * 1.7) * 0.5,
-      2.7 + Math.sin(t * 2.3) * 0.35 + Math.sin(t * 0.7) * 0.2,
-      b.z + f.z * 4.2 + Math.cos(t * 1.3) * 0.5,
+      b.x + f.x * 4.4 + Math.sin(t * 1.7) * 0.7,
+      2.6 + Math.sin(t * 2.3) * 0.4 + Math.sin(t * 0.7) * 0.25,
+      b.z + f.z * 4.4 + Math.cos(t * 1.3) * 0.7,
     )
     pos.current.lerp(want, 1 - Math.exp(-dt * 3))
     g.position.copy(pos.current)
-    g.scale.setScalar(0.85 + 0.15 * Math.sin(t * 6))
+    g.rotation.y = lead + Math.sin(t * 1.1) * 0.5
+    const flap = Math.sin(t * 16) * 0.9
+    if (left.current) left.current.rotation.z = 0.25 + flap
+    if (right.current) right.current.rotation.z = -0.25 - flap
   })
+  const wing = <meshBasicMaterial color="#ff8fc7" side={DoubleSide} />
   return (
     <group ref={ref}>
-      <mesh>
-        <sphereGeometry args={[0.07, 10, 10]} />
-        <meshBasicMaterial color="#fffbe0" />
-      </mesh>
-      <mesh>
-        <sphereGeometry args={[0.3, 12, 12]} />
-        <meshBasicMaterial color="#d9ff9a" transparent opacity={0.22} blending={AdditiveBlending} depthWrite={false} />
+      <group ref={left}>
+        <mesh position={[-0.17, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[0.17, 6]} />
+          {wing}
+        </mesh>
+      </group>
+      <group ref={right}>
+        <mesh position={[0.17, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[0.17, 6]} />
+          {wing}
+        </mesh>
+      </group>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <capsuleGeometry args={[0.022, 0.2, 2, 5]} />
+        <meshBasicMaterial color="#3a2a4a" />
       </mesh>
     </group>
   )
 }
 
-/** Fireflies gather over every island she has visited. */
+/** Drifting motes of pollen gather over every glade she has visited. */
 function Fireflies() {
   const dpr = useThree((s) => s.viewport.dpr)
   const height = useThree((s) => s.size.height)
@@ -489,7 +566,7 @@ function Fireflies() {
       uTime: { value: 0 },
       uLit: { value: new Float32Array(7) },
       uScale: { value: 60 },
-      uColor: { value: new Color('#ffe9a8') },
+      uColor: { value: new Color('#fffbe6') },
     }
     return { geometry, uniforms }
   }, [])
@@ -506,7 +583,7 @@ function Fireflies() {
 
   return (
     <points geometry={geometry} frustumCulled={false}>
-      <shaderMaterial uniforms={uniforms} vertexShader={fireflyVertex} fragmentShader={fireflyFragment} transparent depthWrite={false} blending={AdditiveBlending} />
+      <shaderMaterial uniforms={uniforms} vertexShader={fireflyVertex} fragmentShader={fireflyFragment} transparent depthWrite={false} />
     </points>
   )
 }
@@ -780,7 +857,7 @@ function IslandMesh({ island, index }: { island: Island; index: number }) {
       {/* A mossy rise in the clearing. */}
       <mesh position={[0, 0.06, 0]}>
         <cylinderGeometry args={[island.r * 1.02, island.r * 1.22, 0.36, 11]} />
-        <Tone color="#7fae6e" reveal={reveal} />
+        <Tone color="#7fc24e" rest="#6fb040" reveal={reveal} />
       </mesh>
       <mesh geometry={land} position={[0, 0.3, 0]}>
         <Tone color={palette.land} reveal={reveal} glow={0.12} />
@@ -798,7 +875,7 @@ function IslandMesh({ island, index }: { island: Island; index: number }) {
         <Tree key={i} {...t} color={palette.tree} reveal={reveal} />
       ))}
       <Feature id={island.id} reveal={reveal} colour={chapter.colour} />
-      {lit && <pointLight position={[0, 4, 0]} color={chapter.colour} intensity={30} distance={22} decay={1.6} />}
+      {lit && <pointLight position={[0, 4, 0]} color={chapter.colour} intensity={9} distance={16} decay={1.6} />}
 
       {next && (
         <>
@@ -810,7 +887,7 @@ function IslandMesh({ island, index }: { island: Island; index: number }) {
           </group>
           <mesh position={[0, 20, 0]}>
             <cylinderGeometry args={[0.1, 0.45, 40, 12, 1, true]} />
-            <meshBasicMaterial color={GOLD} transparent opacity={0.13} blending={AdditiveBlending} depthWrite={false} side={DoubleSide} />
+            <meshBasicMaterial color="#fff3c2" transparent opacity={0.34} depthWrite={false} side={DoubleSide} />
           </mesh>
         </>
       )}
@@ -950,10 +1027,10 @@ export function World() {
 
   return (
     <>
-      <color attach="background" args={['#070b1f']} />
-      <hemisphereLight args={['#aab6ff', '#1a1f45', 0.85]} />
-      <directionalLight color="#dfe6ff" intensity={1.25} position={[-35, 50, -78]} />
-      <fog attach="fog" args={['#081420', 34, 130]} />
+      <color attach="background" args={['#a8d4cc']} />
+      <hemisphereLight args={['#dff1ff', '#4f7a34', 1.25]} />
+      <directionalLight color="#fff1d0" intensity={2.1} position={SUN.toArray()} />
+      <fog attach="fog" args={['#a8d4cc', 38, 135]} />
       <Sky />
       <Ground />
       {ISLANDS.map((_, n) => (
@@ -964,7 +1041,10 @@ export function World() {
       ))}
       <Marigolds />
       <Fireflies />
-      <Rider />
+      <Rocks />
+      <Suspense fallback={null}>
+        <Rider />
+      </Suspense>
       <Companion />
     </>
   )
