@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f6f8fb" />
+  <title>Private</title>
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="color-scheme" content="light" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect x=%2212%22 y=%2212%22 width=%2276%22 height=%2276%22 rx=%2220%22 fill=%22%233a6ea5%22/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* Gate styles are scoped to #gate: the decrypted page brings its own CSS
+       and replaces everything inside <body>. */
+    html { -webkit-text-size-adjust: 100% }
+    body { margin: 0; background: #f6f8fb; color: #151b24;
+      font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif }
+
+    #gate { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px;
+      background: repeating-conic-gradient(from 0deg at 50% 40%, transparent 0 3.2deg, rgba(21, 27, 36, .06) 3.2deg 4deg) }
+    #gate * { box-sizing: border-box }
+    #gate .card { width: 100%; max-width: 400px; background: #fff; border: 3px solid #151b24;
+      box-shadow: 6px 6px 0 #151b24; padding: 26px 24px }
+    #gate .brand { display: inline-block; background: #f6cf57; border: 2px solid #151b24; padding: 1px 8px;
+      font-weight: 800; font-size: 12px; letter-spacing: .08em; text-transform: uppercase }
+    #gate h1 { font-weight: 900; font-size: 28px; line-height: 1.15; letter-spacing: -.02em; margin: 14px 0 8px }
+    #gate .sub { font-size: 14.5px; line-height: 1.55; color: #56606c; margin: 0 0 20px }
+    #gate label { display: block; margin: 0 0 14px }
+    #gate label span { display: block; font-weight: 800; font-size: 12px; letter-spacing: .06em;
+      text-transform: uppercase; margin-bottom: 6px }
+    /* 16px keeps iOS Safari from zooming the viewport on focus */
+    #gate input { width: 100%; font: inherit; font-size: 16px; color: #151b24; background: #fff;
+      border: 2px solid #151b24; border-radius: 0; padding: 12px; min-height: 48px }
+    #gate input:focus-visible, #gate button:focus-visible { outline: 3px solid #2a7f86; outline-offset: 2px }
+    #gate button { width: 100%; min-height: 50px; margin-top: 6px; border: 3px solid #151b24; background: #3a6ea5;
+      color: #fff; font: inherit; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 3px 3px 0 #151b24 }
+    #gate button[disabled] { opacity: .6; cursor: progress }
+    #gate #msg { min-height: 20px; margin: 14px 0 0; font-size: 13px; font-weight: 600; color: #56606c }
+    #gate #msg.err { color: #a3352c }
+    #gate .foot { margin: 18px 0 0; padding-top: 14px; border-top: 2px solid #e8edf3; font-size: 11.5px;
+      line-height: 1.7; color: #56606c }
+    #gate .foot a { color: #151b24 }
+  </style>
+</head>
+
+<body>
+  <main id="gate">
+    <form class="card" id="form" autocomplete="on">
+      <span class="brand">Rule book</span>
+      <h1>This one's private</h1>
+      <p class="sub">The page is stored encrypted. Your username and password derive the key that unlocks it, and the
+        same key signs you in to your saved progress.</p>
+
+      <label>
+        <span>Username</span>
+        <input type="text" id="user" name="username" autocomplete="username" autocapitalize="off" autocorrect="off"
+          spellcheck="false" required />
+      </label>
+      <label>
+        <span>Password</span>
+        <input type="password" id="pass" name="password" autocomplete="current-password" required />
+      </label>
+
+      <button type="submit" id="unlock">Unlock</button>
+      <p id="msg" role="status" aria-live="polite"></p>
+
+      <p class="foot">
+        AES-256-GCM · PBKDF2-SHA256 · __ITER_LABEL__ iterations<br />
+        <a href="/">← back to bhargavmantha.dev</a>
+      </p>
+    </form>
+  </main>
+
+  <script type="application/json" id="payload">__PAYLOAD__</script>
+
+  <script>
+    (function () {
+      var P = JSON.parse(document.getElementById('payload').textContent);
+      var form = document.getElementById('form');
+      var btn = document.getElementById('unlock');
+      var msg = document.getElementById('msg');
+      var SKEY = 'dojo-key';
+
+      function b64(s) {
+        var bin = atob(s), out = new Uint8Array(bin.length);
+        for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+        return out;
+      }
+
+      function say(text, isErr) {
+        msg.textContent = text;
+        msg.classList.toggle('err', !!isErr);
+      }
+
+      async function deriveKey(user, pass) {
+        var material = await crypto.subtle.importKey(
+          'raw', new TextEncoder().encode(user.trim().toLowerCase() + '\n' + pass),
+          'PBKDF2', false, ['deriveKey']);
+        return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: b64(P.salt), iterations: P.iterations, hash: 'SHA-256' },
+          material, { name: 'AES-GCM', length: 256 }, true, ['decrypt']);
+      }
+
+      async function decrypt(key) {
+        var plain = await crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv: b64(P.iv) }, key, b64(P.data));
+        return new TextDecoder().decode(plain);
+      }
+
+      // The progress API token is SHA-256("dojo-api-token\n" + raw key), hex.
+      // The server only ever holds a hash of it (see scripts/encrypt-dojo.mjs).
+      async function apiToken(key) {
+        var raw = new Uint8Array(await crypto.subtle.exportKey('raw', key));
+        var pre = new TextEncoder().encode('dojo-api-token\n');
+        var buf = new Uint8Array(pre.length + raw.length);
+        buf.set(pre); buf.set(raw, pre.length);
+        var digest = new Uint8Array(await crypto.subtle.digest('SHA-256', buf));
+        var hex = '';
+        for (var i = 0; i < digest.length; i++) hex += ('0' + digest[i].toString(16)).slice(-2);
+        return hex;
+      }
+
+      function render(html, token) {
+        document.title = P.title;
+        document.body.innerHTML = html;
+        window.DOJO = { token: token };
+        // Content is injected, so its inline <script> never ran — start it here.
+        // (This code ships in the clear; it holds no secrets, only page behaviour.)
+        __BEHAVIOUR__
+      }
+
+      // Already unlocked in this tab? Skip straight through.
+      (async function resume() {
+        var stored = sessionStorage.getItem(SKEY);
+        if (!stored) return;
+        try {
+          var key = await crypto.subtle.importKey(
+            'raw', b64(stored), 'AES-GCM', true, ['decrypt']);
+          render(await decrypt(key), await apiToken(key));
+        } catch (e) {
+          sessionStorage.removeItem(SKEY);
+        }
+      })();
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var user = document.getElementById('user').value;
+        var pass = document.getElementById('pass').value;
+        if (!user || !pass) return;
+
+        btn.disabled = true;
+        say('Deriving key…');
+
+        try {
+          var key = await deriveKey(user, pass);
+          var html = await decrypt(key);
+          var token = await apiToken(key);
+          var raw = await crypto.subtle.exportKey('raw', key);
+          try {
+            sessionStorage.setItem(SKEY,
+              btoa(String.fromCharCode.apply(null, new Uint8Array(raw))));
+          } catch (ignored) { }
+          render(html, token);
+        } catch (err) {
+          btn.disabled = false;
+          say('That username and password don’t unlock this page.', true);
+          document.getElementById('pass').select();
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>
