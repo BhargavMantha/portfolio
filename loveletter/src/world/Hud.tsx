@@ -62,19 +62,19 @@ export function Hud({ touch }: { touch: boolean }) {
 
       {nearChapter ? (
         <button type="button" className="btn btn--oui hud__dock" style={{ ['--tint' as string]: nearChapter.colour }} onClick={() => goAshore(nearChapter.id)}>
-          {completed.includes(nearChapter.id) ? 'Revisit' : 'Go ashore'} · {nearChapter.title}
+          {completed.includes(nearChapter.id) ? 'Revisit' : 'Enter the glade'} · {nearChapter.title}
           {!touch && <kbd>E</kbd>}
         </button>
       ) : (
         <p className="hud__keys" aria-live="polite">
           {touch ? (
-            'Tap the water, or an island, to sail there'
+            'Tap the ground, or a glade, to ride there'
           ) : (
             <>
               <kbd>W</kbd>
               <kbd>A</kbd>
               <kbd>S</kbd>
-              <kbd>D</kbd> or arrow keys to sail · click the water to set a course
+              <kbd>D</kbd> or arrow keys to ride · click the ground to set a course
             </>
           )}
         </p>

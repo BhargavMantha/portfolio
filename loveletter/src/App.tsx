@@ -115,7 +115,7 @@ function Story() {
           gl.domElement.addEventListener('webglcontextlost', () => setTier('none'))
         }}
       >
-        {sailing ? <World detail={tier === 'low' ? 90 : 180} /> : <Stage maxWidth={1600} />}
+        {sailing ? <World /> : <Stage maxWidth={1600} />}
       </Canvas>
       {mode === 'finale' ? (
         <Finale />

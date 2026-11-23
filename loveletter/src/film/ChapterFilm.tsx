@@ -96,7 +96,7 @@ export function ChapterFilm({ chapter, onDone, onOui }: { chapter: Chapter; onDo
       </div>
       {!endsOnQuestion && (
         <button type="button" className={`btn btn--continue${atEnd ? ' is-on' : ''}`} onClick={onDone} tabIndex={atEnd ? 0 : -1}>
-          Sail on
+          Ride on
         </button>
       )}
       <p className={`film__hint${active === 0 ? ' is-on' : ''}`} aria-hidden="true">

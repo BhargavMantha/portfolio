@@ -140,7 +140,7 @@ export function Finale() {
       <p className="finale__line finale__reveal">{w.line}</p>
       <p className="finale__sign finale__reveal">{w.sign}</p>
       <button type="button" className="finale__again finale__reveal" onClick={reset} tabIndex={done ? 0 : -1}>
-        sail it again
+        ride it again
       </button>
     </main>
   )

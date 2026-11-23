@@ -1,4 +1,3 @@
-import { WAVE_GLSL } from './sea'
 import { TRAIL_LENGTH } from './trail'
 
 const NOISE = /* glsl */ `
@@ -15,112 +14,123 @@ const NOISE = /* glsl */ `
   }
 `
 
-/* ───────────────────────── Sea ─────────────────────────
- * Cel-shaded night water. Foam rings hug each island, the boat leaves a
- * glowing wake, taps make ripples, and every visited island pours its colour
- * into the water around it. Islands are known positions, so the foam is
- * computed from distance alone: no depth pass, which keeps phones happy.
+/* ───────────────────────── Forest floor ─────────────────────────
+ * Cel-shaded night grass. A dirt trail joins the glades, each glade is ringed
+ * with flowers, hoofprints of light fade behind the unicorn, taps send out a
+ * ring of light, and every visited glade pours its colour into the ground
+ * around it. Everything is computed from known positions, with no extra
+ * render passes, which keeps phones happy.
  */
-export const seaVertex = /* glsl */ `
-  uniform float uTime;
+export const groundVertex = /* glsl */ `
   varying vec3 vWorld;
-  ${WAVE_GLSL}
   void main() {
     vec4 w = modelMatrix * vec4(position, 1.0);
-    w.y += waveHeight(w.xz, uTime);
     vWorld = w.xyz;
     gl_Position = projectionMatrix * viewMatrix * w;
   }
 `
 
-export const seaFragment = /* glsl */ `
+export const groundFragment = /* glsl */ `
   precision highp float;
   uniform float uTime;
   uniform vec4 uIsle[7];              // x, z, lit (0–1), radius
   uniform vec3 uIsleCol[7];
-  uniform vec3 uBoat;                 // x, z, lantern strength
+  uniform vec3 uBoat;                 // x, z, horn-light strength
   uniform vec3 uTrail[${TRAIL_LENGTH}];  // x, z, age in seconds (<0 unused)
   uniform vec3 uRipple[4];            // x, z, start time (<0 unused)
   uniform vec3 uHorizon;
   varying vec3 vWorld;
-  ${WAVE_GLSL}
   ${NOISE}
+
+  float toSegment(vec2 p, vec2 a, vec2 b) {
+    vec2 ab = b - a;
+    float t = clamp(dot(p - a, ab) / dot(ab, ab), 0.0, 1.0);
+    return distance(p, a + ab * t);
+  }
 
   void main() {
     vec2 p = vWorld.xz;
-    float e = 0.35;
-    float hx = waveHeight(p + vec2(e, 0.0), uTime) - waveHeight(p - vec2(e, 0.0), uTime);
-    float hz = waveHeight(p + vec2(0.0, e), uTime) - waveHeight(p - vec2(0.0, e), uTime);
-    vec3 n = normalize(vec3(-hx, 2.0 * e, -hz));
-    vec3 v = normalize(cameraPosition - vWorld);
+    float broad = fbm(p * 0.16);
+    float fine = fbm(p * 1.3 + 7.0);
 
-    // Three flat bands of ink blue that drift with the swell.
-    float swell = waveHeight(p, uTime) * 2.4 + (fbm(p * 0.22 + uTime * 0.04) - 0.5) * 1.6;
-    float band = clamp(floor((swell * 0.5 + 0.5) * 3.0) / 2.0, 0.0, 1.0);
-    vec3 col = mix(vec3(0.018, 0.030, 0.095), vec3(0.050, 0.085, 0.235), band);
-    float fres = pow(1.0 - max(dot(n, v), 0.0), 3.0);
-    col += vec3(0.03, 0.05, 0.13) * step(0.55, fres);
+    // Three flat bands of moss.
+    float band = clamp(floor(broad * 4.2) / 2.0, 0.0, 1.0);
+    vec3 col = mix(vec3(0.016, 0.050, 0.058), vec3(0.040, 0.105, 0.085), band);
 
-    // Moon glitter, as hard little flecks.
-    vec3 moon = normalize(vec3(-0.35, 0.5, -0.78));
-    float spec = pow(max(dot(reflect(-moon, n), v), 0.0), 70.0);
-    float fleck = step(0.86, noise(p * 7.0 + vec2(uTime * 0.6, -uTime * 0.4)));
-    col += vec3(0.80, 0.86, 1.0) * fleck * smoothstep(0.05, 0.5, spec) * 0.7;
+    // The trail from A to B: packed earth with a ragged edge.
+    float trail = 1e9;
+    for (int i = 0; i < 6; i++) trail = min(trail, toSegment(p, uIsle[i].xy, uIsle[i + 1].xy));
+    float onTrail = 1.0 - step(1.55, trail + (fine - 0.5) * 1.7);
+    vec3 earth = mix(vec3(0.085, 0.070, 0.095), vec3(0.135, 0.105, 0.125), step(0.5, fine));
+    col = mix(col, earth, onTrail);
 
-    float wobble = fbm(p * 0.9 + uTime * 0.12) - 0.5;
-    float foam = 0.0;
     vec3 light = vec3(0.0);
     for (int i = 0; i < 7; i++) {
-      float d = distance(p, uIsle[i].xy);
+      vec2 c = uIsle[i].xy;
+      float d = distance(p, c);
       float r = uIsle[i].w;
+      float lit = uIsle[i].z;
       float fi = float(i);
-      // A tight ring at the shore and a slower one further out.
-      float shore = abs(d - (r + 0.5 + 0.22 * sin(uTime * 1.3 + fi)) + wobble * 0.9);
-      float outer = abs(d - (r + 1.8 + 0.6 * sin(uTime * 0.7 + fi * 2.1)) + wobble * 1.6);
-      foam = max(foam, step(shore, 0.2));
-      foam = max(foam, step(outer, 0.09) * 0.55);
-      // The colour a visited island pours into the sea, in soft steps.
-      float pool = exp(-d * d / 190.0);
-      pool = floor(pool * 5.0 + 0.5) / 5.0;
-      light += uIsleCol[i] * uIsle[i].z * (pool * 0.42 + exp(-d * d / 26.0) * 0.4);
-    }
-    col += light * (0.8 + 0.2 * sin(length(p) * 1.5 - uTime * 1.2 + hx * 8.0));
 
-    // The wake: foam where the boat just was, a cool glow where it was a while ago.
-    float wake = 0.0;
+      // Each glade is a clearing of brighter grass.
+      float clearing = 1.0 - step(r + 2.4, d + (fine - 0.5) * 1.6);
+      col = mix(col, mix(vec3(0.045, 0.120, 0.095), vec3(0.075, 0.175, 0.115), band), clearing);
+
+      // A ring of flowers round it: pale by moonlight, the glade's own colour once visited.
+      float ang = atan(p.y - c.y, p.x - c.x);
+      float n = 22.0;
+      float cell = floor((ang + 3.14159) / 6.28318 * n);
+      float a = (cell + 0.5) / n * 6.28318 - 3.14159;
+      float rr = r + 2.9 + 0.7 * hash(vec2(cell, fi));
+      float flower = step(distance(p, c + vec2(cos(a), sin(a)) * rr), 0.17 + 0.08 * hash(vec2(fi, cell)));
+      vec3 petal = mix(vec3(0.42, 0.47, 0.62), uIsleCol[i] * 1.5 + 0.15, lit);
+      col = mix(col, petal, flower);
+
+      // The colour a visited glade pours into the forest, in soft steps.
+      float pool = exp(-d * d / 210.0);
+      pool = floor(pool * 5.0 + 0.5) / 5.0;
+      light += uIsleCol[i] * lit * (pool * 0.36 + exp(-d * d / 30.0) * 0.3);
+    }
+    col += light * (0.85 + 0.15 * sin(length(p) * 1.3 - uTime * 0.9));
+
+    // Small flowers everywhere; they only show where there is light to catch.
+    float bloom = step(0.90, noise(p * 3.1 + 11.0)) * step(0.5, noise(p * 9.0));
+    col += (light * 2.2 + vec3(0.05, 0.07, 0.11)) * bloom * (1.0 - onTrail);
+
+    // Hoofprints of light where the unicorn has just stepped.
     float glow = 0.0;
+    float spark = 0.0;
     for (int k = 0; k < ${TRAIL_LENGTH}; k++) {
       float age = uTrail[k].z;
       if (age < 0.0) continue;
-      float d = distance(p, uTrail[k].xy) + wobble * 0.5;
-      float spread = 0.45 + age * 0.5;
-      wake = max(wake, step(d, spread) * step(spread * 0.55, d) * step(age, 1.6));
-      glow = max(glow, smoothstep(spread * 1.6, 0.0, d) * exp(-age * 0.55));
+      float d = distance(p, uTrail[k].xy);
+      float fade = exp(-age * 0.9);
+      glow = max(glow, smoothstep(1.5 + age * 0.35, 0.0, d) * fade);
+      spark = max(spark, step(d, 0.26) * fade);
     }
-    col += vec3(0.20, 0.85, 0.95) * glow * 0.36 + vec3(0.55, 0.35, 0.95) * glow * glow * 0.2;
+    float glitter = step(0.62, noise(p * 11.0 + uTime * 1.5));
+    col += vec3(1.0, 0.78, 0.50) * glow * 0.20 + vec3(1.0, 0.62, 0.85) * glow * glitter * 0.55;
+    col = mix(col, vec3(1.0, 0.93, 0.74), spark * 0.85);
 
-    // Ripples from a tap.
+    // A ring of light from a tap.
     for (int k = 0; k < 4; k++) {
       float t0 = uRipple[k].z;
       if (t0 < 0.0) continue;
       float age = uTime - t0;
       float d = distance(p, uRipple[k].xy);
-      float ring = step(abs(d - age * 3.2), 0.1) + step(abs(d - age * 3.2 + 0.9), 0.06) * step(0.3, age);
-      float fade = exp(-age * 1.1) * step(age, 4.0);
-      foam = max(foam, ring * fade * 0.8);
-      col += vec3(0.20, 0.85, 0.95) * exp(-d * d / (1.0 + age * 6.0)) * fade * 0.25;
+      float fade = exp(-age * 1.2) * step(age, 4.0);
+      float ring = step(abs(d - age * 3.0), 0.09) + step(abs(d - age * 3.0 + 0.8), 0.05) * step(0.3, age);
+      col += vec3(1.0, 0.90, 0.62) * ring * fade * 0.8 + vec3(1.0, 0.75, 0.45) * exp(-d * d / (1.0 + age * 5.0)) * fade * 0.2;
     }
 
-    // The lantern's pool of gold.
+    // The horn's pool of gold.
     float bd = distance(p, uBoat.xy);
-    float lantern = exp(-bd * bd / 9.0);
-    lantern = floor(lantern * 3.0 + 0.5) / 3.0;
-    col += vec3(1.0, 0.76, 0.34) * uBoat.z * (lantern * 0.26 + exp(-bd * bd / 70.0) * 0.12);
-
-    col = mix(col, vec3(0.82, 0.90, 1.0) + light * 0.5, clamp(max(foam, wake * 0.85), 0.0, 1.0) * 0.9);
+    float horn = exp(-bd * bd / 11.0);
+    horn = floor(horn * 3.0 + 0.5) / 3.0;
+    col += vec3(1.0, 0.78, 0.40) * uBoat.z * (horn * 0.16 + exp(-bd * bd / 80.0) * 0.10);
 
     float dist = distance(cameraPosition.xz, p);
-    col = mix(col, uHorizon, smoothstep(50.0, 150.0, dist));
+    col = mix(col, uHorizon, smoothstep(42.0, 135.0, dist));
     gl_FragColor = vec4(col, 1.0);
   }
 `

@@ -1,6 +1,6 @@
 # A to B
 
-A private anniversary site: seven chapters of photos and words, joined by a small sea you sail between islands.
+A private anniversary site: seven chapters of photos and words, joined by a moonlit forest you ride through, glade to glade, on a unicorn.
 
 ## Why the content is encrypted
 
