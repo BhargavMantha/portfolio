@@ -96,6 +96,18 @@ Because the ciphertext is downloadable, its security is exactly the strength of
 the passphrase plus the PBKDF2 work factor (`ITERATIONS` in the script). Prefer a
 long passphrase over a short complex one.
 
+### The private `/home` pages
+
+`/home` (the Vanya 3D home model) and `/home/sheet` (its design sheet) use the
+same script. Their sources (`home-source/`, `home-sheet-source/`, gitignored)
+each hold a complete HTML document as `content.html`; `behaviour.js` runs the
+decrypted document in a full-window frame.
+
+```bash
+PAGE_USER='...' PAGE_PASS='...' node scripts/encrypt-page.mjs home
+PAGE_USER='...' PAGE_PASS='...' node scripts/encrypt-page.mjs home-sheet
+```
+
 ### The private `/dojo` page
 
 `/dojo` is the DSA + CKA/CKS rule book and progress tracker. It uses the same

@@ -33,6 +33,17 @@
   to = "/loveletter/index.html"
   status = 200
 
+# Vanya home design (3D model) and its design sheet, both encrypted.
+[[redirects]]
+  from = "/home"
+  to = "/home/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/home/sheet"
+  to = "/home/sheet/index.html"
+  status = 200
+
 [[redirects]]
   from = "/dojo"
   to = "/dojo/index.html"
