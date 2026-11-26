@@ -49,6 +49,25 @@ const PAGES = {
     themeColor: '#0d1726',
     iconColor: '87ceeb',
   },
+  // Vanya (B-801) home design. The source is a complete HTML document; behaviour.js runs it in a full-window frame.
+  home: {
+    title: 'Vanya · B-801',
+    brand: 'vanya · b-801',
+    source: 'home-source',
+    out: 'public/home',
+    skey: 'vanya-home-key',
+    themeColor: '#1f1e1c',
+    iconColor: '8d8f92',
+  },
+  'home-sheet': {
+    title: 'Vanya · design sheet',
+    brand: 'vanya · design sheet',
+    source: 'home-sheet-source',
+    out: 'public/home/sheet',
+    skey: 'vanya-sheet-key',
+    themeColor: '#1f1e1c',
+    iconColor: '8d8f92',
+  },
 };
 
 const name = process.argv[2] ?? 'plan';

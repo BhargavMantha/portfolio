@@ -6,6 +6,8 @@
     { "source": "/plan", "destination": "/plan/index.html" },
     { "source": "/agentic-stack", "destination": "/agentic-stack/index.html" },
     { "source": "/syllabus", "destination": "/syllabus/index.html" },
+    { "source": "/home", "destination": "/home/index.html" },
+    { "source": "/home/sheet", "destination": "/home/sheet/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
